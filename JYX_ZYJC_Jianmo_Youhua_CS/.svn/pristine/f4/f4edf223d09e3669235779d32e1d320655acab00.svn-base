@@ -1,0 +1,725 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+using System.Windows.Forms;
+using MOIE = Microsoft.Office.Interop.Excel;
+using Bentley.OpenPlantModeler.SDK.Utilities;
+using Bentley.ECObjects.Instance;
+using Bentley.Building.Mechanical.Api;
+using Bentley.MstnPlatformNET.InteropServices;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public class ExportMaterials
+    {
+        //MaterialsList.xlsx
+        List<string> lineNumberList = new List<string>();
+        private static Bentley.Interop.MicroStationDGN.Application app1 = Utilities.ComApp;
+        private static string path0 = app1.ActiveWorkspace.ConfigurationVariableValue("OPENPLANT_WORKSET_STANDARDS");
+        public Dictionary<int, string> lineList = new Dictionary<int, string>();
+        public Dictionary<int, List<IECInstance>> iecDicInstanceList = new Dictionary<int, List<IECInstance>>();
+        //C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMetric\Standards\OpenPlant
+
+        /// <summary>
+        /// 根据是否含有属性"JYXtype", "CERI"进行导出
+        /// </summary>
+        public void exportExcel()
+        {
+            //string destPath=Path.Combine(@"H:\材料报表任务","")
+            SaveFileDialog dia = new SaveFileDialog();
+
+            dia.InitialDirectory = @"H:\材料报表任务";
+
+            dia.Filter = "Excel Files(*.xlsx)|*.xlsx";
+
+            dia.RestoreDirectory = true;
+
+            if (dia.ShowDialog() == DialogResult.OK)
+            {
+                string excelPath = dia.FileName.ToString();
+                string excelName = excelPath.Substring(excelPath.LastIndexOf("\\") + 1);
+                int i = excelName.IndexOf(".");
+                string houzhui = excelName.Substring(i + 1);
+                if (i == 0 || houzhui != "xlsx")
+                {
+                    MessageBox.Show("输入文件名格式不正确");
+                    return;
+                }
+                else if (i == -1)
+                {
+                    excelName += ".xlsx";
+                }
+                string excelPath1 = excelPath.Substring(0, excelPath.LastIndexOf("\\") + 1) + excelName;
+                if (File.Exists(excelPath1))
+                {
+                    excelPath1 = excelPath1 + "2";
+                    string name = excelPath1.Substring(excelPath1.LastIndexOf("\\") + 1);
+                    MessageBox.Show("该路径下存在同名的文件，将会在文件名后面加1。修改后的文件名为：" + name);
+                }
+                File.Copy(@"H:\材料报表任务\材料表1.xlsx", excelPath1);
+
+                MOIE.Application app = new MOIE.Application();
+                MOIE.Workbooks wkb = app.Workbooks;
+                MOIE.Workbook wb = wkb.Open(excelPath1);
+                //app.Visible = true;
+                //wb=wkb.Open(excelPath1);
+                MOIE.Worksheet s = (MOIE.Worksheet)wb.Worksheets["通用材料表-国内"];
+                ECInstanceList ecInstanceList = DgnUtilities.GetInstancesFromDGNByProperty("JYXtype", "CERI");
+                #region 遍历所有的
+                //ECInstanceList ecInstanceList1 = DgnUtilities.GetAllInstancesFromDgn();
+                //foreach(IECInstance iecInstance in ecInstanceList1)
+                //{
+                //    bool b=BMECApi.Instance.InstanceDefinedAsClass(iecInstance, "PIPING_COMPONENT", true);
+                //    if(b)
+                //    {
+                //        string LineNumber = iecInstance["LINENUMBER"].StringValue;
+                //        bool bb=lineNumberList.Contains(LineNumber);
+                //        if(!bb)
+                //        {
+                //            lineNumberList.Add(LineNumber);
+                //        }
+                //    }
+                //}
+                #endregion
+
+                foreach (IECInstance iec in ecInstanceList)
+                {
+                    string LineNumber = iec["LINENUMBER"].StringValue;
+                    bool bb = lineNumberList.Contains(LineNumber);
+                    if (!bb)
+                    {
+                        lineNumberList.Add(LineNumber);
+                    }
+                }
+
+                if (lineNumberList.Count > 0)
+                {
+                    for (int j = 0; j < lineNumberList.Count; j++)
+                    {
+                        s.Cells[j + 6, 1] = j + 1;
+                        s.Cells[j + 6, 2] = lineNumberList[j];
+                    }
+                }
+                //DgnUtilities
+                //s.Cells[7, 2] = "hgiugiu";
+
+                wb.Save();
+                wb.Close();
+                wkb.Close();
+                app.Quit();
+                MOIE.Application app1 = new MOIE.Application();
+                MOIE.Workbook wb1 = app1.Workbooks.Add(excelPath1);
+                app1.Visible = true;
+                //wb = app.Workbooks.Add(excelPath1);
+                //app.Visible = true;
+            }
+        }
+
+        /// <summary>
+        /// 根据选择的元素进行导出报表
+        /// </summary>
+        public void selectExportExcel(bool isSelect)
+        {
+            ECInstanceList ecList = DgnUtilities.GetAllInstancesFromDgn();
+            if(isSelect)
+            {
+                ecList = DgnUtilities.GetSelectedInstances();
+                if (ecList.Count == 0)
+                {
+                    System.Windows.Forms.MessageBox.Show("请先选择元素");
+                    app1.CommandState.StartDefaultCommand();
+                    return;
+                }
+            }            
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = path0; //设置初始目录
+            sfd.Filter = "Excel Files(*.xlsx)|*.xlsx";
+            sfd.RestoreDirectory = true;
+            //string OPM_REGISTRYKEY_PATH = @"SOFTWARE\Bentley\OpenPlantModeler";
+            //Microsoft.Win32.RegistryKey mainKey = Microsoft.Win32.Registry.LocalMachine;
+            //Microsoft.Win32.RegistryKey subKey;
+            //subKey = mainKey.OpenSubKey(OPM_REGISTRYKEY_PATH);
+            //foreach (string str in subKey.GetSubKeyNames())
+            //{
+            //    if (str.IndexOf('{') == 0)
+            //    {
+            //        subKey = subKey.OpenSubKey(str);
+            //        string sProgramPath = subKey.GetValue("ProgramPath").ToString();
+            //        string sWorkspacePath = subKey.GetValue("ConfigurationPath").ToString();
+
+            //        break;
+            //    }
+            //}
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                string excelPath = sfd.FileName.ToString();
+                string excelName = excelPath.Substring(excelPath.LastIndexOf("\\") + 1);
+                int i = excelName.LastIndexOf(".");
+                string houzhui = excelName.Substring(i + 1);
+                if (houzhui != "xlsx")
+                {
+                    MessageBox.Show("输入文件名格式不正确");
+                    return;
+                }
+                if (File.Exists(excelPath))
+                {
+                    string excelname = excelName.Substring(0, excelName.LastIndexOf("."));                  
+                    excelname += "1.xlsx";
+                    //string name = excelname.Substring(excelPath1.LastIndexOf("\\") + 1);
+                    MessageBox.Show("该路径下存在同名的文件，将会在文件名后面加1。修改后的文件名为：" + excelname);
+                    string path = excelPath.Substring(0, excelPath.LastIndexOf("\\") + 1);
+                    excelPath = path + excelname;
+                }
+                try
+                {
+                    File.Copy(path0 + "\\JYXConfig\\MaterialsList.xlsx", excelPath);
+                }
+                catch
+                {
+                    MessageBox.Show("路径" + path0 + "\\JYXConfig下没有找到MaterialsList.xlsx文件");
+                    return;
+                }
+                MOIE.Application app = new MOIE.Application();
+                MOIE.Workbooks wkb = app.Workbooks;
+                MOIE.Workbook wb = wkb.Open(excelPath);
+                //app.Visible = true;
+                //wb=wkb.Open(excelPath1);
+                MOIE.Worksheet s = (MOIE.Worksheet)wb.Worksheets["通用材料表-国内"];
+                int ii = ecList.Count;
+                int keyNumber = 0;
+                #region 得到需要导出的instance的集合
+                foreach (IECInstance ec in ecList)
+                {
+                    bool b = BMECApi.Instance.InstanceDefinedAsClass(ec, "PIPING_COMPONENT", true); //查找ec的父类是否含有PIPING_COMPONENT
+                    if (b)
+                    {
+                        string fenlei = ec["CERI_Classify"].StringValue;
+                        if (fenlei == "材料" || fenlei == "cailiao")
+                        {
+                            string LineNumber = ec["LINENUMBER"].StringValue;
+                            if (lineList.Count == 0)
+                            {
+                                lineList.Add(keyNumber, LineNumber);
+                                List<IECInstance> iecList = new List<IECInstance>();
+                                iecList.Add(ec);
+                                iecDicInstanceList.Add(keyNumber, iecList);
+                            }
+                            else
+                            {
+                                bool b1 = lineList.ContainsValue(LineNumber);
+                                if (!b1)
+                                {
+                                    keyNumber += 1;
+                                    lineList.Add(keyNumber, LineNumber);
+                                    List<IECInstance> iecList = new List<IECInstance>();
+                                    iecList.Add(ec);
+                                    iecDicInstanceList.Add(keyNumber, iecList);
+                                }
+                                else
+                                {
+                                    int indexKey = 0;
+                                    foreach (KeyValuePair<int, string> kv in lineList)
+                                    {
+                                        if (kv.Value == LineNumber)
+                                        {
+                                            indexKey = kv.Key;
+                                        }
+                                    }
+                                    iecDicInstanceList[indexKey].Add(ec);
+                                }
+                            }
+                        }
+                        //string ecName = ec.ClassDefinition.Name;
+                    }
+
+                }
+                #endregion
+
+                if (iecDicInstanceList.Count > 0)
+                {
+                    int row = 5; //行数
+                    int lineindex = 0; //序号
+                    foreach (KeyValuePair<int, string> kv in lineList)
+                    {
+                        row++;
+                        lineindex++;
+                        s.Cells[row, 1] = lineindex;
+                        s.Cells[row, 2] = kv.Value;
+                        Dictionary<int, List<IECInstance>> rowIecList = new Dictionary<int, List<IECInstance>>();
+                        int rowm = 0;
+                        #region 将数据按照ECClass和DN分组
+                        foreach (IECInstance iec in iecDicInstanceList[kv.Key])
+                        {
+                            string ecName = iec.ClassDefinition.Name;
+                            double dn = iec["NOMINAL_DIAMETER"].DoubleValue;
+                            if (rowIecList.Count == 0)
+                            {
+                                List<IECInstance> iecList = new List<IECInstance>();
+                                iecList.Add(iec);
+                                rowIecList.Add(rowm, iecList);
+                            }
+                            else
+                            {
+                                int kv_key = 0;
+                                bool bbb = true;
+                                foreach (KeyValuePair<int, List<IECInstance>> kv1 in rowIecList)
+                                {
+                                    foreach (IECInstance iecinstan in kv1.Value)
+                                    {
+                                        string ecName1 = iecinstan.ClassDefinition.Name;
+                                        double dn1 = iecinstan["NOMINAL_DIAMETER"].DoubleValue;
+                                        if (ecName == ecName1 && dn == dn1)
+                                        {
+                                            bbb = false;
+                                            kv_key = kv1.Key;
+                                        }
+                                    }
+                                }
+                                if (bbb)
+                                {
+                                    rowm++;
+                                    List<IECInstance> iecList = new List<IECInstance>();
+                                    iecList.Add(iec);
+                                    rowIecList.Add(rowm, iecList);
+                                }
+                                else
+                                {
+                                    rowIecList[kv_key].Add(iec);
+                                }
+                            }
+
+                        }
+                        #endregion
+                        foreach (KeyValuePair<int, List<IECInstance>> iec in rowIecList)
+                        {
+                            row++;
+                            string ecname = "";
+                            string dn = "";
+                            string unit = "";
+                            double qty = 0;
+                            string materialNum = "";
+                            string pipece_mare = "";
+                            string material = "";
+                            double dry_weight = 0;
+                            string catalog_name = "";
+                            string media = "";
+                            double totalweight = 0;
+                            ecname = iec.Value[0].ClassDefinition.Name;
+                            if (iec.Value[0].GetPropertyValue("CERI_MAIN_SIZE") != null)
+                            {
+                                dn = iec.Value[0]["CERI_MAIN_SIZE"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI MAT_GRADE") != null)
+                            {
+                                materialNum = iec.Value[0]["CERI MAT_GRADE"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI_PIECE_MARK") != null)
+                            {
+                                pipece_mare = iec.Value[0]["CERI_PIECE_MARK"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI_MATERIAL") != null)
+                            {
+                                material = iec.Value[0]["CERI_MATERIAL"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI_CATALOG") != null)
+                            {
+                                catalog_name = iec.Value[0]["CERI_CATALOG"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI_Media_Name") != null)
+                            {
+                                media = iec.Value[0]["CERI_Media_Name"].StringValue;
+                            }
+                            
+                            bool b = BMECApi.Instance.InstanceDefinedAsClass(iec.Value[0], "PIPE", true);
+                            if (b)
+                            {
+                                if (iec.Value[0].GetPropertyValue("CERI_WEIGHT_DRY") != null)
+                                {
+                                    dry_weight = iec.Value[0]["CERI_WEIGHT_DRY"].DoubleValue * 1000;
+                                }
+                                unit = "米";
+                                double length = 0;
+                                foreach (IECInstance iec2 in iec.Value)
+                                {
+                                    length += iec2["LENGTH"].DoubleValue / 1000;
+                                    //dry_weight = iec.Value[0]["DRY_WEIGHT"].DoubleValue * 1000;
+                                }
+                                qty = length;
+                                totalweight = qty * dry_weight;
+                            }
+                            else
+                            {
+                                unit = "个";
+                                if (iec.Value[0].GetPropertyValue("CERI_WEIGHT_DRY") != null)
+                                {
+                                    dry_weight = iec.Value[0]["CERI_WEIGHT_DRY"].DoubleValue;
+                                }
+                                qty = iec.Value.Count;
+                                totalweight = qty * dry_weight;
+                            }
+                            s.Cells[row, 3] = materialNum;
+                            s.Cells[row, 4] = ecname;
+                            s.Cells[row, 5] = pipece_mare;
+                            s.Cells[row, 6] = "DN" + dn;
+                            s.Cells[row, 7] = material;
+                            s.Cells[row, 9] = unit;
+                            s.Cells[row, 10] = qty;
+                            s.Cells[row, 11] = dry_weight;
+                            s.Cells[row, 12] = totalweight;
+                            s.Cells[row, 13] = catalog_name;
+                            s.Cells[row, 16] = media;
+                            //s.Cells[row, 4] = iec.ClassDefinition.Name;
+                        }
+                    }
+                    wb.Save();
+                    wb.Close();
+                    wkb.Close();
+                    app.Quit();
+                    MOIE.Application app1 = new MOIE.Application();
+                    MOIE.Workbooks wbs = app1.Workbooks;
+                    //wbs.Add()
+                    MOIE.Workbook wb1 = app1.Workbooks.Open(excelPath);
+                    //app1.Workbooks.Open(excelPath);
+                    app1.Visible = true;
+                }
+            }
+        }
+
+        public Dictionary<int, string> eqEqList = new Dictionary<int, string>();
+        public Dictionary<int, List<IECInstance>> eqInstanceDicList = new Dictionary<int, List<IECInstance>>();
+        public void selectEquipmentExcel(bool isSelect)
+        {
+            ECInstanceList ecList = DgnUtilities.GetAllInstancesFromDgn();
+            if (isSelect)
+            {
+                ecList = DgnUtilities.GetSelectedInstances();
+                if (ecList.Count == 0)
+                {
+                    System.Windows.Forms.MessageBox.Show("请先选择元素");
+                    app1.CommandState.StartDefaultCommand();
+                    return;
+                }
+            }
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = path0; //设置初始目录
+            sfd.Filter = "Excel Files(*.xlsx)|*.xlsx";
+            sfd.RestoreDirectory = true;
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                string excelPath = sfd.FileName.ToString();
+                string excelName = excelPath.Substring(excelPath.LastIndexOf("\\") + 1);
+                int i = excelName.LastIndexOf(".");
+                string houzhui = excelName.Substring(i + 1);
+                if (houzhui != "xlsx")
+                {
+                    MessageBox.Show("输入文件名格式不正确");
+                    return;
+                }
+                if (File.Exists(excelPath))
+                {
+                    string excelname = excelName.Substring(0, excelName.LastIndexOf("."));
+                    string datetime = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                    //excelname += "1.xlsx";
+                    excelname = excelname + datetime + ".xlsx";
+                    //string name = excelname.Substring(excelPath1.LastIndexOf("\\") + 1);
+                    MessageBox.Show("该路径下存在同名的文件，将会在文件名后面加1。修改后的文件名为：" + excelname);
+                    string path = excelPath.Substring(0, excelPath.LastIndexOf("\\") + 1);
+                    excelPath = path + excelname;
+                }
+                try
+                {
+                    File.Copy(path0 + "\\JYXConfig\\EquipmentList.xlsx", excelPath);
+                }
+                catch
+                {
+                    MessageBox.Show("路径" + path0 + "\\JYXConfig下没有找到EquipmentList.xlsx文件");
+                    return;
+                }
+                MOIE.Application app = new MOIE.Application();
+                MOIE.Workbooks wkb = app.Workbooks;
+                MOIE.Workbook wb = wkb.Open(excelPath);
+                //app.Visible = true;
+                //wb=wkb.Open(excelPath1);
+                MOIE.Worksheet s = (MOIE.Worksheet)wb.Worksheets["设备表-海外"];
+                int keyNumber = 0;
+                int eqkeyNumber = 0;
+                #region 得到需要导出的instance的集合
+                foreach (IECInstance ec in ecList)
+                {
+                    bool sheb = BMECApi.Instance.InstanceDefinedAsClass(ec, "EQUIPMENT", true);
+                    if (sheb)
+                    {
+                        if (ec.GetPropertyValue("CERI_Equipment_Num") != null)
+                        {
+                            string eqName = ec["CERI_Equipment_Num"].StringValue;
+                            if (eqName != null && eqName != "")
+                            {
+                                if (eqEqList.Count == 0)
+                                {
+                                    List<IECInstance> eqinstanceList = new List<IECInstance>();
+                                    eqEqList.Add(eqkeyNumber, eqName);
+                                    eqinstanceList.Add(ec);
+                                    eqInstanceDicList.Add(eqkeyNumber, eqinstanceList);
+                                }
+                                else
+                                {
+                                    bool eqb1 = eqEqList.ContainsValue(eqName);
+                                    if (!eqb1)
+                                    {
+                                        eqkeyNumber++;
+                                        List<IECInstance> eqinstanceList = new List<IECInstance>();
+                                        eqEqList.Add(eqkeyNumber, eqName);
+                                        eqinstanceList.Add(ec);
+                                        eqInstanceDicList.Add(eqkeyNumber, eqinstanceList);
+                                    }
+                                    else
+                                    {
+                                        int indexKey = 0;
+                                        foreach (KeyValuePair<int, string> kv in eqEqList)
+                                        {
+                                            if (kv.Value == eqName)
+                                            {
+                                                indexKey = kv.Key;
+                                            }
+                                        }
+                                        eqInstanceDicList[indexKey].Add(ec);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    bool b = BMECApi.Instance.InstanceDefinedAsClass(ec, "PIPING_COMPONENT", true); //查找ec的父类是否含有PIPING_COMPONENT
+                    if (b)
+                    {
+                        string fenlei = ec["CERI_Classify"].StringValue;
+                        if (fenlei == "shebei")
+                        {
+                            string LineNumber = ec["LINENUMBER"].StringValue;
+                            if (lineList.Count == 0)
+                            {
+                                lineList.Add(keyNumber, LineNumber);
+                                List<IECInstance> iecList = new List<IECInstance>();
+                                iecList.Add(ec);
+                                iecDicInstanceList.Add(keyNumber, iecList);
+                            }
+                            else
+                            {
+                                bool b1 = lineList.ContainsValue(LineNumber);
+                                if (!b1)
+                                {
+                                    keyNumber += 1;
+                                    lineList.Add(keyNumber, LineNumber);
+                                    List<IECInstance> iecList = new List<IECInstance>();
+                                    iecList.Add(ec);
+                                    iecDicInstanceList.Add(keyNumber, iecList);
+                                }
+                                else
+                                {
+                                    int indexKey = 0;
+                                    foreach (KeyValuePair<int, string> kv in lineList)
+                                    {
+                                        if (kv.Value == LineNumber)
+                                        {
+                                            indexKey = kv.Key;
+                                        }
+                                    }
+                                    iecDicInstanceList[indexKey].Add(ec);
+                                }
+                            }
+                        }
+                        //string ecName = ec.ClassDefinition.Name;
+                    }
+
+                }
+                #endregion
+
+                int row = 7;
+                int index = 0;
+                if (eqInstanceDicList.Count > 0)
+                {
+                    foreach (KeyValuePair<int, string> kv in eqEqList)
+                    {
+                        row++;
+                        index++;
+                        s.Cells[row, 1] = index;
+                        s.Cells[row, 2] = kv.Value;
+                        foreach (IECInstance iec in eqInstanceDicList[kv.Key])
+                        {
+                            row++;
+                            string materialNum = "";
+                            string item = "";
+                            string type = "";
+                            string technicalData = "";
+                            string Unit = "pcs/台";
+                            double qty = 0;
+                            double unitWght = 0;
+                            double totalWght = 0;
+                            if (iec.GetPropertyValue("CERI_Equipment_Code") != null)
+                            {
+                                materialNum = iec["CERI_Equipment_Code"].StringValue;
+                            }
+                            if (iec.GetPropertyValue("CERI_Equipment_Name") != null)
+                            {
+                                item = iec["CERI_Equipment_Name"].StringValue;
+                            }
+                            if (iec.GetPropertyValue("CERI_Model") != null)
+                            {
+                                type = iec["CERI_Model"].StringValue;
+                            }
+                            if (iec.GetPropertyValue("CERI_Technical") != null)
+                            {
+                                technicalData = iec["CERI_Technical"].StringValue;
+                            }
+                            if (iec.GetPropertyValue("CERI_Quantity") != null)
+                            {
+                                qty = iec["CERI_Quantity"].DoubleValue;
+                            }
+                            if (iec.GetPropertyValue("CERI_DRY_WEIGHT") != null)
+                            {
+                                unitWght = iec["CERI_DRY_WEIGHT"].DoubleValue;
+                            }
+                            s.Cells[row, 3] = materialNum;
+                            s.Cells[row, 5] = item;
+                            s.Cells[row, 7] = type;
+                            s.Cells[row, 10] = technicalData;
+                            s.Cells[row, 12] = Unit;
+                            s.Cells[row, 13] = qty;
+                            s.Cells[row, 14] = unitWght;
+                            totalWght = qty * unitWght;
+                            s.Cells[row, 15] = totalWght;
+                        }
+                    }
+                }
+                if (iecDicInstanceList.Count > 0)
+                {
+                    //int row = 5; //行数
+                    //int lineindex = 0; //序号
+                    foreach (KeyValuePair<int, string> kv in lineList)
+                    {
+                        row++;
+                        index++;
+                        s.Cells[row, 1] = index;
+                        s.Cells[row, 2] = kv.Value;
+                        Dictionary<int, List<IECInstance>> rowIecList = new Dictionary<int, List<IECInstance>>();
+                        int rowm = 0;
+                        #region 将数据按照ECClass和DN分组
+                        foreach (IECInstance iec in iecDicInstanceList[kv.Key])
+                        {
+                            string ecName = iec.ClassDefinition.Name;
+                            double dn = iec["NOMINAL_DIAMETER"].DoubleValue;
+                            if (rowIecList.Count == 0)
+                            {
+                                List<IECInstance> iecList = new List<IECInstance>();
+                                iecList.Add(iec);
+                                rowIecList.Add(rowm, iecList);
+                            }
+                            else
+                            {
+                                int kv_key = 0;
+                                bool bbb = true;
+                                foreach (KeyValuePair<int, List<IECInstance>> kv1 in rowIecList)
+                                {
+                                    foreach (IECInstance iecinstan in kv1.Value)
+                                    {
+                                        string ecName1 = iecinstan.ClassDefinition.Name;
+                                        double dn1 = iecinstan["NOMINAL_DIAMETER"].DoubleValue;
+                                        if (ecName == ecName1 && dn == dn1)
+                                        {
+                                            bbb = false;
+                                            kv_key = kv1.Key;
+                                        }
+                                    }
+                                }
+                                if (bbb)
+                                {
+                                    rowm++;
+                                    List<IECInstance> iecList = new List<IECInstance>();
+                                    iecList.Add(iec);
+                                    rowIecList.Add(rowm, iecList);
+                                }
+                                else
+                                {
+                                    rowIecList[kv_key].Add(iec);
+                                }
+                            }
+
+                        }
+                        #endregion
+                        foreach (KeyValuePair<int, List<IECInstance>> iec in rowIecList)
+                        {
+                            row++;
+                            string ecname = "";
+                            string dn = "";
+                            string unit = "";
+                            double qty = 0;
+                            string materialNum = "";//物料编号
+                            string pipece_mare = "";//型号
+                            //string material = "";
+                            double dry_weight = 0;
+                            //string catalog_name = "";
+                            //string media = "";
+                            double totalweight = 0;
+                            string jishucs = "";
+                            ecname = iec.Value[0].ClassDefinition.Name;
+                            if(iec.Value[0].GetPropertyValue("SHORT_DESCRIPTION") !=null)
+                            {
+                                ecname = iec.Value[0]["SHORT_DESCRIPTION"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI_MAIN_SIZE") != null)
+                            {
+                                dn = iec.Value[0]["CERI_MAIN_SIZE"].StringValue;
+                            }
+                            if(iec.Value[0].GetPropertyValue("DESCRIPTION")!=null)
+                            {
+                                jishucs = iec.Value[0]["DESCRIPTION"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI MAT_GRADE") != null)
+                            {
+                                materialNum = iec.Value[0]["CERI MAT_GRADE"].StringValue;
+                            }
+                            if (iec.Value[0].GetPropertyValue("CERI_PIECE_MARK") != null)
+                            {
+                                pipece_mare = iec.Value[0]["CERI_PIECE_MARK"].StringValue;
+                            }
+
+                            unit = "pcs/台";
+                            if (iec.Value[0].GetPropertyValue("CERI_WEIGHT_DRY") != null)
+                            {
+                                dry_weight = iec.Value[0]["CERI_WEIGHT_DRY"].DoubleValue;
+                            }
+                            qty = iec.Value.Count;
+                            totalweight = qty * dry_weight;
+                            s.Cells[row, 3] = materialNum;
+                            s.Cells[row, 5] = ecname;
+                            s.Cells[row, 7] = pipece_mare;
+                            s.Cells[row, 9] = dn;
+                            s.Cells[row, 10] = jishucs;
+                            //s.Cells[row, 7] = material;
+                            s.Cells[row, 12] = unit;
+                            s.Cells[row, 13] = qty;
+                            s.Cells[row, 14] = dry_weight;
+                            s.Cells[row, 15] = totalweight;
+                            //s.Cells[row, 13] = catalog_name;
+                            //s.Cells[row, 16] = media;
+                            //s.Cells[row, 4] = iec.ClassDefinition.Name;
+                        }
+                    }
+                }
+
+                wb.Save();
+                wb.Close();
+                wkb.Close();
+                app.Quit();
+                MOIE.Application app1 = new MOIE.Application();
+                MOIE.Workbooks wbs = app1.Workbooks;
+                //wbs.Add()
+                MOIE.Workbook wb1 = app1.Workbooks.Open(excelPath);
+                //app1.Workbooks.Open(excelPath);
+                app1.Visible = true;
+            }
+        }
+    }
+}

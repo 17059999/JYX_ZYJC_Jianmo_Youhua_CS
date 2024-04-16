@@ -1,0 +1,207 @@
+﻿namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 自动清理多余图形
+    /// </summary>
+    partial class ElementClearForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.dataGridView_separateElement = new System.Windows.Forms.DataGridView();
+            this.textBox_distance = new System.Windows.Forms.TextBox();
+            this.label_distance = new System.Windows.Forms.Label();
+            this.button_search = new System.Windows.Forms.Button();
+            this.button_delete = new System.Windows.Forms.Button();
+            this.button_locate = new System.Windows.Forms.Button();
+            this.comboBox_tiaojian = new System.Windows.Forms.ComboBox();
+            this.button_update_connection = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_separateElement)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // dataGridView_separateElement
+            // 
+            this.dataGridView_separateElement.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            this.dataGridView_separateElement.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView_separateElement.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dataGridView_separateElement.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_separateElement.Location = new System.Drawing.Point(9, 66);
+            this.dataGridView_separateElement.Name = "dataGridView_separateElement";
+            this.dataGridView_separateElement.RowTemplate.Height = 23;
+            this.dataGridView_separateElement.Size = new System.Drawing.Size(558, 206);
+            this.dataGridView_separateElement.TabIndex = 0;
+            // 
+            // textBox_distance
+            // 
+            this.textBox_distance.Location = new System.Drawing.Point(309, 22);
+            this.textBox_distance.Name = "textBox_distance";
+            this.textBox_distance.Size = new System.Drawing.Size(91, 21);
+            this.textBox_distance.TabIndex = 1;
+            // 
+            // label_distance
+            // 
+            this.label_distance.AutoSize = true;
+            this.label_distance.Location = new System.Drawing.Point(178, 26);
+            this.label_distance.Name = "label_distance";
+            this.label_distance.Size = new System.Drawing.Size(125, 12);
+            this.label_distance.TabIndex = 2;
+            this.label_distance.Text = "孤立元素判定间隔(mm)";
+            // 
+            // button_search
+            // 
+            this.button_search.Location = new System.Drawing.Point(409, 21);
+            this.button_search.Name = "button_search";
+            this.button_search.Size = new System.Drawing.Size(75, 23);
+            this.button_search.TabIndex = 3;
+            this.button_search.Text = "筛选";
+            this.button_search.UseVisualStyleBackColor = true;
+            this.button_search.Click += new System.EventHandler(this.button_search_Click);
+            // 
+            // button_delete
+            // 
+            this.button_delete.Location = new System.Drawing.Point(90, 20);
+            this.button_delete.Name = "button_delete";
+            this.button_delete.Size = new System.Drawing.Size(75, 23);
+            this.button_delete.TabIndex = 4;
+            this.button_delete.Text = "删除";
+            this.button_delete.UseVisualStyleBackColor = true;
+            this.button_delete.Click += new System.EventHandler(this.button_delete_Click);
+            // 
+            // button_locate
+            // 
+            this.button_locate.Location = new System.Drawing.Point(9, 20);
+            this.button_locate.Name = "button_locate";
+            this.button_locate.Size = new System.Drawing.Size(75, 23);
+            this.button_locate.TabIndex = 5;
+            this.button_locate.Text = "定位";
+            this.button_locate.UseVisualStyleBackColor = true;
+            this.button_locate.Click += new System.EventHandler(this.button_locate_Click);
+            // 
+            // comboBox_tiaojian
+            // 
+            this.comboBox_tiaojian.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_tiaojian.FormattingEnabled = true;
+            this.comboBox_tiaojian.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.comboBox_tiaojian.Items.AddRange(new object[] {
+            "全部",
+            "连接性",
+            "距离"});
+            this.comboBox_tiaojian.Location = new System.Drawing.Point(66, 23);
+            this.comboBox_tiaojian.Name = "comboBox_tiaojian";
+            this.comboBox_tiaojian.Size = new System.Drawing.Size(106, 20);
+            this.comboBox_tiaojian.TabIndex = 6;
+            this.comboBox_tiaojian.SelectedIndexChanged += new System.EventHandler(this.comboBox_tiaojian_SelectedIndexChanged);
+            // 
+            // button_update_connection
+            // 
+            this.button_update_connection.Location = new System.Drawing.Point(171, 20);
+            this.button_update_connection.Name = "button_update_connection";
+            this.button_update_connection.Size = new System.Drawing.Size(75, 23);
+            this.button_update_connection.TabIndex = 8;
+            this.button_update_connection.Text = "更新连接性";
+            this.button_update_connection.UseVisualStyleBackColor = true;
+            this.button_update_connection.Click += new System.EventHandler(this.button_update_connection_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button_delete);
+            this.groupBox1.Controls.Add(this.button_update_connection);
+            this.groupBox1.Controls.Add(this.button_locate);
+            this.groupBox1.Location = new System.Drawing.Point(12, 296);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(575, 58);
+            this.groupBox1.TabIndex = 9;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "其他功能";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Controls.Add(this.textBox_distance);
+            this.groupBox2.Controls.Add(this.label_distance);
+            this.groupBox2.Controls.Add(this.dataGridView_separateElement);
+            this.groupBox2.Controls.Add(this.comboBox_tiaojian);
+            this.groupBox2.Controls.Add(this.button_search);
+            this.groupBox2.Location = new System.Drawing.Point(12, 12);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(575, 278);
+            this.groupBox2.TabIndex = 10;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "筛选元素";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 26);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 12);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "筛选条件";
+            // 
+            // ElementClearForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(599, 362);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "ElementClearForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "元素清除";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ElementClearForm_FormClosed);
+            this.Load += new System.EventHandler(this.ElementClearForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_separateElement)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.DataGridView dataGridView_separateElement;
+        private System.Windows.Forms.TextBox textBox_distance;
+        private System.Windows.Forms.Label label_distance;
+        private System.Windows.Forms.Button button_search;
+        private System.Windows.Forms.Button button_delete;
+        private System.Windows.Forms.Button button_locate;
+        private System.Windows.Forms.ComboBox comboBox_tiaojian;
+        private System.Windows.Forms.Button button_update_connection;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label label1;
+    }
+}

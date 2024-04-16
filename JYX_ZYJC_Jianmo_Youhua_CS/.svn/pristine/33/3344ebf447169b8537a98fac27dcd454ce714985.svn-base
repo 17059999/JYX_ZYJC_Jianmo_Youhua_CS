@@ -1,0 +1,327 @@
+﻿using Bentley.Building.Mechanical;
+using Bentley.Building.Mechanical.Api;
+using Bentley.MstnPlatformNET;
+using Bentley.GeometryNET;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.ECObjects.Instance;
+using System;
+
+//将dll文件放到OpenPlant Modeler CONNECT Edition\MdlSys\Required下可以实现自加载
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    [Bentley.MstnPlatformNET.AddIn(MdlTaskID = "JYX_ZYJC_Jianmo_Youhua_CS")]
+    internal sealed class MyAddin : AddIn
+    {
+        public static MyAddin s_addin = null;
+        private MyAddin(System.IntPtr mdlDesc) : base(mdlDesc)
+        {
+            s_addin = this;
+        }
+        protected override int Run(string[] commandLine)
+        {
+            //Bentley.Building.Mechanical.Api.BMECInstanceManager.SetConfigVariable("OPM_AUTOFITTING_COPY_STANDARD","false");
+
+            BMECApi instance = BMECApi.Instance;
+            instance.RegisterTool("MyLinearPlacementTool", new MyLinearPlacementTool(MechAddIn.Instance, 2000000000));
+            Bentley.Building.Mechanical.Api.BMECApi bmecApiInstance = Bentley.Building.Mechanical.Api.BMECApi.Instance;
+            MyPipeSupportPlacementTool myPipeSupportPlacementTool = new MyPipeSupportPlacementTool(MechAddIn.Instance, 1999999999);
+            MyPipeAnchorPlacementTool myPipeAnchorPlacementTool = new MyPipeAnchorPlacementTool(MechAddIn.Instance, 1999999998);
+            JYXValvePlacementTool valveTool = new JYXValvePlacementTool(MechAddIn.Instance, 1999999997);
+            JYXCloupingPlacementTool cloupingTool = new JYXCloupingPlacementTool(MechAddIn.Instance, 1999999996);
+            ReliefValveTool reliefvalvetool = new ReliefValveTool(MechAddIn.Instance, 1999999995);
+            bmecApiInstance.RegisterTool("MyPipeSupportPlacementTool", myPipeSupportPlacementTool);
+            bmecApiInstance.RegisterTool("MyPipeAnchorPlacementTool", myPipeAnchorPlacementTool);
+            bmecApiInstance.RegisterTool("JYXValvePlacementTool", valveTool);
+            bmecApiInstance.RegisterTool("JYXCloupingPlacementTool", cloupingTool);
+            bmecApiInstance.RegisterTool("ReliefValveTool", reliefvalvetool);
+            //s_addin = this;
+
+            JYX_ZYJC_CLR.PublicMethod.display_pipe_level_info(Setting_Pipe_Display_Info_Form.xmlReade());
+
+            //s_addin.ElementChangedEvent += S_addin_ElementChangedEvent;
+            instance.PreGraphicsInstancePersistedEvent += Instance_PreGraphicsInstancePersistedEvent;
+
+
+            //instance.PostGraphicsInstancePersistedEvent += Instance_PostGraphicsInstancePersistedEvent;
+            //instance.SelectSetChangedEvent += Instance_SelectSetChangedEvent;
+            //instance.LocatedObjectEvent += Instance_LocatedObjectEvent;
+            //instance.PreNonGraphicsInstancePersistedEvent += Instance_PreNonGraphicsInstancePersistedEvent; ;
+            return 0;
+        }
+
+        private void Instance_PreGraphicsInstancePersistedEvent(object @object, IECInstance instance, InstancePersistedReason reason)
+        {
+            BMECApi api = BMECApi.Instance;
+            //throw new NotImplementedException();
+            if (reason == InstancePersistedReason.Added)
+            {
+                bool eqb = BMECApi.Instance.InstanceDefinedAsClass(instance, "EQUIPMENT", true);
+                if(eqb)
+                {
+                    double locationX = instance["CUSTOM_ORIGIN_X"].DoubleValue;
+                    double locationY = instance["CUSTOM_ORIGIN_Y"].DoubleValue;
+                    double locationZ = instance["CUSTOM_ORIGIN_Z"].DoubleValue;
+                    double length = instance["E_LENGTH"].DoubleValue;
+                    double width = instance["WIDTH"].DoubleValue;
+                    double height = instance["HEIGHT"].DoubleValue;
+                    if(instance.GetPropertyValue("CERI_CUSTOM_ORIGIN_X")!=null)
+                    {
+                        instance["CERI_CUSTOM_ORIGIN_X"].DoubleValue = locationX;
+                    }
+                    if(instance.GetPropertyValue("CERI_CUSTOM_ORIGIN_Y")!=null)
+                    {
+                        instance["CERI_CUSTOM_ORIGIN_Y"].DoubleValue = locationY;
+                    }
+                    if(instance.GetPropertyValue("CERI_CUSTOM_ORIGIN_Z")!=null)
+                    {
+                        instance["CERI_CUSTOM_ORIGIN_Z"].DoubleValue = locationZ;
+                    }
+                    if(instance.GetPropertyValue("CERI_E_LENGTH")!=null)
+                    {
+                        instance["CERI_E_LENGTH"].DoubleValue = length;
+                    }
+                    if(instance.GetPropertyValue("CERI_WIDTH")!=null)
+                    {
+                        instance["CERI_WIDTH"].DoubleValue = width;
+                    }
+                    if(instance.GetPropertyValue("CERI_HEIGHT")!=null)
+                    {
+                        instance["CERI_HEIGHT"].DoubleValue = height;
+                    }
+                }
+                bool b11 = BMECApi.Instance.InstanceDefinedAsClass(instance, "PIPING_COMPONENT", true); //查找ec的父类是否含有PIPING_COMPONENT
+                if (b11)
+                {
+
+                    bool bb = BMECApi.Instance.InstanceDefinedAsClass(instance, "REDUCING_PIPE_TEE", true);
+                    bool bb1 = BMECApi.Instance.InstanceDefinedAsClass(instance, "PIPE_REDUCER", true);
+                    if (bb1)
+                    {
+                        if (instance.GetPropertyValue("CERI_MAIN_SIZE") != null)
+                        {
+                            instance["CERI_MAIN_SIZE"].StringValue = instance["NOMINAL_DIAMETER"].DoubleValue + "X" + instance["NOMINAL_DIAMETER_RUN_END"].DoubleValue;
+                        }
+                    }
+                    if (bb)
+                    {
+                        if (instance.GetPropertyValue("CERI_MAIN_SIZE") != null)
+                        {
+                            instance["CERI_MAIN_SIZE"].StringValue = instance["NOMINAL_DIAMETER"].DoubleValue + "X" + instance["NOMINAL_DIAMETER_RUN_END"].DoubleValue + "X" + instance["NOMINAL_DIAMETER_BRANCH_END"].DoubleValue;
+                        }
+                    }
+                    if (!bb1 && !bb)
+                    {
+                        if (instance.GetPropertyValue("CERI_MAIN_SIZE") != null)
+                        {
+                            instance["CERI_MAIN_SIZE"].StringValue = Convert.ToString(instance["NOMINAL_DIAMETER"].DoubleValue);
+                        }
+                    }
+
+                    string line_number = instance["LINENUMBER"].StringValue;
+                    string spec = instance["SPECIFICATION"].StringValue;
+                    double length = instance["LENGTH"].DoubleValue / 1000;
+                    double od = instance["OUTSIDE_DIAMETER"].DoubleValue / 1000;
+                    double wall = instance["WALL_THICKNESS"].DoubleValue / 1000;
+                    //Instance.GetPropertyValue("Origin_X")
+                    if (instance.GetPropertyValue("CERI_Line_Number") != null)
+                    {
+                        instance["CERI_Line_Number"].StringValue = line_number;
+                    }
+                    if (instance.GetPropertyValue("CERI_specification") != null)
+                    {
+                        instance["CERI_specification"].StringValue = spec;
+                    }
+                    if (instance.GetPropertyValue("CERI_LENGTH") != null)
+                    {
+                        instance["CERI_LENGTH"].DoubleValue = length;
+                    }
+                    if (instance.GetPropertyValue("CERI_Area") != null)
+                    {
+                        instance["CERI_Area"].DoubleValue = Math.PI * (od + 2.1 * wall + 0.0082) * length;
+                    }
+                    if (instance.GetPropertyValue("CERI_Volume") != null)
+                    {
+                        instance["CERI_Volume"].DoubleValue = Math.PI * (od + 1.033 * wall) * 1.033 * wall * length;
+                    }
+                }
+            }
+            if (reason == InstancePersistedReason.Updated)
+            {
+                bool b11 = BMECApi.Instance.InstanceDefinedAsClass(instance, "PIPING_COMPONENT", true); //查找ec的父类是否含有PIPING_COMPONENT
+                if (b11)
+                {
+                    //string line_number = instance["LINENUMBER"].StringValue;
+                    //string spec = instance["SPECIFICATION"].StringValue;
+                    double length = instance["LENGTH"].DoubleValue / 1000;
+                    double od1 = instance["OUTSIDE_DIAMETER"].DoubleValue / 1000;
+                    double wall1 = instance["WALL_THICKNESS"].DoubleValue / 1000;
+                    //instance["CERI_Line_Number"] = line_number;
+                    //instance["CERI_specification"] = spec;
+                    if (instance.GetPropertyValue("CERI_LENGTH") != null)
+                    {
+                        instance["CERI_LENGTH"].DoubleValue = length;
+                    }
+                    if (instance.GetPropertyValue("CERI_Area") != null)
+                    {
+                        instance["CERI_Area"].DoubleValue = Math.PI * (od1 + 2.1 * wall1 + 0.0082) * length;
+                    }
+                    if (instance.GetPropertyValue("CERI_Volume") != null)
+                    {
+                        instance["CERI_Volume"].DoubleValue = Math.PI * (od1 + 1.033 * wall1) * 1.033 * wall1 * length;
+                    }
+                    BMECObject bmec = new BMECObject(instance);
+                    //DPoint3d dp=bmec.GetNthPort(0).Location;
+                    //DPoint3d dp1 = bmec.GetNthPort(1).Location;
+                    //DPoint3d dp1 = new DPoint3d();
+
+                    //bmec.Refresh();
+                    IECPropertyValue iECPropertyValue = instance.FindPropertyValue("TRANSFORMATION_MATRIX", true, true, false);
+                    DPoint3d dpoint = new DPoint3d();
+                    dpoint = bmec.Transform3d.Translation;
+                    double x = dpoint.X / 1000;
+                    string orgin_x = string.Format("{0:F}", x);
+
+                    double y = dpoint.Y / 1000;
+                    double z = dpoint.Z / 1000;
+                    string orgin_z = string.Format("{0:F}", z);
+                    string orgin_y = string.Format("{0:F}", y);
+                    if (bmec.Instance.GetPropertyValue("Origin_X") != null)
+                    {
+                        bmec.Instance["Origin_X"].StringValue = orgin_x + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_Coordinate_X") != null)
+                    {
+                        bmec.Instance["D_Coordinate_X"].StringValue = orgin_x + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_zuobiaoX") != null)
+                    {
+                        bmec.Instance["D_zuobiaoX"].StringValue = orgin_x + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("CERI_LocationX") != null)
+                    {
+                        bmec.Instance["CERI_LocationX"].StringValue = orgin_x + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("Origin_Y") != null)
+                    {
+                        bmec.Instance["Origin_Y"].StringValue = orgin_y + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_Coordinate_Y") != null)
+                    {
+                        bmec.Instance["D_Coordinate_Y"].StringValue = orgin_y + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_zuobiaoY") != null)
+                    {
+                        bmec.Instance["D_zuobiaoY"].StringValue = orgin_y + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("CERI_LocationY") != null)
+                    {
+                        bmec.Instance["CERI_LocationY"].StringValue = orgin_y + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("Origin_Z") != null)
+                    {
+                        bmec.Instance["Origin_Z"].StringValue = orgin_z + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_Coordinate_Z") != null)
+                    {
+                        bmec.Instance["D_Coordinate_Z"].StringValue = orgin_z + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_zuobiaoZ") != null)
+                    {
+                        bmec.Instance["D_zuobiaoZ"].StringValue = orgin_z + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("CERI_LocationZ") != null)
+                    {
+                        bmec.Instance["CERI_LocationZ"].StringValue = orgin_z + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("zhongxinbiaogao") != null)
+                    {
+                        bmec.Instance["zhongxinbiaogao"].StringValue = orgin_z + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_Valve_Center_Elevation") != null)
+                    {
+                        bmec.Instance["D_Valve_Center_Elevation"].StringValue = orgin_z + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("D_guanzhongxinbiaogao") != null)
+                    {
+                        bmec.Instance["D_guanzhongxinbiaogao"].StringValue = orgin_z + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("CERI_Center_Elevation") != null)
+                    {
+                        bmec.Instance["CERI_Center_Elevation"].StringValue = orgin_z + "mm";
+                    }
+                    double od = bmec.Instance["OUTSIDE_DIAMETER"].DoubleValue;
+                    double wall = bmec.Instance["WALL_THICKNESS"].DoubleValue;
+                    double orginz = Convert.ToDouble(orgin_z);
+                    //double topbiaogao = orgin_z + od + wall;
+                    if (bmec.Instance.GetPropertyValue("CERI_Pipe_top_elevation") != null)
+                    {
+                        bmec.Instance["CERI_Pipe_top_elevation"].StringValue = (orginz + od + wall) + "mm";
+                    }
+                    //bmec.Instance["D_guandingwaibiaogao"].StringValue = (orginz + od + wall) + "mm";
+                    if (bmec.Instance.GetPropertyValue("CERI_Pipe_low_outer_elevation") != null)
+                    {
+                        bmec.Instance["CERI_Pipe_low_outer_elevation"].StringValue = (orginz - od - wall) + "mm";
+                    }
+                    if (bmec.Instance.GetPropertyValue("CERI_Pipe_low_internal_elevation") != null)
+                    {
+                        bmec.Instance["CERI_Pipe_low_internal_elevation"].StringValue = (orginz - od) + "mm";
+                    }
+                    try
+                    {
+                        DPoint3d[] pointshuz = JYX_ZYJC_CLR.PublicMethod.get_two_port_object_end_points(bmec);
+                        DVector3d dv_x = new DVector3d(1, 0, 0);
+                        DVector3d dv_pipe = new DVector3d(pointshuz[0], pointshuz[1]);
+                        double angle = dv_pipe.AngleTo(dv_x).Degrees;
+                        string podu = string.Empty;
+                        if (pointshuz[0].Z == pointshuz[1].Z)
+                        {
+                            podu = "0°";
+                            angle = 0;
+                        }
+                        else
+                        {
+                            DPoint3d touy = new DPoint3d(pointshuz[1].X, pointshuz[1].Y, pointshuz[0].Z);
+                            DVector3d touyin = new DVector3d(pointshuz[0], touy);
+                            bool b = dv_pipe.IsPerpendicularTo(touyin);
+                            if (b)
+                            {
+                                podu = "90°";
+                                angle = 90;
+                            }
+                            else
+                            {
+                                double ra = dv_pipe.AngleTo(touyin).Radians;
+                                angle = dv_pipe.AngleTo(touyin).Degrees;
+                                double tan = Math.Tan(ra);
+                                podu = (tan * 100) + "%";
+                            }
+                        }
+                        if (bmec.Instance.GetPropertyValue("D_jiaodu") != null)
+                        {
+                            bmec.Instance["D_jiaodu"].StringValue = angle + "°";
+                        }
+                        if (bmec.Instance.GetPropertyValue("CERI_Angle") != null)
+                        {
+                            bmec.Instance["CERI_Angle"].StringValue = angle + "°";
+                        }
+                        if (bmec.Instance.GetPropertyValue("D_podu") != null)
+                        {
+                            bmec.Instance["D_podu"].StringValue = podu;
+                        }
+                        if (bmec.Instance.GetPropertyValue("CERI_Gradient") != null)
+                        {
+                            bmec.Instance["CERI_Gradient"].StringValue = podu;
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                }
+                
+                //bmec.Create();
+            }
+        }
+
+    }
+}

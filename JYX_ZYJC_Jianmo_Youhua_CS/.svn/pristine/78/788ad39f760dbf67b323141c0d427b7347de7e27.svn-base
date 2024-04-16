@@ -1,0 +1,147 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Bentley.Building.Mechanical;
+using Bentley.MstnPlatformNET;
+using System.Windows.Forms;
+using Bentley.MstnPlatformNET.WinForms;
+using Bentley.ApplicationFramework.UI;
+using Bentley.Building.Mechanical.Api;
+using Bentley.Building.Mechanical.Components;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Bentley.UI.Controls.WinForms.GroupPanel;
+using Bentley.MstnPlatformNET.InteropServices;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    class SupportView : LinearContainerView
+    {
+        public SupportForm supportForm;
+
+        public SupportView(AddIn addIn, string toolName) : base(addIn, toolName)
+        {
+        }
+
+        private void AddSupportGroupPanel()
+        {
+            this.supportForm = new SupportForm();
+            supportForm.Dock = DockStyle.Top;
+            GroupPanel group_panel = new GroupPanel();
+            group_panel.Title = "支吊架";
+            group_panel.DisplayState = GroupDisplayState.Closed;
+            group_panel.Tag = ToolAdapter.GroupPanelOptions.AutoClose;
+            group_panel.ContentPanel.Controls.Add(this.supportForm);
+            base.ToolAdapter.GroupPanels.Controls.Add(group_panel);
+        }
+
+        //public override Adapter ToolFrameAdapter
+        //{
+        //    get
+        //    {
+        //        if (null == base.ToolAdapter && null != base.ResourceManager)
+        //        {
+        //            base.ToolAdapter = new ToolAdapter(base.AddIn, base.ToolName, this.PropertyContainer, null);
+        //            BMECApi arg_3B_0 = BMECApi.Instance;
+        //            BMdDiscipline bMdDiscipline = BMdDiscipline.bmdDiscipline_Piping;
+        //            BMECPropertyContainer bMECPropertyContainer = this.PropertyContainer as BMECPropertyContainer;
+        //            if (null != bMECPropertyContainer)
+        //            {
+        //                bMdDiscipline = bMECPropertyContainer.Object.NetworkSysInfo.DisciplineEnum;
+        //            }
+        //            this.AddToolStrip();
+        //            base.AddSettingsGroupPanel();
+        //            {
+        //                base.AddPortSettingsGroupPanel();
+        //            }
+        //            else
+        //            {
+        //                //this.AddAutoFittingGroupPanel();
+        //                string content = JYX_Guandao_CLR.CliPublicMethod.get_opm_config_string("OPM_DIR_ASSEMBLIES");
+        //                Assembly dll = Assembly.LoadFile(content + @"MechAddin.dll");
+        //                Type linear_container_view_type = dll.GetType("Bentley.Building.Mechanical.LinearContainerView", true);
+
+        //                Type[] params_type = new Type[0];
+        //                ParameterModifier[] parameter_modifier = new ParameterModifier[0];
+        //                BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
+        //                MethodInfo method = linear_container_view_type.GetMethod("AddAutoFittingGroupPanel", flag, null, params_type, parameter_modifier);
+        //                object value = method.Invoke(this, null);
+
+
+        //                this.AddSupportGroupPanel();
+        //            }
+
+        //            base.AddPropertiesPaneGroupPanel();
+        //            base.WindowContentHost.CanDockHorizontally = false;
+        //            base.SetFormClosingEvents(base.ToolAdapter);
+        //        }
+        //        //this.AutoFittingSettings.EnableAutoFitting.CheckedChanged += new EventHandler(this.CheckboxChanged);
+        //        //this.AutoFittingSettings.EnableAutoFitting.Checked = true;
+        //        return base.ToolAdapter;
+        //    }
+        //}
+        public override Adapter ToolFrameAdapter
+        {
+            get
+            {
+                if (null == base.ToolAdapter && null != base.ResourceManager)
+                {
+                    base.ToolAdapter = new ToolAdapter(base.AddIn, base.ToolName, this.PropertyContainer, null);
+                    BMECApi arg_3B_0 = BMECApi.Instance;
+                    BMdDiscipline bMdDiscipline = BMdDiscipline.bmdDiscipline_Piping;
+                    BMECPropertyContainer bMECPropertyContainer = this.PropertyContainer as BMECPropertyContainer;
+                    if (null != bMECPropertyContainer)
+                    {
+                        bMdDiscipline = bMECPropertyContainer.Object.NetworkSysInfo.DisciplineEnum;
+                    }
+                    this.AddToolStrip();
+                    base.AddSettingsGroupPanel();
+                    if (bMdDiscipline == BMdDiscipline.bmdDiscipline_HVAC)
+                    {
+                        base.AddPortSettingsGroupPanel();
+                    }
+                    else
+                    {
+                        //string content = JYX_Guandao_CLR.CliPublicMethod.get_opm_config_string("OPM_DIR_ASSEMBLIES");
+                        Bentley.Interop.MicroStationDGN.Application app = Utilities.ComApp;
+                        //string work_path = app.ActiveWorkspace.ConfigurationVariableValue("OPM_DIR_ASSEMBLIES");
+                        string content = app.ActiveWorkspace.ConfigurationVariableValue("ASSEMBLIES_ROOT");
+                        Assembly dll = Assembly.LoadFile(content + @"MechAddin.dll");
+                        Type linear_container_view_type = dll.GetType("Bentley.Building.Mechanical.LinearContainerView", true);
+
+                        Type[] params_type = new Type[0];
+                        ParameterModifier[] parameter_modifier = new ParameterModifier[0];
+                        BindingFlags flag = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
+                        MethodInfo method = linear_container_view_type.GetMethod("AddAutoFittingGroupPanel", flag, null, params_type, parameter_modifier);
+                        object value = method.Invoke(this, null);
+
+
+                        this.AddSupportGroupPanel();
+                    }
+                    base.AddPropertiesPaneGroupPanel();
+                    base.WindowContentHost.CanDockHorizontally = false;
+                    base.SetFormClosingEvents(base.ToolAdapter);
+                }
+                return base.ToolAdapter;
+            }
+        }
+
+        protected override void Dispose([MarshalAs(UnmanagedType.U1)] bool flag)
+        {
+            if (flag)
+            {
+                try
+                {
+                    return;
+                }
+                finally
+                {
+                    base.Dispose(true);
+                }
+            }
+            base.Dispose(false);
+        }
+    }
+}

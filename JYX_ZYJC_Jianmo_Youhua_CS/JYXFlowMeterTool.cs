@@ -1,0 +1,33 @@
+﻿using Bentley.ApplicationFramework.Interfaces;
+using Bentley.Building.Mechanical;
+
+using Bentley.DgnPlatformNET;
+using Bentley.MstnPlatformNET;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    class JYXFlowMeterTool : InlinePlacementTool
+    {
+        #region 构造方法
+
+        public JYXFlowMeterTool(JYXFlowMeterTool valveTool) : base(valveTool)
+        {
+        }
+        public JYXFlowMeterTool(AddIn addIn, int cmdNumber) : base(addIn, cmdNumber)
+        {
+        }
+        #endregion
+        public override void CreateTool()
+        {
+            new JYXFlowMeterTool(this).InstallTool();
+        }
+        public override IPropertyContainerView CreateContainerView()
+        {
+            return new ValveView(base.AddIn, MechAddIn.Instance.GetLocalizedString("PlaceComponentCmdName"));
+        }
+        public override void OnRestartCommand()
+        {
+            base.RestartCommand(new JYXFlowMeterTool(this));
+        }
+    }
+}

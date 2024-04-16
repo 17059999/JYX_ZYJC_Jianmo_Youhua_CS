@@ -1,0 +1,113 @@
+﻿using Bentley.Building.Mechanical;
+using Bentley.Building.Mechanical.Api;
+using Bentley.MstnPlatformNET;
+using Bentley.GeometryNET;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.ECObjects.Instance;
+
+//将dll文件放到OpenPlant Modeler CONNECT Edition\MdlSys\Required下可以实现自加载
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    [Bentley.MstnPlatformNET.AddIn(MdlTaskID = "JYX_ZYJC_Jianmo_Youhua_CS")]
+    internal sealed class MyAddin : AddIn
+    {
+        public static MyAddin s_addin = null;
+        private MyAddin(System.IntPtr mdlDesc) : base(mdlDesc)
+        {
+            s_addin = this;
+        }
+        protected override int Run(string[] commandLine)
+        {
+            //Bentley.Building.Mechanical.Api.BMECInstanceManager.SetConfigVariable("OPM_AUTOFITTING_COPY_STANDARD","false");
+           
+            BMECApi instance = BMECApi.Instance;
+            instance.RegisterTool("MyLinearPlacementTool", new MyLinearPlacementTool(MechAddIn.Instance, 2000000000));
+            Bentley.Building.Mechanical.Api.BMECApi bmecApiInstance = Bentley.Building.Mechanical.Api.BMECApi.Instance;
+            MyPipeSupportPlacementTool myPipeSupportPlacementTool = new MyPipeSupportPlacementTool(MechAddIn.Instance, 1999999999);
+            MyPipeAnchorPlacementTool myPipeAnchorPlacementTool = new MyPipeAnchorPlacementTool(MechAddIn.Instance, 1999999998);
+            JYXValvePlacementTool valveTool = new JYXValvePlacementTool(MechAddIn.Instance, 1999999997);
+            JYXCloupingPlacementTool cloupingTool = new JYXCloupingPlacementTool(MechAddIn.Instance, 1999999996);
+            ReliefValveTool reliefvalvetool = new ReliefValveTool(MechAddIn.Instance, 1999999995);
+            bmecApiInstance.RegisterTool("MyPipeSupportPlacementTool", myPipeSupportPlacementTool);
+            bmecApiInstance.RegisterTool("MyPipeAnchorPlacementTool", myPipeAnchorPlacementTool);
+            bmecApiInstance.RegisterTool("JYXValvePlacementTool", valveTool);
+            bmecApiInstance.RegisterTool("JYXCloupingPlacementTool", cloupingTool);
+            bmecApiInstance.RegisterTool("ReliefValveTool", reliefvalvetool);
+            //s_addin = this;
+
+            JYX_ZYJC_CLR.PublicMethod.display_pipe_level_info(Setting_Pipe_Display_Info_Form.xmlReade());
+
+            s_addin.ElementChangedEvent += S_addin_ElementChangedEvent;
+
+            return 0;
+        }
+
+        private void S_addin_ElementChangedEvent(AddIn sender, ElementChangedEventArgs eventArgs)
+        {
+            DPoint3d dpoint = new DPoint3d();
+            if (eventArgs.Change == ChangeTrackKind.Add)
+            {
+                if (eventArgs.NewElement.ElementType == Bentley.DgnPlatformNET.MSElementType.CellHeader)
+                {                    
+                    (eventArgs.NewElement as Bentley.DgnPlatformNET.Elements.CellHeaderElement).GetTransformOrigin(out dpoint);
+                }
+            }
+            if (eventArgs.Change == ChangeTrackKind.Modify || eventArgs.Change == ChangeTrackKind.Add)
+            {
+                if(eventArgs.NewElement.ElementType==Bentley.DgnPlatformNET.MSElementType.CellHeader)
+                {
+                    //(eventArgs.NewElement as Bentley.DgnPlatformNET.Elements.CellHeaderElement).GetTransformOrigin(out dpoint);
+                    //DPoint3d
+                    Element ele = eventArgs.NewElement;
+                    BMECObject bmecObject = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(ele.ElementId);
+                    if(bmecObject.Instance!=null)
+                    {
+                        dpoint = bmecObject.Transform3d.Translation;
+                        IECInstance iecInstance = bmecObject.Instance;
+                        iecInstance=BMECApi.Instance.FindAllInformationOnInstance(iecInstance);
+                        //iecInstance.get
+                        if (bmecObject.Instance.GetPropertyValue("Origin_X")!=null)
+                        {
+                            //double x = dpoint.X / 1000;
+                            //string orgin_x = string.Format("{0:F}", x);       
+                            //iecInstance["Origin_X"].StringValue = orgin_x + "mm";
+                        }
+                        double x = dpoint.X / 1000;
+                        string orgin_x = string.Format("{0:F}", x);
+                        double y = dpoint.Y / 1000;
+                        double z = dpoint.Z / 1000;
+                        string orgin_z = string.Format("{0:F}", z);
+                        string orgin_y = string.Format("{0:F}", y);
+                        try
+                        {
+                            iecInstance["Origin_X"].StringValue = orgin_x + "mm";
+                            //iecInstance[""]
+                            iecInstance["Origin_Y"].StringValue = orgin_y + "mm";
+                            iecInstance["Origin_Z"].StringValue = orgin_z + "mm";
+                        }
+                        catch
+                        {
+
+                        }
+                        if (bmecObject.Instance.GetPropertyValue("Origin_Y")!=null)
+                        {
+                            //double y = dpoint.Y / 1000;
+                            //string orgin_y = string.Format("{0:F}", y);
+                            //iecInstance["Origin_Y"].StringValue = orgin_y + "mm";
+                        }
+                        
+                        
+                        if (bmecObject.Instance.GetPropertyValue("Origin_Z")!=null)
+                        {
+                            //double z = dpoint.Z / 1000;
+                            //string orgin_z = string.Format("{0:F}", z);
+                            //iecInstance["Origin_Z"].StringValue = orgin_z;
+                        }
+
+                        bmecObject.Create();
+                    }
+                }
+            }
+        }
+    }
+}

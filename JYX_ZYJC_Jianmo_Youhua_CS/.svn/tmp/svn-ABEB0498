@@ -1,0 +1,428 @@
+﻿
+using Bentley.ApplicationFramework.Interfaces;
+using Bentley.Building.Mechanical.Api;
+using Bentley.DgnPlatformNET;           //Dgn文档相关对象
+using Bentley.DgnPlatformNET.Elements;  //Dgn文档所有元素对象
+using Bentley.GeometryNET;              //几何绘图相关对象
+using Bentley.MstnPlatformNET;          //MicroStation相关对象
+using Bentley.OpenPlantModeler.SDK.Components.PipingComponents;
+using System;
+using System.Collections.Generic;
+using static Bentley.GeometryNET.CurvePrimitive;
+using BIM = Bentley.Interop.MicroStationDGN;
+using BG = Bentley.GeometryNET;
+using Bentley.Building.Mechanical.ComponentLibrary.Equipment;
+using Bentley.Building.Mechanical.Components;
+using Bentley.Plant.StandardPreferences;
+using Bentley.ECObjects.Instance;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    class CommandsList
+    {
+        static BIM.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+        static BMApplication bm_app = new BMApplication();
+        static Session session = Session.Instance;
+        static double uor_per_master = Session.Instance.GetActiveDgnModel().GetModelInfo().UorPerMaster;//当前设计文件的主单位
+
+        public static void test(string unparsed)//画线
+        {
+            //搜索元素
+            //Session.Instance.GetActiveDgnModel().GetGraphicElements();
+            //ScanCriteria dd = new ScanCriteria();
+
+
+            //椭圆
+            ElementHolder elem_holder =JYX_ZYJC_CLR.PublicMethod.create_elliptic_cylinder(100000, 200000, 100000,DPoint3d.Zero,DPoint3d.FromXYZ(0,0,1));
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(elem_holder);
+            ElementHolder elem_holder1 = JYX_ZYJC_CLR.PublicMethod.create_elliptic_cylinder_solid(100000,200000,150000,DPoint3d.Zero,DPoint3d.FromXYZ(0,0,1));
+            JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(elem_holder1);
+            //测试取ABD墙体表面
+            //ulong id = 156183;
+            //ElementId element_id = new ElementId(ref id);
+            //LineElement line =(LineElement)Session.Instance.GetActiveDgnModel().FindElementById(element_id);
+            //DPoint3d dpt = DPoint3d.FromXYZ(105555710, 2860190, 750000);
+            //line.GetCurveVector().GetStartPoint(out dpt);
+            //ElementAgenda ae=new ElementAgenda();
+
+            //SelectionSetManager.BuildAgenda(ref ae);
+            //Element elem = ae.GetFirst();
+
+            //ShapeElement target_shape=null;
+            //ComplexShapeElement target_complex_shape = null;
+            //if (elem!=null)
+            //{
+            //    if (elem.ElementType == MSElementType.CellHeader)
+            //    {
+            //        CellHeaderElement cellheaderelement = (CellHeaderElement)elem;
+            //        ChildElementCollection cec = cellheaderelement.GetChildren();
+
+
+            //        foreach(Element child_elem in cec)
+            //        {
+            //            if (child_elem == null)
+            //            {
+
+            //            }
+            //            else if(child_elem.ElementType==MSElementType.CellHeader)
+            //            {
+            //                CellHeaderElement child_cellheaderelement = (CellHeaderElement)child_elem;
+            //                ChildElementCollection child_cec = child_cellheaderelement.GetChildren();
+
+            //                foreach (Element child_child_elem in child_cec)
+            //                {
+            //                    if (child_child_elem.ElementType==MSElementType.Shape)
+            //                    {
+            //                        ShapeElement shape = (ShapeElement)child_child_elem;
+            //                        CurveVector.InOutClassification inoutclassification = shape.GetCurveVector().PointInOnOutXY(dpt);
+            //                        if(inoutclassification== CurveVector.InOutClassification.In)
+            //                        {
+            //                            target_shape = shape;
+            //                            break;
+            //                        }else if (inoutclassification == CurveVector.InOutClassification.On)
+            //                        {
+            //                            if (target_shape == null)
+            //                            {
+            //                                target_shape = shape;
+            //                            }
+            //                            else
+            //                            {
+            //                                double area1, area2;
+            //                                DPoint3d cent1, cent2;
+            //                                DVector3d nor1, nor2;
+            //                                target_shape.GetCurveVector().CentroidNormalArea(out cent1, out nor1, out area1);
+            //                                shape.GetCurveVector().CentroidNormalArea(out cent2, out nor2, out area2);
+            //                                if(area2> area1)
+            //                                {
+            //                                    target_shape = shape;
+            //                                }
+            //                            }
+            //                        }
+
+            //                    }
+            //                    else if (child_child_elem.ElementType == MSElementType.ComplexShape)
+            //                    {
+            //                        ComplexShapeElement shape = (ComplexShapeElement)child_child_elem;
+            //                        CurveVector.InOutClassification inoutclassification = shape.GetCurveVector().PointInOnOutXY(dpt);
+
+            //                        if (inoutclassification == CurveVector.InOutClassification.In)
+            //                        {
+            //                            target_complex_shape = shape;
+            //                            break;
+            //                        }
+            //                        else if (inoutclassification == CurveVector.InOutClassification.On)
+            //                        {
+            //                            if (target_complex_shape == null)
+            //                            {
+            //                                target_complex_shape = shape;
+            //                            }
+            //                            else
+            //                            {
+            //                                double area1, area2;
+            //                                DPoint3d cent1, cent2;
+            //                                DVector3d nor1, nor2;
+            //                                target_complex_shape.GetCurveVector().CentroidNormalArea(out cent1, out nor1, out area1);
+            //                                shape.GetCurveVector().CentroidNormalArea(out cent2, out nor2, out area2);
+            //                                if (area2 > area1)
+            //                                {
+            //                                    target_complex_shape = shape;
+            //                                }
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+
+            //    }
+            //}
+
+
+            //复制管道测试
+            //ulong id = 72949;
+            //BMECObject pipe = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(id);
+            //BMECObject new_pipe1=new BMECObject();
+            //new_pipe1.Copy(pipe);
+            //new_pipe1.Create();
+
+
+            //管道三维模型
+            //ElementHolder element_holder = OPM_Public_Api.create_cone_surface(100, app.Point3dFromXYZ(0,0,0), app.Point3dFromXYZ(1000, 0, 0));
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(element_holder);
+
+            //获取设置的保温层值等
+            //string ss =DlgStandardPreference.GetPreferenceValue("INSULATION");
+            //ss = DlgStandardPreference.GetPreferenceValue("INSULATION_THICKNESS");
+            //ss = DlgStandardPreference.GetPreferenceValue("UNIT");
+            //ss = DlgStandardPreference.GetPreferenceValue("LINENUMBER");
+            //ss = DlgStandardPreference.GetPreferenceValue("NOMINAL_DIAMETER");
+            //ss = DlgStandardPreference.GetPreferenceValue("COMPONENT");
+
+            //C型钢回切
+            //double length = 1000 * uor_per_master;
+            //double diameter = 20 * uor_per_master;
+            //double depth = 15 * uor_per_master;
+            //DVector3d direction = DVector3d.FromXYZ(1,0,0);
+            //double thickness = 5 * uor_per_master;
+            //DPoint3d location = DPoint3d.FromXYZ(0, 0, 0);
+            //Channel channel = new Channel(diameter, diameter, depth, length, DPoint3d.FromXYZ(0,0,0), location, direction, thickness);
+            //List<ElementHolder> element_holder_list =channel.Create3DElements();
+            //foreach(ElementHolder element_holder in element_holder_list)
+            //{
+            //    JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(element_holder);
+            //}
+
+            //DPoint3d path_start, path_end;
+            //path_start = DPoint3d.Zero;
+            //path_end = DPoint3d.FromXYZ(0,0, length);
+            //DPoint3d[] pts = new DPoint3d[4];
+            //pts[0] = DPoint3d.FromXYZ(-(depth)/2,-(diameter+2* thickness)/2,0);
+            //pts[1] = DPoint3d.FromXYZ(-(depth) / 2, (diameter + 2 * thickness) / 2, 0);
+            //pts[2] = DPoint3d.FromXYZ((depth + thickness*2) / 2, (diameter + 2 * thickness) / 2, 0);
+            //pts[3] = DPoint3d.FromXYZ((depth + thickness*2) / 2, -(diameter + 2 * thickness) / 2, 0);
+            //ElementHolder profile = bm_app.CreateShapeElement(pts, 1);
+            //ElementHolder path = bm_app.CreateLineElement(path_start, path_end);
+
+            //DMatrix3d ma=DMatrix3d.Identity;
+            //JYX_ZYJC_CLR.PublicMethod.dMatrix3d_fromVectorToVector(DVector3d.FromXYZ(0,0,1),direction,ref ma);
+
+            //ElementHolder  d =JYX_ZYJC_CLR.PublicMethod.solid_sweepbodywire(profile,path);
+            //d.Transform(DTransform3d.FromMatrixAndTranslation(ma, location),false);
+
+            //DVector3d direction1 = DVector3d.FromXYZ(0,0,1);
+
+            //Channel channel1 = new Channel(diameter, diameter, depth, length, DPoint3d.FromXYZ(0,0,0), location, direction1, thickness);
+            //List<ElementHolder> element_holder_list1 =channel1.Create3DElements();
+            //foreach(ElementHolder element_holder1 in element_holder_list1)
+            //{
+            //    ElementHolder element_holder1_new =JYX_ZYJC_CLR.PublicMethod.solid_subtract(element_holder1, d);
+            //    JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(element_holder1_new);
+            //}
+
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(d);
+
+            //椭圆柱拉伸体测试
+            //ElementHolder elem =create_elliptic_cylinder_solid(DPoint3d.Zero,100000,200000,DMatrix3d.Identity,Math.PI/2,Math.PI,100000);
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(elem);
+
+            //多边柱拉伸体测试
+            //ElementHolder elem = OPM_Public_Api.create_prism_solid(10000, 15000, 6, DPoint3d.FromXYZ(100000, 0, 0), DVector3d.FromXYZ(0, 0, 1));
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(elem);
+
+            //ElementHolder elem1 = create_prism_solid(8000, 15000, 6, DPoint3d.FromXYZ(100000, 0, 0), DVector3d.FromXYZ(0, 0, 1));
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(elem1);
+
+
+            //实体剪切测试
+            //SolidCylinder solid_cylinder1 = new SolidCylinder(1000, 2000, 0);
+            //List<ElementHolder> element_holder_list1 = solid_cylinder1.Create3DElements();
+            //SolidCylinder solid_cylinder2 = new SolidCylinder(800, 2000, 0);
+            //List<ElementHolder> element_holder_list2 = solid_cylinder2.Create3DElements();
+            //ElementHolder elem =JYX_ZYJC_CLR.PublicMethod.solid_subtract(element_holder_list1[0], element_holder_list2[0]);
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(elem);
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(element_holder_list1[0]);
+            //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(element_holder_list2[0]);
+
+            //出图测试
+            //JYX_ZYJC_CLR.PublicMethod.detailingSymbolValidation();
+
+            //夹套管测试
+            //JacketedPipeTool JacketedPipeTool = new JacketedPipeTool();
+            //JacketedPipeTool.InstallTool();
+
+
+            //同port管道测试
+            //DPoint3d start_dpt = new DPoint3d(1000 * uor_per_master, 0, 0);
+            //DPoint3d end_dpt = new DPoint3d(2000 * uor_per_master, 0, 0);
+            //BMECObject pipe1 = OPM_Public_Api.create_pipe(start_dpt, end_dpt, 100);
+            //pipe1.DiscoverConnections();
+            //pipe1.UpdateConnections();
+            //pipe1.Create();
+            //BMECObject pipe2 = OPM_Public_Api.create_pipe(start_dpt, end_dpt, 150);
+            //pipe2.DiscoverConnections();
+            //pipe2.UpdateConnections();
+            //pipe2.Create();
+
+            //测试替换管道子元素
+            //long id = 10774;
+            //BIM.CellElement cell = app.ActiveModelReference.GetElementByID(id).AsCellElement();
+
+            //ulong uid = 10774;
+
+            //BMECObject bmec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(uid);
+            //DPoint3d pt1 = bmec_object.GetNthPort(0).Location;
+            //DPoint3d pt2 = bmec_object.GetNthPort(1).Location;
+            //BIM.CellElement new_cell=cell.Clone().AsCellElement();
+            //cell.ResetElementEnumeration();
+            //while (cell.MoveToNextElement(true,1))
+            //{
+            //    BIM.Element elem = cell.CopyCurrentElement();
+            //    if (elem.IsCellElement())
+            //    {
+            //        BIM.CellElement sub_cell = elem.AsCellElement();
+            //        if (sub_cell.Name.Equals("Graphics"))
+            //        {
+            //            sub_cell.ResetElementEnumeration();
+
+            //            while (sub_cell.MoveToNextElement(true,1))
+            //            {
+            //                BIM.Element sub_elem = sub_cell.CopyCurrentElement();
+
+            //                if (sub_elem.Type == BIM.MsdElementType.Cone)
+            //                {
+            //                    BIM.Element new_cone = OPM_Public_Api.create_cone_surface(200, pt1, pt2);
+            //                    //Element sub_elem_ = JYX_ZYJC_CLR.PublicMethod.ConvertToDgnNetEle(sub_elem);
+            //                    //ConeElement new_cone = new ConeElement(Session.Instance.GetActiveDgnModel(), sub_elem_, 100* uor_per_master, 100* uor_per_master, pt1, pt2,DMatrix3d.Identity,true);
+            //                    //BIM.Element new_elem=JYX_ZYJC_CLR.PublicMethod.ConvertToInteropEle(new_cone);
+            //                    //BIM.Element new_cone =app.SmartSolid.CreateCone(null, 100, 100, pt1.Distance(pt2));
+            //                    //Element new_elem = JYX_ZYJC_CLR.PublicMethod.ConvertToDgnNetEle(new_cone);
+
+            //                    //app.ActiveModelReference.AddElement(new_cone);
+
+            //                    //app.ActiveModelReference.ReplaceElement(sub_elem, new_cone);
+            //                    //app.ActiveModelReference.AddElement(sub_elem);
+
+            //                    //sub_cell.AppendToCellOfCurrentElement(new_cone);
+            //                    //app.ActiveModelReference.AddElement(sub_elem);
+            //                    //sub_cell.Rewrite();
+            //                    //sub_cell.Name = "test";
+            //                    //cell.ReplaceCurrentElement(sub_cell);
+
+            //                    //sub_cell.AppendToCellOfCurrentElement(new_cone);
+            //                    //sub_cell.DeleteCurrentElement();
+            //                    //new_sub_cell = sub_cell.Clone();
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+
+            //BMECApi.Instance.ReplaceComponentEx(bmec_object, bmec_object,2);
+
+            //BMECObject ff;
+            //ff.LegacyGraphicsId
+
+            //DgnModel active_model = Session.Instance.GetActiveDgnModel();           //当前激活的Model
+            //DSegment3d segment = new DSegment3d(0, 0, 0, 10 * uor_per_master, 0, 0);
+            //System.Windows.Forms.MessageBox.Show(uor_per_master.ToString());
+            //LineElement line = new LineElement(active_model, null, segment);
+            ////设置元素的样式
+            //ElementPropertiesSetter prop_setter = new ElementPropertiesSetter();
+            //prop_setter.SetColor(0);
+            //prop_setter.SetWeight(2);
+            //prop_setter.Apply(line);
+            //line.AddToModel();  //将元素添加到当前激活的Model中
+
+            //DPoint3d[] points = new DPoint3d[5];
+            //points[0] = DPoint3d.FromXYZ(0, 0, 0);
+            //points[1] = DPoint3d.FromXYZ(uor_per_master, 2 * uor_per_master, 0);
+            //points[2] = DPoint3d.FromXYZ(3 * uor_per_master, -2 * uor_per_master, 0);
+            //points[3] = DPoint3d.FromXYZ(5 * uor_per_master, 2 * uor_per_master, 0);
+            //points[4] = DPoint3d.FromXYZ(6 * uor_per_master, 0 * uor_per_master, 0);
+            //LineStringElement linestring = new LineStringElement(active_model, null, points);
+
+            //prop_setter.SetColor(1);
+            //prop_setter.Apply(linestring);
+            //linestring.AddToModel();
+
+        }
+
+        public static BIM.Element  testtt(BIM.Point3d center_point,double xR,double yR,BIM.Matrix3d ma,double start,double sweep,double height)
+        {
+            BIM.ArcElement arc = app.CreateArcElement2(null, center_point, xR, yR, ma, start, sweep);
+
+            BIM.LineElement line = app.CreateLineElement2(null, arc.EndPoint, arc.StartPoint);
+            List<BIM.ChainableElement> base_elem_all_list = new List<BIM.ChainableElement>();
+            base_elem_all_list.Add(arc);
+            base_elem_all_list.Add(line);
+            BIM.ComplexShapeElement ComplexShapeElement = app.CreateComplexShapeElement1(base_elem_all_list.ToArray(), BIM.MsdFillMode.Filled);
+
+            BIM.LineElement line1 = app.CreateLineElement2(null, center_point, app.Point3dFromXYZ(0, 0, height));
+            BIM.SmartSolidElement solid = app.SmartSolid.SweepProfileAlongPath(ComplexShapeElement, line1);
+            return solid;
+        }
+        
+        public static void lianjie_guandao(string unparsed)
+        {
+            elbow.InstallNewTool();
+
+        }
+
+        public static void select_zhenggen_pipe(string unparsed)
+        {
+            select_zhenggen_pipe select_zhenggen_pipe = new select_zhenggen_pipe();
+            select_zhenggen_pipe.InstallTool();
+        }
+
+        public static void dingyi_zhinengxian(string unparsed)
+        {
+            dingyi_zhinengxian dingyi_zhinengxian = new dingyi_zhinengxian();
+            dingyi_zhinengxian.start();
+        }
+
+        public static void zhinengxian_to_pipe(string unparsed)
+        {
+            multiZhinengxianPipe multi_zhinengxian_to_pipe = new multiZhinengxianPipe();
+            multi_zhinengxian_to_pipe.start();
+        }
+
+        public static void setting_pipe_display_info(string unparsed)
+        {
+            Setting_Pipe_Display_Info_Form setting_pipe_display_info_form = new Setting_Pipe_Display_Info_Form();
+            if (setting_pipe_display_info_form.ShowDialog()==System.Windows.Forms.DialogResult.OK)
+            {
+                JYX_ZYJC_CLR.PublicMethod.change_display_pipe_level_info(setting_pipe_display_info_form.pipe_display_info);
+                BMECApi.Instance.StartDefaultCommand();
+            }
+        }
+
+        /// <summary>
+        /// 断开管道为指定长度
+        /// </summary>
+        /// <param name="unparsed"></param>
+        public static void CutOffPipeTool(string unparsed)
+        {
+            CutOffPipeTool cutOffPipeTool = new CutOffPipeTool();
+            cutOffPipeTool.InstallTool();
+        }
+        /// <summary>
+        /// 合并一组管道
+        /// </summary>
+        /// <param name="unparsed"></param>
+        public static void MergePipeTool(string unparsed)
+        {
+            MergePipeTool mergePipeTool = new MergePipeTool();
+            mergePipeTool.InstallTool();
+        }
+        public static void create_jiataoguan(string unparsed)
+        {
+            JacketedPipeTool.InstallNewTool();
+        }
+
+        public static void jiataoguan_huiqie(string unparsed)
+        {
+            Jiataoguan_kaikou jiataoguan_kaikou = new Jiataoguan_kaikou();
+            jiataoguan_kaikou.InstallTool();
+        }
+
+        /// <summary>
+        /// 清除多余图形
+        /// </summary>
+        /// <param name="unparsed"></param>
+        public static void elementClear(string unparsed)
+        {
+            ElementClearForm myForm = ElementClearForm.getInstance();
+#if DEBUG
+
+#else
+            myForm.AttachAsTopLevelForm(MyAddin.s_addin, true);
+#endif
+            myForm.Show();
+        }
+    }
+}

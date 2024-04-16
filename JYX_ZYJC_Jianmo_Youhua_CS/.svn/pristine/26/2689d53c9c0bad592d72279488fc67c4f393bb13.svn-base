@@ -1,0 +1,168 @@
+﻿using Bentley.DgnPlatformNET;
+using System.Collections.Generic;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.Building.Mechanical.Api;
+using Bentley.GeometryNET;
+using Bentley.MstnPlatformNET;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public class CutOffPipeTool : DgnElementSetTool
+    {
+        private static CutOffPipeForm m_cutOffPipeForm = null;
+        /// <summary>
+        /// 构造，单例
+        /// </summary>
+        public CutOffPipeTool() : base()
+        {
+        }
+        /// <summary>
+        /// 交互窗口初始化
+        /// </summary>
+        private void forminit()
+        {
+            if (null == m_cutOffPipeForm)
+            {
+                m_cutOffPipeForm = new CutOffPipeForm(this);
+            }
+#if !DEBUG
+                                    m_cutOffPipeForm.AttachAsTopLevelForm(MyAddin.s_addin, true); //置于OPM顶层
+#endif
+            m_cutOffPipeForm.Show();
+        }
+        private List<BMECObject> selectedPipes = null;
+        private CutOffPipe cutOffPipe = new CutOffPipe();
+        /// <summary>
+        /// 在工具切换的时候
+        /// </summary>
+        protected override void OnPostInstall()
+        {
+            CutOffPipe cutOffPipe = new CutOffPipe();
+            selectedPipes = cutOffPipe.getPipe();
+            if (selectedPipes == null || selectedPipes.Count == 0)
+            {
+                MessageBox.Show("未选中管道！");
+                MessageCenter.Instance.ShowInfoMessage("未选中管道！", "没有检测到选择的管道。", false);
+                this.clearTool();
+            }
+            else
+            {
+                forminit();
+            }
+        }
+        /// <summary>
+        /// 退出工具
+        /// </summary>
+        protected override void ExitTool()
+        {
+            if (null != m_cutOffPipeForm)
+            {
+                m_cutOffPipeForm.Close();
+                m_cutOffPipeForm = null;
+            }
+            base.ExitTool();
+        }
+        /// <summary>
+        /// base.OnCleanup
+        /// </summary>
+        protected override void OnCleanup()
+        {
+            base.OnCleanup();
+        }
+        List<DPoint3d> list = new List<DPoint3d>();
+        /// <summary>
+        /// return false
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <returns></returns>
+        protected override bool OnDataButton(DgnButtonEvent ev)
+        {
+            return true;
+        }
+        /// <summary>
+        /// 因为功能放在了OnDataButton中，这里直接返回StatusInt.Error
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public override StatusInt OnElementModify(Element element)
+        {
+            return StatusInt.Error;
+        }
+        /// <summary>
+        /// 重启该工具
+        /// </summary>
+        protected override void OnRestartTool()
+        {
+        }
+        /// <summary>
+        /// 在重置按钮点击后重置该工具
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <returns></returns>
+        protected override bool OnResetButton(DgnButtonEvent ev)
+        {
+            ExitTool();
+            return true;
+        }
+        /// <summary>
+        /// 给CutOffPipeForm点击OK时调用的方法
+        /// </summary>
+        /// <param name="length">预制管道长度</param>
+        public void MyOnDataButton(double length)
+        {
+            //CutOffPipe cutOffPipe = new CutOffPipe();
+            //selectedPipes = cutOffPipe.getPipe();//获取选中的管道，其中已经将获取到的管道存到了本地成员pipes中
+            if (selectedPipes != null && selectedPipes.Count > 0)
+            {
+                int selectedPipeNum = selectedPipes.Count;//选中的管道数量
+                int cutOffPipeNum = 0;//已断开管道数量
+                List<List<BMECObject>> selectedList = new List<List<BMECObject>>();//管道断开完成后将其添加到选择集中使用的容器
+                foreach (var pipe in selectedPipes)
+                {
+                    List<BMECObject> cutPipes = new List<BMECObject>();//将管道断开后的管道组
+                    cutPipes = cutOffPipe.cutOffPipe(pipe, length);
+                    if (cutPipes.Count > 1)//如果断开了就计数断开管道
+                    {
+                        cutOffPipeNum++;
+                    }
+                    selectedList.Add(cutPipes);//将断开完成的管道存到容器
+                }
+                //将断开的管道添加到选择集中
+                DgnModelRef modelRef = Session.Instance.GetActiveDgnModelRef();
+                SelectionSetManager.EmptyAll();//清空之前选中的元素
+                foreach (var zu in selectedList)
+                {
+                    foreach (var pipe in zu)
+                    {
+                        ulong elementId = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_id(pipe);//获取ecobject的element的id
+                        Element element = Session.Instance.GetActiveDgnModel().FindElementById(new ElementId(ref elementId));//通过elementId获取Element
+                        SelectionSetManager.AddElement(element, modelRef);//添加需要选中的元素
+                    }
+                }
+                MessageBox.Show("断开管道完成。选择管道：" + selectedPipeNum + ",已断开管道：" + cutOffPipeNum);//断开管道后给出提示
+                MessageCenter.Instance.ShowInfoMessage("断开管道完成。", "选择管道：" + selectedPipeNum + ", 已断开管道：" + cutOffPipeNum, false);
+            }
+            else
+            {
+                MessageBox.Show("未选中管道！");
+                MessageCenter.Instance.ShowInfoMessage("未选中管道！", "没有检测到选择的管道。", false);
+            }
+            CutOffPipeTool.m_cutOffPipeForm.Hide();
+        }
+        /// <summary>
+        /// 当窗口关闭时，清除此类保有的窗口对象，同时退出该工具
+        /// </summary>
+        public void clearTool()
+        {
+            if (m_cutOffPipeForm != null)
+            {
+                CutOffPipeTool.m_cutOffPipeForm = null;
+            }
+            this.ExitTool();
+        }
+    }
+}

@@ -1,0 +1,218 @@
+﻿using Bentley.DgnPlatformNET;
+using System.Collections.Generic;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.Building.Mechanical.Api;
+using Bentley.GeometryNET;
+using Bentley.MstnPlatformNET;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 需求新增：判断连接形式为螺纹连接时，断开管道后，由设计人员选择相应连接件，断开管道由选择连接件连接
+    /// </summary>
+    public class CutOffPipeTool : DgnElementSetTool
+    {
+        public static CutOffPipeForm m_cutOffPipeForm = null;
+        /// <summary>
+        /// 程序关闭窗体状态
+        /// </summary>
+        public enum StatusCloseFormEvent
+        {
+            DEFAULT = 0,
+            FORM,
+            RESETBUTTON,
+            CLEANUP
+        }
+        /// <summary>
+        /// 是否由程序关闭窗体
+        /// </summary>
+        public static StatusCloseFormEvent isClosedFromCode = StatusCloseFormEvent.DEFAULT;
+        /// <summary>
+        /// 构造，单例
+        /// </summary>
+        public CutOffPipeTool() : base()
+        {
+        }
+        /// <summary>
+        /// 交互窗口初始化
+        /// </summary>
+        private void forminit()
+        {
+            if (null == m_cutOffPipeForm)
+            {
+                m_cutOffPipeForm = new CutOffPipeForm(this);
+            }
+#if !DEBUG
+            m_cutOffPipeForm.AttachAsTopLevelForm(MyAddin.s_addin, true); //置于OPM顶层
+#endif
+            m_cutOffPipeForm.Show();
+        }
+        private List<BMECObject> selectedPipes = null;
+        private CutOffPipe cutOffPipe = new CutOffPipe();
+        private static Bentley.Interop.MicroStationDGN.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+        /// <summary>
+        /// 在工具切换的时候
+        /// </summary>
+        protected override void OnPostInstall()
+        {
+            isClosedFromCode = StatusCloseFormEvent.DEFAULT;
+            selectedPipes = cutOffPipe.getPipe();
+            if (selectedPipes == null || selectedPipes.Count == 0)
+            {
+                MessageBox.Show("未选中管道！");
+                MessageCenter.Instance.ShowInfoMessage("未选中管道！", "没有检测到选择的管道。", false);
+                //this.clearTool();
+                this.ExitTool();
+            }
+            else
+            {
+                forminit();
+                app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+                app.ShowCommand("断开管道");
+            }
+        }
+        /// <summary>
+        /// 退出工具
+        /// </summary>
+        //protected override void ExitTool()
+        //{
+        //    if (null != m_cutOffPipeForm)
+        //    {
+        //        m_cutOffPipeForm.Close();
+        //        m_cutOffPipeForm = null;
+        //    }
+        //    base.ExitTool();
+        //}
+        /// <summary>
+        /// base.OnCleanup，切换命令时会执行
+        /// </summary>
+        protected override void OnCleanup()
+        {
+            selectedPipes.Clear();
+            MyCleanUp();
+            base.OnCleanup();
+        }
+        List<DPoint3d> list = new List<DPoint3d>();
+        /// <summary>
+        /// return false
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <returns></returns>
+        protected override bool OnDataButton(DgnButtonEvent ev)
+        {
+            return true;
+        }
+        /// <summary>
+        /// 因为功能放在了OnDataButton中，这里直接返回StatusInt.Error
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public override StatusInt OnElementModify(Element element)
+        {
+            return StatusInt.Error;
+        }
+        /// <summary>
+        /// 重启该工具
+        /// </summary>
+        protected override void OnRestartTool()
+        {
+        }
+        /// <summary>
+        /// 在重置按钮点击后重置该工具
+        /// </summary>
+        /// <param name="ev"></param>
+        /// <returns></returns>
+        protected override bool OnResetButton(DgnButtonEvent ev)
+        {
+            isClosedFromCode = StatusCloseFormEvent.RESETBUTTON;
+            MyCleanUp();
+            return true;
+        }
+        /// <summary>
+        /// 给CutOffPipeForm点击OK时调用的方法
+        /// </summary>
+        /// <param name="length">预制管道长度</param>
+        public void MyOnDataButton(double length)
+        {
+            //selectedPipes.Clear();
+            //selectedPipes = cutOffPipe.getPipe();
+            if (selectedPipes != null && selectedPipes.Count > 0)
+            {
+                int selectedPipeNum = selectedPipes.Count;//选中的管道数量
+                int cutOffPipeNum = 0;//已断开管道数量
+                List<List<BMECObject>> selectedList = new List<List<BMECObject>>();//管道断开完成后将其添加到选择集中使用的容器
+                foreach (var pipe in selectedPipes)
+                {
+                    List<BMECObject> cutPipes = new List<BMECObject>();//将管道断开后的管道组
+                    cutPipes = cutOffPipe.cutOffPipe(pipe, length);
+                    if (cutPipes.Count > 1)//如果断开了就计数断开管道
+                    {
+                        cutOffPipeNum++;
+                    }
+                    selectedList.Add(cutPipes);//将断开完成的管道存到容器
+                }
+                //将断开的管道添加到选择集中
+                DgnModelRef modelRef = Session.Instance.GetActiveDgnModelRef();
+                SelectionSetManager.EmptyAll();//清空之前选中的元素
+                foreach (var zu in selectedList)
+                {
+                    foreach (var pipe in zu)
+                    {
+                        ulong elementId = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_id(pipe);//获取ecobject的element的id
+                        Element element = Session.Instance.GetActiveDgnModel().FindElementById(new ElementId(ref elementId));//通过elementId获取Element
+                        SelectionSetManager.AddElement(element, modelRef);//添加需要选中的元素
+                    }
+                }
+                MessageBox.Show("断开管道完成。选择管道：" + selectedPipeNum + ",已断开管道：" + cutOffPipeNum);//断开管道后给出提示
+                MessageCenter.Instance.ShowInfoMessage("断开管道完成。", "选择管道：" + selectedPipeNum + ", 已断开管道：" + cutOffPipeNum, false);
+            }
+            else
+            {
+                MessageBox.Show("未选中管道！");
+                MessageCenter.Instance.ShowInfoMessage("未选中管道！", "没有检测到选择的管道。", false);
+            }
+            this.ExitTool();
+        }
+        /// <summary>
+        /// 当窗口关闭时，清除此类保有的窗口对象，同时退出该工具
+        /// </summary>
+        //public void clearTool()
+        //{
+        //    if (m_cutOffPipeForm != null)
+        //    {
+        //        CutOffPipeTool.m_cutOffPipeForm = null;
+        //    }
+        //    this.ExitTool();
+        //}
+        public static void MyCleanUp()
+        {
+            switch (isClosedFromCode)
+            {
+                case StatusCloseFormEvent.DEFAULT:
+                    isClosedFromCode = StatusCloseFormEvent.CLEANUP;
+                    if (m_cutOffPipeForm != null)
+                    {
+                        m_cutOffPipeForm.Close();
+                    }
+                    break;
+                case StatusCloseFormEvent.FORM:
+                    isClosedFromCode = StatusCloseFormEvent.CLEANUP;
+                    app.CommandState.StartDefaultCommand();
+                    break;
+                case StatusCloseFormEvent.RESETBUTTON:
+                    isClosedFromCode = StatusCloseFormEvent.CLEANUP;
+                    if (m_cutOffPipeForm != null)
+                    {
+                        m_cutOffPipeForm.Close();
+                        app.CommandState.StartDefaultCommand();
+                    }
+                    break;
+                case StatusCloseFormEvent.CLEANUP:
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}

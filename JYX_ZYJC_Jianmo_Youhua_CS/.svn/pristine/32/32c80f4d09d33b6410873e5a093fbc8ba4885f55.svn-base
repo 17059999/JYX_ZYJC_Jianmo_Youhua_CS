@@ -1,0 +1,44 @@
+﻿using Bentley.MstnPlatformNET.WinForms;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public partial class EquipmentManagerModifyForm : /*Form*/
+#if DEBUG
+                     Form
+#else
+                     Adapter
+#endif
+    {
+        private EquipmentManagerForm equipmentManagerForm = null;
+
+        public EquipmentManagerModifyForm()
+        {
+            InitializeComponent();
+            LoadData();
+        }
+        public EquipmentManagerModifyForm(EquipmentManagerForm equipmentManagerForm) : this()
+        {
+            this.equipmentManagerForm = equipmentManagerForm;
+        }
+        //加载数据
+        private void LoadData() {
+            List<string> allUnit = EquipmentManager.GetAllEquipmentUnit();
+            List<string> allService = EquipmentManager.GetAllEquipmentService();
+            this.comboBox_equipmentunit.DataSource = allUnit;
+            this.comboBox_equipmentservice.DataSource = allService;
+        }
+        //确认修改
+        private void button_OK_Click(object sender, EventArgs e)
+        {
+            if (equipmentManagerForm != null)
+            {
+                equipmentManagerForm.SetEquipmentNumber(this.textBox_equipmentNumber.Text);
+                equipmentManagerForm.SetEquipmentUnit(this.comboBox_equipmentunit.Text);
+                equipmentManagerForm.SetEquipmentService(this.comboBox_equipmentservice.Text);
+            }
+        }
+    }
+}

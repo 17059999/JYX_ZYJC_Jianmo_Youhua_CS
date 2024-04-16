@@ -1,0 +1,676 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7BE46A42-38BD-43A7-9812-0F19969E5419}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JYX_ZYJC_Jianmo_Youhua_CS</RootNamespace>
+    <AssemblyName>JYX_ZYJC_Jianmo_Youhua_CS</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Mdlapps\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>
+    </DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>c:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Mdlapps\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Mdlapps\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="bentley.ApplicationFramework.Events">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\bentley.ApplicationFramework.Events.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.ApplicationFramework.Interfaces">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.ApplicationFramework.Interfaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.ApplicationFramework.PropertyContainerManager">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.ApplicationFramework.PropertyContainerManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.ApplicationFramework.UI">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.ApplicationFramework.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.Building.Mechanical.ComponentLibrary">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.Building.Mechanical.ComponentLibrary.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.Building.Mechanical.Components">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.Building.Mechanical.Components.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.DgnDisplayNet">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Bentley.DgnDisplayNet.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.DgnPlatformNET">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Bentley.DgnPlatformNET.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.DgnReport">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.DgnReport.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.EC.Persistence3">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\ECFramework\Bentley.EC.Persistence3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.ECObjects3">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\ECFramework\Bentley.ECObjects3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.ECSystem3">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\ECFramework\Bentley.ECSystem3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.General.1.0">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\ECFramework\Bentley.General.1.0.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.GeometryNET">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Bentley.GeometryNET.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.GeometryNET.Common">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Bentley.GeometryNET.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.GeometryNET.Structs">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Bentley.GeometryNET.Structs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.Interop.MicroStationDGN">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.Interop.MicroStationDGN.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.MicroStation">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.MicroStation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.MicroStation.Interfaces.1.0">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.MicroStation.Interfaces.1.0.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.MicroStation.WinForms.Controls">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.MicroStation.WinForms.Controls.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.OpenPlant.Modeler.Api">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.OpenPlant.Modeler.Api.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.OpenPlantModeler.SDK">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.OpenPlantModeler.SDK.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.Plant.PipelineManager">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\Bentley.Plant.PipelineManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="bentley.plant.standardpreferences">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\bentley.plant.standardpreferences.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="bentley.plant.utilities">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\bentley.plant.utilities.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.Platform">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\ECFramework\Bentley.Platform.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.UI">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\ECFramework\Bentley.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Bentley.Windowing">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\ECFramework\Bentley.Windowing.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.3.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Enums.NET, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
+      <HintPath>..\packages\Enums.NET.4.0.1\lib\net45\Enums.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="ExtendedNumerics.BigDecimal, Version=2023.1000.0.230, Culture=neutral, PublicKeyToken=65f1315a45ad8949, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExtendedNumerics.BigDecimal.2023.1000.0.230\lib\net472\ExtendedNumerics.BigDecimal.dll</HintPath>
+    </Reference>
+    <Reference Include="GAMI.Development.Clr%281%29">
+      <HintPath>..\GAMI.Development.Clr(1).dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.3.3.11, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.3.3\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="JYXControlLib">
+      <HintPath>..\JYXControlLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="JYX_ZYJC_CLR">
+      <HintPath>..\JYX_ZYJC_CLR.dll</HintPath>
+    </Reference>
+    <Reference Include="JYX_ZYJC_License">
+      <HintPath>..\..\JYX_ZYJC_Jianmo_Youhua_CS-CE8\JYX_ZYJC_License.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cd8b63ad3d691a37, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.Signed.5.0.0\lib\net461\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="MechAddin">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\MechAddin.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.0\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Mdlapps\Microsoft.Office.Interop.Excel.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NPOI.Core, Version=2.7.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.7.0\lib\net472\NPOI.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.7.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.7.0\lib\net472\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.7.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.7.0\lib\net472\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.7.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.7.0\lib\net472\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="OPMCommon">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\Assemblies\OPMCommon.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
+      <HintPath>..\packages\SixLabors.Fonts.1.0.1\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="SixLabors.ImageSharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
+      <HintPath>..\packages\SixLabors.ImageSharp.2.1.7\lib\net472\SixLabors.ImageSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.6.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Pkcs, Version=6.0.0.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Pkcs.6.0.3\lib\net461\System.Security.Cryptography.Pkcs.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Xml, Version=6.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Xml.6.0.1\lib\net461\System.Security.Cryptography.Xml.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encoding.CodePages, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.5.0.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ustation">
+      <HintPath>C:\Program Files\Bentley\OpenPlant CONNECT Edition\OpenPlantModeler\ustation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddCheckBoxToDataGridView.cs" />
+    <Compile Include="AutoSizeForm.cs" />
+    <Compile Include="biaogaoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="biaogaoForm.Designer.cs">
+      <DependentUpon>biaogaoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BoTree.cs" />
+    <Compile Include="CellElementEditor.cs" />
+    <Compile Include="CloupingTool.cs" />
+    <Compile Include="CloupingView.cs" />
+    <Compile Include="CommandsList.cs" />
+    <Compile Include="CustomizeHeightCallout.cs" />
+    <Compile Include="CustomizeHeightSectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomizeHeightSectionForm.Designer.cs">
+      <DependentUpon>CustomizeHeightSectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CutOffPipe.cs" />
+    <Compile Include="CutOffPipeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CutOffPipeForm.designer.cs">
+      <DependentUpon>CutOffPipeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CutOffPipeTool.cs" />
+    <Compile Include="dingyi_zhinengxian.cs" />
+    <Compile Include="drawBiaogao.cs" />
+    <Compile Include="Drawing.cs" />
+    <Compile Include="DrawingPipeLineTool.cs" />
+    <Compile Include="DrawingtestMark.cs" />
+    <Compile Include="DrawingpipeBiaoGaoTool.cs" />
+    <Compile Include="DrawingzhijiaTool.cs" />
+    <Compile Include="DrawingtestTool.cs" />
+    <Compile Include="DrawingVaSuEqTool.cs" />
+    <Compile Include="elbow.cs" />
+    <Compile Include="elbowBuzhiForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="elbowBuzhiForm.designer.cs">
+      <DependentUpon>elbowBuzhiForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="elbowOrBend.cs" />
+    <Compile Include="ElementClear.cs" />
+    <Compile Include="ElementClearForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ElementClearForm.designer.cs">
+      <DependentUpon>ElementClearForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EquipmentManager.cs" />
+    <Compile Include="EquipmentManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EquipmentManagerForm.Designer.cs">
+      <DependentUpon>EquipmentManagerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EquipmentManagerModifyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EquipmentManagerModifyForm.Designer.cs">
+      <DependentUpon>EquipmentManagerModifyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EquipmentManagerSelectColumnsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EquipmentManagerSelectColumnsForm.Designer.cs">
+      <DependentUpon>EquipmentManagerSelectColumnsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EquipmentReportFrom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EquipmentReportFrom.Designer.cs">
+      <DependentUpon>EquipmentReportFrom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="excelProcessor.cs" />
+    <Compile Include="ExportMaterials.cs" />
+    <Compile Include="GroupPipeTool.cs" />
+    <Compile Include="GroupPipeToolFrom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GroupPipeToolFrom.designer.cs">
+      <DependentUpon>GroupPipeToolFrom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="isolateElementFrom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="isolateElementFrom.Designer.cs">
+      <DependentUpon>isolateElementFrom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="isRegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="isRegisterForm.designer.cs">
+      <DependentUpon>isRegisterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JacketedPipe.cs" />
+    <Compile Include="JacketedPipeTool.cs" />
+    <Compile Include="JacketedPipeToolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JacketedPipeToolForm.designer.cs">
+      <DependentUpon>JacketedPipeToolForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Jiataoguan_kaikou.cs" />
+    <Compile Include="jindutiaoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="jindutiaoForm.Designer.cs">
+      <DependentUpon>jindutiaoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="jindutiaoThread.cs" />
+    <Compile Include="JYXAnglePlacementTool.cs" />
+    <Compile Include="JYXFlowMeterTool.cs" />
+    <Compile Include="JYXInlineplacementTool.cs" />
+    <Compile Include="KeepOutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="KeepOutForm.Designer.cs">
+      <DependentUpon>KeepOutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="KillP.cs" />
+    <Compile Include="MaterialsProManagerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MaterialsProManagerForm.Designer.cs">
+      <DependentUpon>MaterialsProManagerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MovePipesTool.cs" />
+    <Compile Include="CopySupportTool.cs" />
+    <Compile Include="MoveSupportTool.cs" />
+    <Compile Include="MovePipesToolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MovePipesToolForm.designer.cs">
+      <DependentUpon>MovePipesToolForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="multiZhinengxianPipe.cs" />
+    <Compile Include="MyLinearPlacementTool.cs" />
+    <Compile Include="MergePipeTool.cs" />
+    <Compile Include="MyPipeAnchorPlacementTool.cs" />
+    <Compile Include="MyPipeSupportPlacementTool.cs" />
+    <Compile Include="Parameters_Setting\Parameters_Setting.cs" />
+    <Compile Include="PcGeneralLayout.cs" />
+    <Compile Include="plpipeBiaozhuForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="plpipeBiaozhuForm.Designer.cs">
+      <DependentUpon>plpipeBiaozhuForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="pipeBiaozhuForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="pipeBiaozhuForm.Designer.cs">
+      <DependentUpon>pipeBiaozhuForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="pipeBiaogaoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="pipeBiaogaoForm.Designer.cs">
+      <DependentUpon>pipeBiaogaoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="pipeBiaogaoType.cs" />
+    <Compile Include="pipeCenterLinesDisplayManger.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="pipeCenterLinesDisplayManger.Designer.cs">
+      <DependentUpon>pipeCenterLinesDisplayManger.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PipeConnectTree.cs" />
+    <Compile Include="Public_Api\Mstn_Public_Api.cs" />
+    <Compile Include="MyAddin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Public_Api\MyPublic_Api.cs" />
+    <Compile Include="Public_Api\OPM_Public_Api.cs" />
+    <Compile Include="public_enum.cs" />
+    <Compile Include="refreshChecked.cs" />
+    <Compile Include="refreshcailiao.cs" />
+    <Compile Include="refreshNozzle.cs" />
+    <Compile Include="ReliefValveTool.cs" />
+    <Compile Include="RepairConnectTool.cs" />
+    <Compile Include="ReportFLForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportFLForm.designer.cs">
+      <DependentUpon>ReportFLForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportFLPZForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportFLPZForm.designer.cs">
+      <DependentUpon>ReportFLPZForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportFrom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportFrom.Designer.cs">
+      <DependentUpon>ReportFrom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RotationNoteTool.cs" />
+    <Compile Include="Segment.cs" />
+    <Compile Include="select_start_end_pipe.cs" />
+    <Compile Include="select_zhenggen_pipe.cs" />
+    <Compile Include="Setting_Pipe_Display_Info_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Setting_Pipe_Display_Info_Form.Designer.cs">
+      <DependentUpon>Setting_Pipe_Display_Info_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="shengchengGuanxianForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="shengchengGuanxianForm.designer.cs">
+      <DependentUpon>shengchengGuanxianForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowPipingComponentInfosForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowPipingComponentInfosForm.Designer.cs">
+      <DependentUpon>ShowPipingComponentInfosForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowPipingGroupComponentInfosForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowPipingGroupComponentInfosForm.Designer.cs">
+      <DependentUpon>ShowPipingGroupComponentInfosForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SupportForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SupportForm.designer.cs">
+      <DependentUpon>SupportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SupportView.cs" />
+    <Compile Include="ToolsTemplate.cs" />
+    <Compile Include="UpdateConnectTool.cs" />
+    <Compile Include="UpdateProForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UpdateProForm.Designer.cs">
+      <DependentUpon>UpdateProForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="updateToleranceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="updateToleranceForm.designer.cs">
+      <DependentUpon>updateToleranceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Utility.cs" />
+    <Compile Include="ValveTool.cs" />
+    <Compile Include="ValveView.cs" />
+    <Compile Include="ZhinengxianPipeFrom.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ZhinengxianPipeFrom.Designer.cs">
+      <DependentUpon>ZhinengxianPipeFrom.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="biaogaoForm.resx">
+      <DependentUpon>biaogaoForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="commands.xml">
+      <SubType>Designer</SubType>
+      <LogicalName>CommandTable.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomizeHeightSectionForm.resx">
+      <DependentUpon>CustomizeHeightSectionForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CutOffPipeForm.resx">
+      <DependentUpon>CutOffPipeForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="elbowBuzhiForm.resx">
+      <DependentUpon>elbowBuzhiForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ElementClearForm.resx">
+      <DependentUpon>ElementClearForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EquipmentManagerForm.resx">
+      <DependentUpon>EquipmentManagerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EquipmentManagerModifyForm.resx">
+      <DependentUpon>EquipmentManagerModifyForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EquipmentManagerSelectColumnsForm.resx">
+      <DependentUpon>EquipmentManagerSelectColumnsForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EquipmentReportFrom.resx">
+      <DependentUpon>EquipmentReportFrom.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GroupPipeToolFrom.resx">
+      <DependentUpon>GroupPipeToolFrom.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HebingPipe.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="isolateElementFrom.resx">
+      <DependentUpon>isolateElementFrom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="isRegisterForm.resx">
+      <DependentUpon>isRegisterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JacketedPipeToolForm.resx">
+      <DependentUpon>JacketedPipeToolForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="jindutiaoForm.resx">
+      <DependentUpon>jindutiaoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="KeepOutForm.resx">
+      <DependentUpon>KeepOutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MaterialsProManagerForm.resx">
+      <DependentUpon>MaterialsProManagerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MovePipesToolForm.resx">
+      <DependentUpon>MovePipesToolForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="plpipeBiaozhuForm.resx">
+      <DependentUpon>plpipeBiaozhuForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="pipeBiaozhuForm.resx">
+      <DependentUpon>pipeBiaozhuForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="pipeBiaogaoForm.resx">
+      <DependentUpon>pipeBiaogaoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="pipeCenterLinesDisplayManger.resx">
+      <DependentUpon>pipeCenterLinesDisplayManger.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportFLForm.resx">
+      <DependentUpon>ReportFLForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportFLPZForm.resx">
+      <DependentUpon>ReportFLPZForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportFrom.resx">
+      <DependentUpon>ReportFrom.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Setting_Pipe_Display_Info_Form.resx">
+      <DependentUpon>Setting_Pipe_Display_Info_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="shengchengGuanxianForm.resx">
+      <DependentUpon>shengchengGuanxianForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowPipingComponentInfosForm.resx">
+      <DependentUpon>ShowPipingComponentInfosForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowPipingGroupComponentInfosForm.resx">
+      <DependentUpon>ShowPipingGroupComponentInfosForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SupportForm.resx">
+      <DependentUpon>SupportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UpdateProForm.resx">
+      <DependentUpon>UpdateProForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="updateToleranceForm.resx">
+      <DependentUpon>updateToleranceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ZhinengxianPipeFrom.resx">
+      <DependentUpon>ZhinengxianPipeFrom.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

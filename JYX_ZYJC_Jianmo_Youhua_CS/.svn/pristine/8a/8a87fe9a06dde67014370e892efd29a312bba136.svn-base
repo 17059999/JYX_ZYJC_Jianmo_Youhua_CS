@@ -1,0 +1,138 @@
+﻿namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    partial class ShowPipingComponentInfosForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowPipingComponentInfosForm));
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.dataGridView_unconnected_piping = new System.Windows.Forms.DataGridView();
+            this.xuhao = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.elem_type = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.describe = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_unconnected_piping)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.dataGridView_unconnected_piping);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(698, 284);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "无连接性构件";
+            // 
+            // dataGridView_unconnected_piping
+            // 
+            this.dataGridView_unconnected_piping.AllowUserToAddRows = false;
+            this.dataGridView_unconnected_piping.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            this.dataGridView_unconnected_piping.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView_unconnected_piping.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView_unconnected_piping.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridView_unconnected_piping.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_unconnected_piping.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.xuhao,
+            this.elem_type,
+            this.describe});
+            this.dataGridView_unconnected_piping.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView_unconnected_piping.Location = new System.Drawing.Point(3, 21);
+            this.dataGridView_unconnected_piping.Margin = new System.Windows.Forms.Padding(4);
+            this.dataGridView_unconnected_piping.MultiSelect = false;
+            this.dataGridView_unconnected_piping.Name = "dataGridView_unconnected_piping";
+            this.dataGridView_unconnected_piping.RowHeadersVisible = false;
+            this.dataGridView_unconnected_piping.RowTemplate.Height = 23;
+            this.dataGridView_unconnected_piping.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_unconnected_piping.Size = new System.Drawing.Size(692, 260);
+            this.dataGridView_unconnected_piping.TabIndex = 1;
+            this.dataGridView_unconnected_piping.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_unconnected_piping_CellClick);
+            // 
+            // xuhao
+            // 
+            this.xuhao.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.xuhao.DefaultCellStyle = dataGridViewCellStyle2;
+            this.xuhao.FillWeight = 30F;
+            this.xuhao.HeaderText = "序号";
+            this.xuhao.Name = "xuhao";
+            this.xuhao.ReadOnly = true;
+            // 
+            // elem_type
+            // 
+            this.elem_type.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.elem_type.FillWeight = 45F;
+            this.elem_type.HeaderText = "元素类型";
+            this.elem_type.Name = "elem_type";
+            this.elem_type.ReadOnly = true;
+            // 
+            // describe
+            // 
+            this.describe.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.describe.HeaderText = "描述";
+            this.describe.Name = "describe";
+            this.describe.ReadOnly = true;
+            // 
+            // ShowPipingComponentInfosForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(698, 284);
+            this.Controls.Add(this.groupBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "ShowPipingComponentInfosForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "无连接性构件";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ShowPipingComponentInfosForm_FormClosed);
+            this.Load += new System.EventHandler(this.ShowPipingComponentInfosForm_Load);
+            this.groupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_unconnected_piping)).EndInit();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.DataGridView dataGridView_unconnected_piping;
+        private System.Windows.Forms.DataGridViewTextBoxColumn xuhao;
+        private System.Windows.Forms.DataGridViewTextBoxColumn elem_type;
+        private System.Windows.Forms.DataGridViewTextBoxColumn describe;
+    }
+}

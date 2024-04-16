@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.OleDb;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using Bentley.MstnPlatformNET.InteropServices;
+using Bentley.MstnPlatformNET.WinForms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public partial class SupportForm : UserControl//Adapter//Form//
+    {
+        public double cWidth;
+        public double cHeight;
+        public double cThickness;
+        List<string> k_whz = new List<string>();
+        DataRow v_whz;
+        public Dictionary<string, DataRow> kv_whz = new Dictionary<string, DataRow>(); 
+        public SupportForm()
+        {
+            InitializeComponent();
+            GetProfile();
+            textBox_length.ReadOnly = true;
+            textBox_height.ReadOnly = true;
+            textBox_height1.ReadOnly = true;
+        }
+        //选择截面下拉框
+        private void comboBox_profile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string k = (sender as ComboBox).Text;
+            v_whz =  kv_whz[k];
+            cWidth = (double)v_whz["WIDTH"];
+            cHeight = (double)v_whz["HEIGHT"];
+            cThickness = (double)v_whz["THICKNESS"];
+
+        }
+
+        //是否启用设置参数
+        private void checkBox_setParam_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_setParam.Checked)
+            {
+                textBox_length.ReadOnly = false;
+                textBox_height.ReadOnly = false;
+                textBox_height1.ReadOnly = false;
+            }
+            else
+            {
+                //Enable,readonly
+                textBox_length.ReadOnly = true;
+                textBox_height.ReadOnly = true;
+                textBox_height1.ReadOnly = true;
+            }
+        }
+
+        private void textBox_length_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void textBox_height_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox_height1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void GetProfile()
+        {
+            Bentley.Interop.MicroStationDGN.Application app = Utilities.ComApp;
+            string work_path = app.ActiveWorkspace.ConfigurationVariableValue("OPENPLANT_WORKSET_STANDARDS");
+            string path = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source="+ work_path+@"\Specs\Supports.mdb";
+            OleDbConnection _oleDbConn = new OleDbConnection(path);
+            _oleDbConn.Open();
+
+            //OleDbDataAdapter _oleDbAda = new OleDbDataAdapter("select * from SUPPORTS where EC_CLASS='" + profile_fag + "'", _oleDbConn);
+            OleDbDataAdapter _oleDbAda = new OleDbDataAdapter("select * from SUPPORTS where PROFILE='C'", _oleDbConn); 
+             DataTable dt = new DataTable();
+
+            _oleDbAda.Fill(dt);
+            
+            foreach (DataRow item in dt.Rows)
+            {
+                string k = item["WIDTH"] + "X" + item["HEIGHT"] + "X" + item["THICKNESS"];
+                k_whz.Add(k);
+                kv_whz.Add(k, item);
+            }
+            comboBox_profile.DataSource = k_whz;
+
+            _oleDbConn.Close();
+        }
+
+        //private static Bentley.Interop.MicroStationDGN.Application app = Utilities.ComApp;
+        //private static string path = app.ActiveWorkspace.ConfigurationVariableValue("OPENPLANT_WORKSET_STANDARDS") + @"\CutOffPipeData.txt";
+    }
+}

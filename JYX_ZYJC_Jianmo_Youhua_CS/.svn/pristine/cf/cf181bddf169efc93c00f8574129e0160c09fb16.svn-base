@@ -1,0 +1,502 @@
+﻿using Bentley.Building.Mechanical.Api;
+using Bentley.ECObjects.Instance;
+using Bentley.MstnPlatformNET.WinForms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 设备管理器：显示设备的 Name、Unit、Service、设备类型、设备编号
+    /// 高亮显示、单独显示
+    /// 选中某设备时，点击 Show Component 按钮时显示设备管嘴信息，内容和管嘴编辑器内容一样
+    /// 能够批量修改设备的“设备位号”、“UNIT”、“SERVICE”属性
+    /// TODO 设备位号是什么
+    /// </summary>
+    public partial class EquipmentManagerForm :
+#if DEBUG
+                     Form
+#else
+                     Adapter
+#endif
+    {
+        //该窗体的实例
+        private static EquipmentManagerForm instance = null;
+        //列名
+        private List<string> columnsName = new List<string>() { "CheckBoxColumn", "EquipmentName", "EquipmentUnit", "EquipmentService", "EquipmentType", "EquipmentNumber" };
+        private List<string> columnsDisplayName = new List<string>() {"CheckBoxColumn", "Name", "Unit", "Service", "设备类型", "设备编号" };
+        //获取该窗体的实例
+        public static EquipmentManagerForm getInstance() {
+            if (instance == null)
+            {
+                instance = new EquipmentManagerForm();
+            }
+            return instance;
+        }
+        //构造
+        private EquipmentManagerForm()
+        {
+            InitializeComponent();
+        }
+        //窗体加载
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            this.LoadData();
+            this.SetFormStyle();
+        }
+        //查询 Model 中的设备，添加到数据表中
+        private List<IECInstance> allEquipmentInstance = new List<IECInstance>();
+        //private List<BMECObject> allEquipmentObject = new List<BMECObject>();
+        //加载数据
+        private void LoadData() {
+            this.dataGridView_equipment.Columns.Clear();
+            if (columnsName.Count != columnsDisplayName.Count)
+            {
+                System.Windows.Forms.MessageBox.Show("列名数量不匹配，请确认是否遗漏或存在非法列名");
+                this.Close();
+                return;
+            }
+            for (int i = 0; i < columnsName.Count; i++)
+            {
+                if (columnsName[i].Equals("CheckBoxColumn"))
+                {
+                    DataGridViewCheckBoxColumn chk = new DataGridViewCheckBoxColumn();
+                    //chk.FalseValue = "F";
+                    //chk.TrueValue = "T";
+                    this.dataGridView_equipment.Columns.Add(chk);
+
+                }
+                else
+                {
+                    this.dataGridView_equipment.Columns.Add(columnsName[i], columnsDisplayName[i]);
+                    this.dataGridView_equipment.Columns[i].ReadOnly = true;
+                }
+            }
+            this.dataGridView_equipment.Rows.Clear();
+            this.dataGridView_equipment.Controls.Clear();
+            //TODO
+            //allEquipmentInstance = EquipmentManager.GetAllEquipment();
+            allEquipmentInstance = EquipmentManager.GetAllEquipment();
+
+            int RowsCount = 0;
+            foreach (IECInstance instance in allEquipmentInstance)
+            {
+                RowsCount = this.dataGridView_equipment.Rows.Add();
+                int index = 1;
+                try
+                {
+                    this.dataGridView_equipment.Rows[RowsCount].Cells[index++].Value = instance["NAME"].StringValue;
+                    this.dataGridView_equipment.Rows[RowsCount].Cells[index++].Value = instance["UNIT"].StringValue;
+                    this.dataGridView_equipment.Rows[RowsCount].Cells[index++].Value = instance["SERVICE"].StringValue;
+                    this.dataGridView_equipment.Rows[RowsCount].Cells[index++].Value = instance.ClassDefinition.Name;
+                    this.dataGridView_equipment.Rows[RowsCount].Cells[index++].Value = instance["NUMBER"].StringValue;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
+                }
+            }
+        }
+        //刷新数据
+        private void RefreshData(bool isUpdateInstance) {
+            //EquipmentManager.ViewComponent(null, false, false, false);
+            //if (selectedRowsIndex != -1)
+            //{
+            //    isolateInstance = allEquipmentInstance[selectedRowsIndex];
+            //    hiliteInstance = allEquipmentInstance[selectedRowsIndex];
+            //}
+            //EquipmentManager.ViewComponent(isolateInstance, hiLite, zoom, isolate);
+            //EquipmentManager.ViewComponent(hiliteInstance, hiLite, zoom, isolate);
+            EquipmentManager.ViewComponent(null, false, false, false);
+            for (int i = 0; i < modifyInstances.Count; i++)
+            {
+                EquipmentManager.ViewComponent(modifyInstances[i], hiLite, zoom, isolate);
+            }
+            if (isUpdateInstance)
+            {
+                LoadData();
+                SetFormStyle();
+                modifyInstances.Clear();
+                //modifyBMECObject.Clear();
+            }
+
+        }
+        //两 datagridview 高差
+        private int datagridviewOffsetY = 0;
+        //private int windowsFormHeight = 0;
+        //设置窗体样式
+        private void SetFormStyle() {
+            this.Text = "设备管理器";
+            this.MinimizeBox = false;
+            this.MaximizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            //equipment information datagridview
+            //this.dataGridView_equipment.ReadOnly = true;
+            this.dataGridView_equipment.AllowUserToAddRows = false;
+            this.dataGridView_equipment.AllowUserToDeleteRows = false;
+            this.dataGridView_equipment.RowHeadersVisible = false;
+            this.dataGridView_equipment.AllowUserToResizeColumns = true;
+            this.dataGridView_equipment.AllowUserToResizeRows = false;
+            this.dataGridView_equipment.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_equipment.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            int columnsCount = 0;
+            this.dataGridView_equipment.Columns[columnsCount++].FillWeight = 5;
+            this.dataGridView_equipment.Columns[columnsCount++].FillWeight = 10;
+            this.dataGridView_equipment.Columns[columnsCount++].FillWeight = 15;
+            this.dataGridView_equipment.Columns[columnsCount++].FillWeight = 15;
+            this.dataGridView_equipment.Columns[columnsCount++].FillWeight = 25;
+            this.dataGridView_equipment.Columns[columnsCount++].FillWeight = 15;
+            this.dataGridView_equipment.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            //nozzle information datagridview
+            this.dataGridView_nozzleInfo.AllowUserToAddRows = false;
+            this.dataGridView_nozzleInfo.AllowUserToDeleteRows = false;
+            this.dataGridView_nozzleInfo.RowHeadersVisible = false;
+            this.dataGridView_nozzleInfo.AllowUserToResizeColumns = true;
+            this.dataGridView_nozzleInfo.AllowUserToResizeRows = false;
+            this.dataGridView_nozzleInfo.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_nozzleInfo.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            #region MyRegion
+            //int nozzleColumnsCount = 0;
+            //this.dataGridView_nozzleInfo.Columns[nozzleColumnsCount++].FillWeight = 5;
+            //this.dataGridView_nozzleInfo.Columns[nozzleColumnsCount++].FillWeight = 10;
+            //this.dataGridView_nozzleInfo.Columns[nozzleColumnsCount++].FillWeight = 15;
+            //this.dataGridView_nozzleInfo.Columns[nozzleColumnsCount++].FillWeight = 15;
+            //this.dataGridView_nozzleInfo.Columns[nozzleColumnsCount++].FillWeight = 25;
+            //this.dataGridView_nozzleInfo.Columns[nozzleColumnsCount++].FillWeight = 15;
+            //this.dataGridView_nozzleInfo.Columns[nozzleColumnsCount++].FillWeight = 20;
+            #endregion
+            this.dataGridView_nozzleInfo.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            bool isVisiblenozzleInfo = false;
+            if (this.button_showComponents.Text.Contains("Hide"))
+            {
+                isVisiblenozzleInfo = true;
+                this.Height = 284 + 191;
+            }
+            else
+            {
+                isVisiblenozzleInfo = false;
+                this.Height = 284;
+            }
+            this.dataGridView_nozzleInfo.Visible = isVisiblenozzleInfo;
+            datagridviewOffsetY = this.dataGridView_nozzleInfo.Location.Y - this.dataGridView_equipment.Location.Y - this.dataGridView_equipment.Height;
+        }
+        //高亮
+        private bool hiLite = false;
+        //聚焦
+        private bool zoom = false;
+        //单独显示
+        private bool isolate = false;
+        //选中的行
+        //private int selectedRowsIndex = -1;
+        //单独显示的 ECInstance
+        private IECInstance isolateInstance = null;
+        //高亮的 ECInstance
+        private IECInstance hiliteInstance = null;
+        //单独显示按钮
+        private void button_isolate_Click(object sender, EventArgs e)
+        {
+            isolate = !isolate;
+            if (isolate)
+            {
+                this.button_isolate.Text = "关闭单独显示";
+            }
+            else
+            {
+                this.button_isolate.Text = "开启单独显示";
+            }
+            RefreshData(false);
+        }
+        //高亮显示按钮
+        private void button_hilite_Click(object sender, EventArgs e)
+        {
+            hiLite = !hiLite;
+            if (hiLite)
+            {
+                this.button_hilite.Text = "关闭高亮显示";
+            }
+            else
+            {
+                this.button_hilite.Text = "开启高亮显示";
+            }
+            RefreshData(false);
+        }
+        //窗体关闭
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            ClearData();
+            instance = null;
+        }
+        //清理方法
+        private void ClearData() {
+            EquipmentManager.ViewComponent(null, false, false, false);
+        }
+        //批量修改元素的容器
+        private List<IECInstance> modifyInstances = new List<IECInstance>();
+        //private List<BMECObject> modifyBMECObject = new List<BMECObject>();
+        //修改属性窗体
+        private EquipmentManagerModifyForm modifyForm = null;
+        //修改的属性
+        private string equipmentNumber = "";
+        private string equipmentUnit = "";
+        private string equipmentService = "";
+        public void SetEquipmentNumber(string value) {
+            if (value != null)
+            {
+                this.equipmentNumber = value;
+            }
+        }
+        public void SetEquipmentUnit(string value)
+        {
+            if (value != null)
+            {
+                this.equipmentUnit = value;
+            }
+        }
+        public void SetEquipmentService(string value)
+        {
+            if (value != null)
+            {
+                this.equipmentService = value;
+            }
+        }
+        //TODO 批量修改
+        private void button_modify_Click(object sender, EventArgs e)
+        {
+            modifyForm = new EquipmentManagerModifyForm(this);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EquipmentManagerModifyForm));
+            modifyForm.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            modifyForm.ShowDialog();
+            #region MyRegion
+            //if (modifyInstances.Count == 0)
+            //{
+            //    MessageBox.Show("没有选中元素");
+            //    return;
+            //}
+            //if (modifyForm.DialogResult == DialogResult.OK)
+            //{
+            //    List<IECInstance> newModifyInstance = new List<IECInstance>();
+            //    foreach (IECInstance modifyInstance in modifyInstances)
+            //    {
+            //        #region MyRegion
+            //        ////TODO 设备位号
+            //        modifyInstance["NUMBER"].StringValue = equipmentNumber;
+            //        modifyInstance["UNIT"].StringValue = equipmentUnit;
+            //        modifyInstance["SERVICE"].StringValue = equipmentService;
+            //        ////newModifyInstance.Add(modifyInstance);
+
+            //        Bentley.Building.Mechanical.Api.BMECObject modifyEquipment = new Bentley.Building.Mechanical.Api.BMECObject(modifyInstance);
+            //        modifyEquipment.Create();
+            //        modifyEquipment.DiscoverConnectionsEx();
+            //        modifyEquipment.UpdateConnections();
+            //        ////EquipmentManager.ModifyBMECObject(modifyInstance, "NUMBER", equipmentNumber);
+            //        ////EquipmentManager.ModifyBMECObject(modifyInstance, "UNIT", equipmentUnit);
+            //        ////EquipmentManager.ModifyBMECObject(modifyInstance, "SERVICE", equipmentService);
+
+            //        //Bentley.Building.Mechanical.Api.BMECObjectCache bmecobjectCache = new Bentley.Building.Mechanical.Api.BMECObjectCache();
+            //        //int cacheCount = bmecobjectCache.CacheCount();
+
+            //        //if (modifyInstance.IsReadOnly)
+            //        //{
+            //        //}
+            //        //modifyInstance["UNIT"].StringValue = equipmentUnit;
+            //        //modifyInstance["SERVICE"].StringValue = equipmentService;
+
+            //        //Bentley.Building.Mechanical.Api.BMECApi.Instance.InstanceManager.CommitInstance(modifyInstance);
+            //        //Bentley.Building.Mechanical.Api.BMECObject modifyEquipment = new Bentley.Building.Mechanical.Api.BMECObject(modifyInstance);
+
+            //        //List<IECInstance> tempInstances = EquipmentManager.GetAllEquipment();
+            //        //int temp1 = 1;
+            //        //string unitValue = tempInstances[1]["UNIT"].StringValue;
+            //        //temp1 = 2;
+            //        //Bentley.Building.Mechanical.Api.BMECObject modifyEquipment3 = new Bentley.Building.Mechanical.Api.BMECObject(modifyInstance);
+            //        ////Bentley.Building.Mechanical.Api.BMECObject modifyEquipment = new Bentley.Building.Mechanical.Api.BMECObject(modifyInstance);
+            //        ////if (modifyEquipment.SetStringValue("UNIT", equipmentUnit))
+            //        ////{
+
+            //        ////}
+            //        ////if (modifyEquipment.SetStringValue("SERVICE", equipmentService))
+            //        ////{
+
+            //        ////}
+
+            //        ////Bentley.Plant.Utilities.DgnUtilities.GetInstance().SaveModifiedInstance(modifyInstance, Bentley.Plant.Utilities.DgnUtilities.GetInstance().GetDGNConnection());
+
+            //        //cacheCount = bmecobjectCache.CacheCount();
+
+            //        //modifyEquipment.Create();
+            //        //modifyEquipment.DiscoverConnectionsEx();
+            //        //modifyEquipment.UpdateConnections();
+
+            //        //modifyEquipment3.Create();
+            //        //modifyEquipment3.DiscoverConnectionsEx();
+            //        //modifyEquipment3.UpdateConnections();
+            //        #endregion
+
+            //        //IECInstance newInstance = Bentley.OpenPlantModeler.SDK.Utilities.DgnUtilities.GetInstanceByInstanceId(modifyInstance.InstanceId);
+            //        //newInstance["UNIT"].StringValue = equipmentUnit;
+            //        //newInstance["SERVICE"].StringValue = equipmentService;
+            //        //Bentley.Building.Mechanical.Api.BMECObject newObject = new Bentley.Building.Mechanical.Api.BMECObject(newInstance);
+            //        //newObject.Create();
+            //        //newObject.DiscoverConnectionsEx();
+            //        //newObject.UpdateConnections();
+            //        //IECInstance newIECInstance = Bentley.OpenPlantModeler.SDK.Utilities.DgnUtilities.GetInstanceByInstanceId(modifyInstance.InstanceId);
+            //        //Bentley.Building.Mechanical.Api.BMECObject newObject = new Bentley.Building.Mechanical.Api.BMECObject(newIECInstance);
+            //        //newObject.SetStringValue("UNIT", equipmentUnit);
+            //        //newObject.SetStringValue("SERVICE", equipmentService);
+            //        //newObject.Create();
+            //        //newObject.DiscoverConnectionsEx();
+            //        //newObject.UpdateConnections();
+            //        //EquipmentManager.ModifyBMECObject(modifyInstance, "UNIT", equipmentUnit);
+            //        //EquipmentManager.ModifyBMECObject(modifyInstance, "SERVICE", equipmentService);
+            //    }
+            //    //List<Bentley.Building.Mechanical.Api.BMECObject> newModifyEquipment = new List<Bentley.Building.Mechanical.Api.BMECObject>();
+            //    //foreach (IECInstance instance in newModifyInstance)
+            //    //{
+            //    //    Bentley.Building.Mechanical.Api.BMECObject modifyEquipment = new Bentley.Building.Mechanical.Api.BMECObject(instance);
+            //    //    modifyEquipment.Create();
+            //    //    modifyEquipment.DiscoverConnectionsEx();
+            //    //    modifyEquipment.UpdateConnections();
+            //    //    newModifyEquipment.Add(modifyEquipment);
+            //    //}
+            //    //modifyInstances.Clear();
+            //    //foreach (Bentley.Building.Mechanical.Api.BMECObject item in newModifyEquipment)
+            //    //{
+            //    //    modifyInstances.Add(item.Instance);
+            //    //}
+            //    RefreshData(true);
+            //}
+            #endregion
+
+            if (modifyForm.DialogResult == DialogResult.OK) {
+                foreach (IECInstance item in modifyInstances)
+                {
+                    if (equipmentNumber != "")
+                    {
+                        EquipmentManager.ModifyBMECObject(item, "NUMBER", equipmentNumber);
+                    }
+                    EquipmentManager.ModifyBMECObject(item, "UNIT", equipmentUnit);
+                    EquipmentManager.ModifyBMECObject(item, "SERVICE", equipmentService);
+                }
+                RefreshData(true);
+                LoadNozzleData();
+            }
+        }
+        //设备管嘴信息窗体
+        //private EquipmentManagerNozzleInfo nozzleInfoForm = null;
+        //是否显示管嘴信息
+        private bool isViewNozzleInfo = false;
+        //管嘴信息列名及显示的列名
+        private List<string> nozzleColumnsName = new List<string>() { "State", "Number", "Type", "Datum", "A", "B", "C", "D", "E", "R", "T", "Service", "LineNumber", "Specification", "NominalDiameter", "InsulationThickness" };
+        private List<string> nozzlePropertiesName = new List<string>() { "STATE", "Number", "TYPE_FOR_DATUM", "DATUM", "PARAM_A", "PARAM_B", "PARAM_C", "PARAM_D", "PARAM_E", "PARAM_R", "PARAM_T", "SERVICE", "LINENUMBER", "SPECIFICATION", "NOMINAL_DIAMETER", "INSULATION_THICKNESS" };
+        //显示设备管嘴信息
+        private void button_showComponents_Click(object sender, EventArgs e)
+        {
+            isViewNozzleInfo = !isViewNozzleInfo;
+            if (isViewNozzleInfo)
+            {
+                this.button_showComponents.Text = "Hide Component";
+                //this.Height += this.dataGridView_nozzleInfo.Height + datagridviewOffsetY;
+                this.Height = 284 + 191;
+                this.dataGridView_nozzleInfo.Visible = true;
+            }
+            else
+            {
+                this.button_showComponents.Text = "Show Component";
+                //this.Height -= this.dataGridView_nozzleInfo.Height + datagridviewOffsetY;
+                this.Height = 284;
+                this.dataGridView_nozzleInfo.Visible = false;
+            }
+            //this.panel_nozzleInfo.Controls.Clear();
+            //nozzleInfoForm = new EquipmentManagerNozzleInfo(this);
+            //nozzleInfoForm.TopLevel = false;
+            //nozzleInfoForm.FormBorderStyle = FormBorderStyle.None;
+            //this.panel_nozzleInfo.Controls.Add(nozzleInfoForm);
+            //nozzleInfoForm.Show();
+            LoadNozzleData();
+        }
+        //加载管嘴数据
+        private void LoadNozzleData()
+        {
+            this.dataGridView_nozzleInfo.Columns.Clear();
+            for (int i = 0; i < nozzleColumnsName.Count; i++)
+            {
+                this.dataGridView_nozzleInfo.Columns.Add(nozzleColumnsName[i], nozzleColumnsName[i]);
+            }
+            this.dataGridView_nozzleInfo.Rows.Clear();
+            List<IECInstance> selectedEquipmentInstance = new List<IECInstance>();
+            selectedEquipmentInstance = modifyInstances;
+            int RowsCount = 0;
+            foreach (IECInstance equipmentInstance in selectedEquipmentInstance)
+            {
+                List<IECInstance> nozzles = EquipmentManager.GetAllNozzleInstance(equipmentInstance);
+                foreach (IECInstance nozzle in nozzles)
+                {
+                    int index = 0;
+                    RowsCount = this.dataGridView_nozzleInfo.Rows.Add();
+                    try
+                    {
+                        foreach (string propertyName in nozzlePropertiesName)
+                        {
+                            string proName = "";
+                            proName = nozzlePropertiesName[index];
+                            if (proName.Equals("Number"))
+                            {
+                                this.dataGridView_nozzleInfo.Rows[RowsCount].Cells[index++].Value = RowsCount + 1;
+                            }
+                            else
+                            {
+                                this.dataGridView_nozzleInfo.Rows[RowsCount].Cells[index++].Value = nozzle[proName].StringValue;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.ToString());
+                    }
+                }
+            }
+        }
+        //提交临时修改的数据
+        private void dataGridView_equipment_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dataGridView_equipment.IsCurrentCellDirty)
+            {
+                dataGridView_equipment.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
+        }
+        //单元格数值改变时
+        private void dataGridView_equipment_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex != 0) return;
+            object value = (dataGridView_equipment.Rows[e.RowIndex].Cells[e.ColumnIndex]).FormattedValue;
+
+            if ((bool)dataGridView_equipment.Rows[e.RowIndex].Cells[0].EditedFormattedValue == true)
+            {
+                if (modifyInstances.Contains(allEquipmentInstance[e.RowIndex])) return;
+                modifyInstances.Add(allEquipmentInstance[e.RowIndex]);
+                isolateInstance = allEquipmentInstance[e.RowIndex];
+                hiliteInstance = allEquipmentInstance[e.RowIndex];
+                //modifyBMECObject.Add(allEquipmentInstance[e.RowIndex]);
+            }
+            else
+            {
+                if (modifyInstances.Contains(allEquipmentInstance[e.RowIndex]))
+                {
+                    modifyInstances.Remove(allEquipmentInstance[e.RowIndex]);
+                    //modifyBMECObject.Remove(allEquipmentInstance[e.RowIndex]);
+                }
+            }
+            RefreshData(false);
+            LoadNozzleData();
+        }
+    }
+}

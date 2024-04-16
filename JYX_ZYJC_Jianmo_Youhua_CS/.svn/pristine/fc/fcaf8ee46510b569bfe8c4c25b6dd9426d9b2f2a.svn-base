@@ -1,0 +1,113 @@
+﻿
+
+using Bentley;
+using Bentley.ApplicationFramework.Interfaces;
+using Bentley.Building.Mechanical;
+using Bentley.Building.Mechanical.Api;
+using Bentley.Building.Mechanical.Components;
+using Bentley.DgnPlatformNET;
+using Bentley.ECObjects.Instance;
+using Bentley.GeometryNET;
+using Bentley.MstnPlatformNET;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public class MyLinearPlacementTool : LinearPlacementTool
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="linearTool"></param>
+        public MyLinearPlacementTool(MyLinearPlacementTool linearTool) : base(linearTool)
+        {
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="addIn"></param>
+        /// <param name="cmdNumber"></param>
+        public MyLinearPlacementTool(AddIn addIn, int cmdNumber) : base(addIn, cmdNumber)
+        {
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        protected unsafe override void _OnDataButton(Bentley.DgnPlatformNET.DgnButtonEvent e)
+        {
+            base._OnDataButton(e);
+            if (base.ObjectAtOrigin != null)
+            {
+                foreach (BMECObject bmec_object in base.ObjectAtOrigin.ConnectedComponents)
+                {
+                    if (bmec_object.ClassName.Equals("EQUAL_PIPE_TEE"))
+                    {
+                        //通过创建一个于原来的 EQUAL_PIPE_TEE 相同的 ECInstance 来获取 mdb 中对应字段的值
+                        try
+                        {
+                            IECInstance elbow_iec_instance = BMECInstanceManager.Instance.CreateECInstance("EQUAL_PIPE_TEE", true);//创建一个ECInstance
+                            BMECApi api = BMECApi.Instance;
+                            ISpecProcessor specProcessor = api.SpecProcessor;
+                            specProcessor.FillCurrentPreferences(elbow_iec_instance, null);
+                            elbow_iec_instance["NOMINAL_DIAMETER"].DoubleValue = bmec_object.GetDoubleValue("NOMINAL_DIAMETER");//设置管径
+                            ECInstanceList ec_instance_list = specProcessor.SelectSpec(elbow_iec_instance, false);//获取选择数据
+
+                            string standard = string.Empty;
+                            if (null != ec_instance_list && ec_instance_list.Count > 0)
+                            {
+                                IECInstance instance = ec_instance_list[0];
+                                standard = instance["STANDARD"].StringValue;
+                            }
+                            bmec_object.Instance["STANDARD"].StringValue = standard;
+                            bmec_object.Create();
+                            //MessageBox.Show("当前生成的Tee中Standard属性为：" + standard);//TODO 测试完了记得注释掉
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+                    else if (bmec_object.ClassName.Equals("PIPE"))
+                    {
+                        if (MessageBox.Show("是否自动合并管道？", "合并管道", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        {
+                            CutOffPipe cutOffPipe = new CutOffPipe();
+                            List<BMECObject> pipes = new List<BMECObject>();
+                            pipes.Add(bmec_object);
+                            pipes.Add(base.ObjectAtOrigin);
+                            int hebingGuandaozuNum = 0;
+                            List<BMECObject> hebingGuandao = new List<BMECObject>();//合并后的管道容器
+                            hebingGuandao = cutOffPipe.hebing_guandao(pipes, out hebingGuandaozuNum);//合并管道
+                                                                                                     //SelectionSetManager.EmptyAll();//清空之前选中的元素
+
+                            //base.ObjectAtOrigin 父类变量，控制动态显示
+                        }
+                    }
+                }
+
+            }
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void CreateTool() { new MyLinearPlacementTool(this).InstallTool(); }
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void OnRestartCommand()
+        {
+            base.RestartCommand(new MyLinearPlacementTool(this));
+        }
+
+    }
+}

@@ -1,0 +1,129 @@
+﻿namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    partial class EquipmentManagerForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.dataGridView_equipment = new System.Windows.Forms.DataGridView();
+            this.button_isolate = new System.Windows.Forms.Button();
+            this.button_hilite = new System.Windows.Forms.Button();
+            this.button_showComponents = new System.Windows.Forms.Button();
+            this.button_modify = new System.Windows.Forms.Button();
+            this.dataGridView_nozzleInfo = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_equipment)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_nozzleInfo)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // dataGridView_equipment
+            // 
+            this.dataGridView_equipment.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_equipment.Location = new System.Drawing.Point(12, 41);
+            this.dataGridView_equipment.Name = "dataGridView_equipment";
+            this.dataGridView_equipment.RowTemplate.Height = 23;
+            this.dataGridView_equipment.Size = new System.Drawing.Size(638, 192);
+            this.dataGridView_equipment.TabIndex = 0;
+            this.dataGridView_equipment.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_equipment_CellValueChanged);
+            this.dataGridView_equipment.CurrentCellDirtyStateChanged += new System.EventHandler(this.dataGridView_equipment_CurrentCellDirtyStateChanged);
+            // 
+            // button_isolate
+            // 
+            this.button_isolate.Location = new System.Drawing.Point(12, 12);
+            this.button_isolate.Name = "button_isolate";
+            this.button_isolate.Size = new System.Drawing.Size(86, 23);
+            this.button_isolate.TabIndex = 1;
+            this.button_isolate.Text = "开启单独显示";
+            this.button_isolate.UseVisualStyleBackColor = true;
+            this.button_isolate.Click += new System.EventHandler(this.button_isolate_Click);
+            // 
+            // button_hilite
+            // 
+            this.button_hilite.Location = new System.Drawing.Point(104, 12);
+            this.button_hilite.Name = "button_hilite";
+            this.button_hilite.Size = new System.Drawing.Size(87, 23);
+            this.button_hilite.TabIndex = 2;
+            this.button_hilite.Text = "开启高亮显示";
+            this.button_hilite.UseVisualStyleBackColor = true;
+            this.button_hilite.Click += new System.EventHandler(this.button_hilite_Click);
+            // 
+            // button_showComponents
+            // 
+            this.button_showComponents.Location = new System.Drawing.Point(197, 12);
+            this.button_showComponents.Name = "button_showComponents";
+            this.button_showComponents.Size = new System.Drawing.Size(116, 23);
+            this.button_showComponents.TabIndex = 3;
+            this.button_showComponents.Text = "Show Components";
+            this.button_showComponents.UseVisualStyleBackColor = true;
+            this.button_showComponents.Click += new System.EventHandler(this.button_showComponents_Click);
+            // 
+            // button_modify
+            // 
+            this.button_modify.Location = new System.Drawing.Point(319, 12);
+            this.button_modify.Name = "button_modify";
+            this.button_modify.Size = new System.Drawing.Size(63, 23);
+            this.button_modify.TabIndex = 5;
+            this.button_modify.Text = "修改";
+            this.button_modify.UseVisualStyleBackColor = true;
+            this.button_modify.Click += new System.EventHandler(this.button_modify_Click);
+            // 
+            // dataGridView_nozzleInfo
+            // 
+            this.dataGridView_nozzleInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_nozzleInfo.Location = new System.Drawing.Point(12, 239);
+            this.dataGridView_nozzleInfo.Name = "dataGridView_nozzleInfo";
+            this.dataGridView_nozzleInfo.RowTemplate.Height = 23;
+            this.dataGridView_nozzleInfo.Size = new System.Drawing.Size(638, 191);
+            this.dataGridView_nozzleInfo.TabIndex = 6;
+            // 
+            // EquipmentManagerForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(660, 245);
+            this.Controls.Add(this.dataGridView_nozzleInfo);
+            this.Controls.Add(this.button_modify);
+            this.Controls.Add(this.button_showComponents);
+            this.Controls.Add(this.button_hilite);
+            this.Controls.Add(this.button_isolate);
+            this.Controls.Add(this.dataGridView_equipment);
+            this.Name = "EquipmentManagerForm";
+            this.Text = "EquipmentManagerForm";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_equipment)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_nozzleInfo)).EndInit();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.DataGridView dataGridView_equipment;
+        private System.Windows.Forms.Button button_isolate;
+        private System.Windows.Forms.Button button_hilite;
+        private System.Windows.Forms.Button button_showComponents;
+        private System.Windows.Forms.Button button_modify;
+        private System.Windows.Forms.DataGridView dataGridView_nozzleInfo;
+    }
+}

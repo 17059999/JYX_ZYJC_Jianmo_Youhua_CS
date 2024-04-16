@@ -1,0 +1,360 @@
+﻿using Bentley.Building.Mechanical.Api;
+using Bentley.ECObjects.Instance;
+using Bentley.GeometryNET;
+using Bentley.MstnPlatformNET.WinForms;
+using Bentley.OpenPlantModeler.SDK.Utilities;
+using Bentley.Plant.StandardPreferences;
+using JYX_ZYJC_Jianmo_Youhua_CS;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace zhinengxian_pipe
+{
+    public partial class ZhinengxianPipeFrom :
+#if DEBUG
+        Form
+#else  
+        Adapter
+#endif
+    {
+        public List<string> PipelineList = new List<string>();
+        public List<string> specsList = new List<string>();
+        public List<double> dnList = new List<double>();
+        public List<string> insulationMaterial = new List<string>();
+        public ECInstanceList ec_instance_list = new ECInstanceList();
+        protected BMECApi api = BMECApi.Instance;
+        public List<DPoint3d> new_points_list = new List<DPoint3d>();
+        public bool b = false;
+        public ZhinengxianPipeFrom(List<DPoint3d> dpList)
+        {
+            new_points_list = dpList;
+            InitializeComponent();
+            init();
+        }
+
+        /// <summary>
+        /// 初始化给控件赋初始值
+        /// </summary>
+        private void init()
+        {
+            PipelineList = GetPipeLine();
+            this.comboBox_outer_pipeline.DataSource = PipelineList;
+            string specName = DlgStandardPreference.GetPreferenceValue("SPECIFICATION");
+            specsList = Bentley.OpenPlantModeler.SDK.Utilities.DatabaseUtilities.GetAllSpecifications();
+            this.comboBox_outer_spec.DataSource = specsList;
+            
+            if(specsList.Contains(specName))
+            {
+                this.comboBox_outer_spec.Text = specName;
+            }
+            else
+            {
+                this.comboBox_outer_spec.SelectedIndex = 0;
+            }
+
+            string insulation_thickness = DlgStandardPreference.GetPreferenceValue("INSULATION_THICKNESS");
+            this.textBox_outer_insulation_thickness.Text = insulation_thickness;
+
+            insulationMaterial = getInsulationMaterial();
+            insulationMaterial.Insert(0, "");
+            this.comboBox_outer_insulation_material.DataSource = insulationMaterial;
+            string insulation_material = DlgStandardPreference.GetPreferenceValue("INSULATION");
+            if(insulationMaterial.Contains(insulation_material))
+            {
+                this.comboBox_outer_insulation_material.Text = insulation_material;
+            }
+            else
+            {
+                this.comboBox_outer_insulation_material.SelectedIndex = 0;
+            }
+
+            string compState = DlgStandardPreference.GetPreferenceValue("STATE");
+            this.ComboxComponentSate.Text = compState;
+
+            this.textPipePressure.Text = "0 kPaG";
+        }
+
+        private static List<Bentley.OpenPlantModeler.SDK.AssociatedItems.NetworkSystem> pipingNetworkSystems = null;
+        private static List<string> pipelinesName = null;
+        /// <summary>
+        /// 获取管道线
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetPipeLine()
+        {
+            pipingNetworkSystems = Bentley.OpenPlantModeler.SDK.AssociatedItems.NetworkSystem.GetExistingPipingNetworkSystems();
+            pipelinesName = new List<string>();
+            foreach (var item in pipingNetworkSystems)
+            {
+                string name = item.Name;
+                pipelinesName.Add(name);
+            }
+            return pipelinesName;
+        }
+
+        /// <summary>
+        /// 获取保护层材料
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> getInsulationMaterial()
+        {
+            List<string> insulationMaterialList = new List<string>();
+            IECInstance insulationMaterialInstance = BMECInstanceManager.Instance.CreateECInstance("INSULATION_MATERIAL_VALUE_MAP", true);
+            foreach (var item in insulationMaterialInstance)
+            {
+                insulationMaterialList.Add(item.AccessString);
+            }
+            return insulationMaterialList;
+        }
+
+        /// <summary>
+        /// 找到对应等级库下的dn
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboBox_outer_spec_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            double dn = Convert.ToDouble(DlgStandardPreference.GetPreferenceValue("NOMINAL_DIAMETER"));
+            dnList = Bentley.OpenPlantModeler.SDK.Utilities.DatabaseUtilities.GetAllSizes(comboBox_outer_spec.Text);
+            comboBox_outer_dn.DataSource = dnList;
+            
+            if(dnList.Contains(dn))
+            {
+                this.comboBox_outer_dn.Text = Convert.ToString(dn);
+            }
+            else
+            {
+                this.comboBox_outer_dn.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// 根据等级库dn让用户选择一条数据，对控件进行赋值
+        /// </summary>
+        /// <param name="dn"></param>
+        /// <param name="spec"></param>
+        private void fuzhi(double dn,string spec)
+        {
+            int index = pipelinesName.IndexOf(comboBox_outer_pipeline.Text);
+            StandardPreferencesUtilities.SetActivePipingNetworkSystem(pipingNetworkSystems[index]);
+            StandardPreferencesUtilities.ChangeSpecification(spec);
+            IECInstance iecInstance = BMECInstanceManager.Instance.CreateECInstance("PIPE", true);
+            iecInstance["NOMINAL_DIAMETER"].DoubleValue = Convert.ToDouble(dn);
+            ISpecProcessor specProcessor = api.SpecProcessor;
+            specProcessor.FillCurrentPreferences(iecInstance, null);
+            ec_instance_list = specProcessor.SelectSpec(iecInstance, true);
+            IECInstance instance = ec_instance_list[0];
+            this.textBox_outer_OD.Text = Convert.ToString(instance["OUTSIDE_DIAMETER"].DoubleValue);
+            this.textBox_outer_weight.Text = Convert.ToString(instance["WEIGHT"].DoubleValue);
+            this.textBox_outer_shortDesc.Text = instance["SHORT_DESCRIPTION"].StringValue;
+            this.textBox_outer_wallThickness.Text = Convert.ToString(instance["WALL_THICKNESS"].DoubleValue);
+            this.textBox_outer_pipeMaterial.Text = instance["MATERIAL"].StringValue;
+            //this.textBox_outer_dryWeight.Text = Convert.ToString(instance["DRY_WEIGHT"].DoubleValue);
+        }
+
+        /// <summary>
+        /// 当等级库或者dn改变时重新赋值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboBox_outer_dn_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            fuzhi(Convert.ToDouble(comboBox_outer_dn.Text), comboBox_outer_spec.Text);
+        }
+
+        /// <summary>
+        /// 生成管道
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //b = true;
+            string pipePressure = pressure(textPipePressure.Text);
+            if(pipePressure==null)
+            {
+                return;
+            }
+            textPipePressure.Text = pipePressure;
+            List<BMECObject> bmec_object_list = new List<BMECObject>();
+            for (int i = 0; i < new_points_list.Count - 1; i++)
+            {
+
+                DPoint3d dpt_start = new_points_list[i];
+                DPoint3d dpt_end = new_points_list[i + 1];
+                //BMECObject bmec_object = OPM_Public_Api.create_pipe(dpt_start, dpt_end, Convert.ToDouble(comboBox_outer_dn.Text));
+                //bmec_object.Create();
+                BMECObject bmec_object = createPipe(dpt_start, dpt_end);
+                //bmec_object.SetIntValue(null, 1001);
+                bmec_object.DiscoverConnectionsEx();
+                bmec_object.UpdateConnections();
+                bmec_object_list.Add(bmec_object);
+            }
+            #region 对生成的管道进行回切操作
+            //string errorMessage = string.Empty;
+            //for (int i = 0; i < bmec_object_list.Count - 1; i++)
+            //{
+            //    string errorMessage_temp;
+            //    string PipeLine = bmec_object_list[i].Instance["LINENUMBER"].StringValue; //获取pdm中PipeLine的值
+            //    //bmec_object_list[i].Instance.InstanceId
+            //    if (PipeLine != "")
+            //    {
+            //        try
+            //        {
+            //            BMECObject bmec_object1 = bmec_object_list[i];
+            //            ulong id1 = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_id(bmec_object1);
+            //            bmec_object1 = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(id1);
+            //            BMECObject bmec_object2 = bmec_object_list[i + 1];
+            //            ulong id2 = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_id(bmec_object2);
+            //            bmec_object2 = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(id2);
+
+            //            OPM_Public_Api.huiqie_pipe(bmec_object1, bmec_object2, out errorMessage_temp);
+            //            errorMessage += errorMessage_temp;
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            System.Windows.Forms.MessageBox.Show(ex.Message.ToString());
+            //            //CleraPublic();
+            //            return;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        //CleraPublic();
+            //        System.Windows.Forms.MessageBox.Show("请先设置PipeLine");
+            //        BMECApi.Instance.StartDefaultCommand();
+            //        //return;
+            //        this.Close();
+            //    }
+            //}
+            #endregion
+            //if (errorMessage.Length != 0)
+            //{
+            //    System.Windows.Forms.MessageBox.Show(errorMessage);
+            //    this.Close();
+            //}
+            System.Windows.Forms.MessageBox.Show("生成成功");
+            BMECApi.Instance.StartDefaultCommand();
+            this.Close();
+        }
+
+        /// <summary>
+        /// 创建管道
+        /// </summary>
+        /// <param name="dpt_start"></param>
+        /// <param name="dpt_end"></param>
+        /// <returns></returns>
+        private BMECObject createPipe(DPoint3d dpt_start,DPoint3d dpt_end)
+        {
+            BMECObject ec_object = null;
+            BMECObject ecObject = new BMECObject();          
+            if (null!=ec_instance_list&&ec_instance_list.Count>0)
+            {
+                IECInstance instance = ec_instance_list[0];
+                instance["INSULATION_THICKNESS"].DoubleValue = Convert.ToDouble(textBox_outer_insulation_thickness.Text);
+                if(comboBox_outer_insulation_material.Text!="")
+                {
+                    instance["INSULATION"].StringValue = comboBox_outer_insulation_material.Text;
+                }
+                instance["STATE"].StringValue = ComboxComponentSate.Text;
+                string PipePre = textPipePressure.Text;
+                int i=PipePre.IndexOf(" ");
+                string pipePresu = PipePre.Substring(0, i);
+                instance["NORMAL_OPERATING_PRESSURE"].DoubleValue = Convert.ToDouble(pipePresu);
+                ec_object = new BMECObject(instance);
+                ecObject.Copy(ec_object);
+                ecObject.SetLinearPoints(dpt_start, dpt_end);
+                ecObject.Create();
+            }
+            return ecObject;
+        }
+
+        /// <summary>
+        /// 设置用户只能输入数字
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void textBox_outer_insulation_thickness_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char result = e.KeyChar;
+            if(char.IsDigit(result)||result==8)
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// 匹配用户输入的值，开头为.数字或者数字.数字，数字才是正确的输入
+        /// </summary>
+        /// <param name="pressure"></param>
+        /// <returns></returns>
+        private string pressure(string pressure)
+        {
+            //string Pipepressure = "0 kPaG";
+            Regex reg = new Regex(@"^(\d*\.*\d*){1}"); //正则匹配从开始匹配找到一个为\d*\.*\d*的字符串
+            MatchCollection result = reg.Matches(pressure);
+            string m = result[0].ToString();
+            if(m==""|| result.Count == 0)
+            {
+                MessageBox.Show("管道压力输入格式不正确");
+                return null;
+            }
+            char[] ch = m.ToCharArray();
+            if(ch[0]=='.')
+            {
+                if(ch[1]=='.')
+                {
+                    MessageBox.Show("管道压力输入格式不正确");
+                    return null;
+                }
+                else
+                {
+                    m = "0" + m + " kPaG";
+                    return m;
+                }
+            }
+            else
+            {
+                for(int i=0;i<ch.Length-1;i++)
+                {
+                    if(ch[i]=='.')
+                    {
+                        if(i==ch.Length-1)
+                        {
+                            string mm= m.Substring(0, ch.Length - 1);
+                            return mm;
+                        }
+                        else
+                        {
+                            if(ch[i+1]=='.')
+                            {
+                                MessageBox.Show("管道压力输入格式不正确");
+                                return null;
+                            }
+                            else
+                            {
+                                m = m + " kPaG";
+                                return m;
+                            }
+                        }
+                    }
+                }
+                m += " kPaG";
+                return m;
+            }
+            //return Pipepressure;
+        }
+    }
+}

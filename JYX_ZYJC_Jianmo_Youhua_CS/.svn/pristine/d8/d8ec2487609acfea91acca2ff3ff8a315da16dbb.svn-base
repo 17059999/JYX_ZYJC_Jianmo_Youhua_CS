@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<KeyinTree xmlns="http://www.bentley.com/schemas/1.0/MicroStation/AddIn/KeyinTree.xsd">
+
+
+  <RootKeyinTable ID="root">
+
+    <!-- SubtableRef = "指向子表的ID属性" CommandClass = "命令类型" CommandWord = "Key-in中输入的命令Word"-->
+    <Keyword CommandWord="JYX_ZYJC_Jianmo_Youhua_CS" CommandClass="MacroCommand" SubtableRef="CommandsList">
+      <!-- Required = "true：不是最后一个命令Word" -->
+      <Options Required="true"/>
+    </Keyword>
+
+  </RootKeyinTable>
+
+
+  <SubKeyinTables>
+
+    <KeyinTable ID="CommandsList">
+
+      <Keyword CommandWord="CommandsList" SubtableRef="Commands">
+        <Options Required="true"/>
+      </Keyword>
+
+    </KeyinTable>
+
+
+    <KeyinTable ID="Commands">
+      <Keyword CommandWord="test"/>
+      <Keyword CommandWord="select_zhenggen_pipe"/>
+      <Keyword CommandWord="lianjie_guandao"/>
+      <Keyword CommandWord="dingyi_zhinengxian"/>
+      <Keyword CommandWord="setting_pipe_display_info"/>
+      <Keyword CommandWord="create_jiataoguan"/>
+      <Keyword CommandWord="zhinengxian_to_pipe"/>
+      <Keyword CommandWord="CutOffPipeTool"/>
+      <Keyword CommandWord="jiataoguan_huiqie"/>
+      <Keyword CommandWord="MergePipeTool"/>
+      <Keyword CommandWord="elementClear"/>
+
+      <Keyword CommandWord="MovePipe"/>
+      <Keyword CommandWord="GroupPipeMain" />
+      <Keyword CommandWord="createLine"></Keyword>
+      <Keyword CommandWord="shuaxin"/>
+      <Keyword CommandWord="excelEmportCailiao"/>
+      <Keyword CommandWord="excelEmportEquipment"></Keyword>
+      <Keyword CommandWord="textTool"></Keyword>
+
+      <Keyword CommandWord="DrawingStart"/>
+      <Keyword CommandWord="ExcelStart"/>
+
+      <Keyword CommandWord="select_start_end_pipe"/>
+
+      <Keyword CommandWord="EquipmentManager"/>
+
+    </KeyinTable>
+
+  </SubKeyinTables>
+
+
+  <KeyinHandlers>
+    <!-- Function = "对应的功能函数全名" Keyin = "完整的命令Word" -->
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.test" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList test"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.lianjie_guandao" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList lianjie_guandao"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.select_zhenggen_pipe" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList select_zhenggen_pipe"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.dingyi_zhinengxian" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList dingyi_zhinengxian"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.zhinengxian_to_pipe" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList zhinengxian_to_pipe"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.setting_pipe_display_info" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList setting_pipe_display_info"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.create_jiataoguan" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList create_jiataoguan"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.CutOffPipeTool" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList CutOffPipeTool"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.MergePipeTool" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList MergePipeTool"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.jiataoguan_huiqie" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList jiataoguan_huiqie"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.elementClear" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList elementClear"/>
+
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.MovePipe" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList MovePipe"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.GroupPipeMain" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList GroupPipeMain" />
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.createLine" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList createLine" />
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.shuaxin" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList shuaxin" />
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.excelEmportCailiao" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList excelEmportCailiao" />
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.excelEmportEquipment" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList excelEmportEquipment"/>
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.textTool" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList textTool"/>
+
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.Drawing.Start" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList DrawingStart" />
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.BOM.Start" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList ExcelStart" />
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.select_start_end_pipe" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList select_start_end_pipe" />
+
+    <KeyinHandler Function="JYX_ZYJC_Jianmo_Youhua_CS.CommandsList.EquipmentManager" Keyin="JYX_ZYJC_Jianmo_Youhua_CS CommandsList EquipmentManager" />
+    
+  </KeyinHandlers>
+
+</KeyinTree>
+    

@@ -1,0 +1,160 @@
+﻿namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    partial class MovePipesToolForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.textBox_X = new System.Windows.Forms.TextBox();
+            this.textBox_Y = new System.Windows.Forms.TextBox();
+            this.textBox_Z = new System.Windows.Forms.TextBox();
+            this.label_offsetx = new System.Windows.Forms.Label();
+            this.label_offsety = new System.Windows.Forms.Label();
+            this.label_offsetz = new System.Windows.Forms.Label();
+            this.checkBox_isWorking = new System.Windows.Forms.CheckBox();
+            this.radioButton_offset = new System.Windows.Forms.RadioButton();
+            this.radioButton_absolute = new System.Windows.Forms.RadioButton();
+            this.SuspendLayout();
+            // 
+            // textBox_X
+            // 
+            this.textBox_X.Location = new System.Drawing.Point(29, 34);
+            this.textBox_X.Name = "textBox_X";
+            this.textBox_X.Size = new System.Drawing.Size(71, 21);
+            this.textBox_X.TabIndex = 2;
+            this.textBox_X.Text = "0";
+            // 
+            // textBox_Y
+            // 
+            this.textBox_Y.Location = new System.Drawing.Point(123, 34);
+            this.textBox_Y.Name = "textBox_Y";
+            this.textBox_Y.Size = new System.Drawing.Size(71, 21);
+            this.textBox_Y.TabIndex = 3;
+            this.textBox_Y.Text = "0";
+            // 
+            // textBox_Z
+            // 
+            this.textBox_Z.Location = new System.Drawing.Point(217, 34);
+            this.textBox_Z.Name = "textBox_Z";
+            this.textBox_Z.Size = new System.Drawing.Size(71, 21);
+            this.textBox_Z.TabIndex = 4;
+            this.textBox_Z.Text = "0";
+            // 
+            // label_offsetx
+            // 
+            this.label_offsetx.AutoSize = true;
+            this.label_offsetx.Location = new System.Drawing.Point(12, 37);
+            this.label_offsetx.Name = "label_offsetx";
+            this.label_offsetx.Size = new System.Drawing.Size(11, 12);
+            this.label_offsetx.TabIndex = 5;
+            this.label_offsetx.Text = "X";
+            // 
+            // label_offsety
+            // 
+            this.label_offsety.AutoSize = true;
+            this.label_offsety.Location = new System.Drawing.Point(106, 37);
+            this.label_offsety.Name = "label_offsety";
+            this.label_offsety.Size = new System.Drawing.Size(11, 12);
+            this.label_offsety.TabIndex = 6;
+            this.label_offsety.Text = "Y";
+            // 
+            // label_offsetz
+            // 
+            this.label_offsetz.AutoSize = true;
+            this.label_offsetz.Location = new System.Drawing.Point(200, 37);
+            this.label_offsetz.Name = "label_offsetz";
+            this.label_offsetz.Size = new System.Drawing.Size(11, 12);
+            this.label_offsetz.TabIndex = 7;
+            this.label_offsetz.Text = "Z";
+            // 
+            // checkBox_isWorking
+            // 
+            this.checkBox_isWorking.AutoSize = true;
+            this.checkBox_isWorking.Location = new System.Drawing.Point(12, 12);
+            this.checkBox_isWorking.Name = "checkBox_isWorking";
+            this.checkBox_isWorking.Size = new System.Drawing.Size(48, 16);
+            this.checkBox_isWorking.TabIndex = 8;
+            this.checkBox_isWorking.Text = "启用";
+            this.checkBox_isWorking.UseVisualStyleBackColor = true;
+            this.checkBox_isWorking.CheckedChanged += new System.EventHandler(this.checkBox_isWorking_CheckedChanged);
+            // 
+            // radioButton_offset
+            // 
+            this.radioButton_offset.AutoSize = true;
+            this.radioButton_offset.Checked = true;
+            this.radioButton_offset.Location = new System.Drawing.Point(66, 12);
+            this.radioButton_offset.Name = "radioButton_offset";
+            this.radioButton_offset.Size = new System.Drawing.Size(71, 16);
+            this.radioButton_offset.TabIndex = 9;
+            this.radioButton_offset.TabStop = true;
+            this.radioButton_offset.Text = "相对坐标";
+            this.radioButton_offset.UseVisualStyleBackColor = true;
+            // 
+            // radioButton_absolute
+            // 
+            this.radioButton_absolute.AutoSize = true;
+            this.radioButton_absolute.Location = new System.Drawing.Point(143, 12);
+            this.radioButton_absolute.Name = "radioButton_absolute";
+            this.radioButton_absolute.Size = new System.Drawing.Size(71, 16);
+            this.radioButton_absolute.TabIndex = 10;
+            this.radioButton_absolute.Text = "绝对坐标";
+            this.radioButton_absolute.UseVisualStyleBackColor = true;
+            // 
+            // MovePipesToolForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(295, 65);
+            this.Controls.Add(this.radioButton_absolute);
+            this.Controls.Add(this.radioButton_offset);
+            this.Controls.Add(this.checkBox_isWorking);
+            this.Controls.Add(this.label_offsetz);
+            this.Controls.Add(this.label_offsety);
+            this.Controls.Add(this.label_offsetx);
+            this.Controls.Add(this.textBox_Z);
+            this.Controls.Add(this.textBox_Y);
+            this.Controls.Add(this.textBox_X);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Name = "MovePipesToolForm";
+            this.Text = "移动管道";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MovePipesToolForm_FormClosed);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+        private System.Windows.Forms.Label label_offsetx;
+        private System.Windows.Forms.Label label_offsety;
+        private System.Windows.Forms.Label label_offsetz;
+        public System.Windows.Forms.TextBox textBox_X;
+        public System.Windows.Forms.TextBox textBox_Y;
+        public System.Windows.Forms.TextBox textBox_Z;
+        public System.Windows.Forms.CheckBox checkBox_isWorking;
+        public System.Windows.Forms.RadioButton radioButton_offset;
+        public System.Windows.Forms.RadioButton radioButton_absolute;
+    }
+}

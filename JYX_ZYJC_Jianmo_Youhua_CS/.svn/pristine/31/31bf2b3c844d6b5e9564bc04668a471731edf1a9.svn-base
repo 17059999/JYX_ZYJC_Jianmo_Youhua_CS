@@ -1,0 +1,410 @@
+﻿using Bentley.DgnPlatformNET;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.MstnPlatformNET;
+using System;
+using Bentley.Building.Mechanical.Api;
+using System.Collections.Generic;
+using BIM = Bentley.Interop.MicroStationDGN;
+using BG = Bentley.GeometryNET;
+using Bentley.MstnPlatformNET.InteropServices;
+using Bentley.ECObjects.Instance;
+using System.Windows.Forms;
+using Bentley.Plant.StandardPreferences;
+using Bentley.OpenPlantModeler.SDK.Components;
+using Bentley.ECObjects;
+using Bentley.Plant.PipelineManager;
+using System.Collections;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    class select_start_end_pipe : DgnElementSetTool
+    {
+        static BIM.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+        private BMECObject component1 = null;
+        private BMECObject component2 = null;
+        private int point_n=0;
+        public override StatusInt OnElementModify(Element element)
+        {
+            return StatusInt.Error;
+        }
+        public static void InstallNewTool()
+        {
+            select_zhenggen_pipe select_zhenggen_pipe = new select_zhenggen_pipe();
+            select_zhenggen_pipe.InstallTool();
+        }
+        protected override void OnPostInstall()
+        {
+            
+            base.OnPostInstall();
+            app.ShowCommand("首尾法选择管道\\管件");
+            app.ShowPrompt("请选择首端管道\\管件");
+        }
+        protected override void OnCleanup()
+        {
+        }
+        protected override bool OnResetButton(DgnButtonEvent ev)
+        {
+
+            app.CommandState.StartDefaultCommand();
+
+            return true;
+        }
+        protected override void OnRestartTool()
+        {
+            
+            InstallNewTool();
+        }
+        protected override bool NeedAcceptPoint()
+        {
+            return false;
+        }
+
+        protected override bool OnDataButton(DgnButtonEvent ev)
+        {
+            HitPath hit_path = DoLocate(ev, true, 1);
+            if (hit_path == null)
+            {
+                return true;
+            }
+            if (point_n == 0)
+            {
+                
+                Element elem = hit_path.GetHeadElement();
+                
+                BMECObject bmec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(elem.ElementId);
+
+                if (bmec_object == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("选择的组件不是管道\\管件，请重新选择！");
+                    return true;
+                }
+                else if (BMECApi.Instance.InstanceDefinedAsClass(bmec_object.Instance, "PIPING_COMPONENT", true))
+                {
+                    app.ShowPrompt("请选择尾端管道\\管件");
+                    point_n++;
+                    
+                    component1 = bmec_object;
+                    //string pipe_line = bmec_object.Instance["LINENUMBER"].StringValue;
+                    //select_components_by_pipelinename(pipe_line);
+                }else
+                {
+                    System.Windows.Forms.MessageBox.Show("选择的组件不是管道\\管件，请重新选择！");
+                    return true;
+                }
+            }
+            else if(point_n==1)
+            {
+                Element elem = hit_path.GetHeadElement();
+
+                BMECObject bmec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(elem.ElementId);
+                if (bmec_object == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("选择的组件不是管道\\管件，请重新选择！");
+                    return true;
+                }
+                else if (BMECApi.Instance.InstanceDefinedAsClass(bmec_object.Instance, "PIPING_COMPONENT", true))
+                {
+                    
+                    string pipe_line = bmec_object.Instance["LINENUMBER"].StringValue;
+                    if (component1.Instance["LINENUMBER"].StringValue.Equals(pipe_line))
+                    {
+                        if (component1.Instance.InstanceId== bmec_object.Instance.InstanceId)
+                        {
+                            System.Windows.Forms.MessageBox.Show("选择的首尾管道\\管件相同，请重新选择尾端管道\\管件！");
+                            return true;
+                        }
+                        else
+                        {
+                            component2 = bmec_object;
+                            if (is_valid_connected(component1, component2))
+                            {
+
+                                point_n = 0;
+                                component2 = null;
+                                component1 = null;
+                                app.ShowPrompt("请选择首端管道\\管件");
+                            }
+                            else
+                            {
+                                System.Windows.Forms.MessageBox.Show("首尾管道之间存在没有连接性的构件!");
+                                return true;
+                            }
+
+                        }
+                        
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show("选择的组件管线编号不相同，重新选择！");
+                        return true;
+                    }
+                    
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("选择的组件不是管道\\管件，请重新选择！");
+                    return true;
+                }
+            }
+
+            return true;
+        }
+
+        private void select_components_by_pipelinename(string pipe_line)
+        {
+            PipelineUtilities _Utilities = new PipelineUtilities();
+            Hashtable pipelines = _Utilities.GetAllPipelines();
+            ArrayList allComponents = new ArrayList();
+            bool pipeline_has_finded = false;
+            List<BMECObject> unconnected_components = new List<BMECObject>();
+            List<BMECObject> result_bmec_object_list = new List<BMECObject>();
+            foreach (PipelineCacheData pipelinecachedata in pipelines.Values)
+            {
+                if (pipelinecachedata.Name.Equals(pipe_line))
+                {
+                    pipeline_has_finded = true;
+                    allComponents = pipelinecachedata.GetAllComponents(true);
+                }
+            }
+            if (!pipeline_has_finded)
+            {
+                MessageBox.Show("当前图纸管线管理器未包含'" + pipe_line + "'的定义,无法使用该功能");
+                return ;
+            }
+            else
+            {
+                for (int i = 0; i < allComponents.Count; i++)
+                {
+                    IECInstance iECInstance = allComponents[i] as IECInstance;
+                    BMECObject bmecobject = new BMECObject(iECInstance);
+                    if (bmecobject.ConnectedComponents.Count == 0)
+                    {
+                        unconnected_components.Add(bmecobject);
+                    }
+                    else
+                    {
+                        result_bmec_object_list.Add(bmecobject);
+                        for (int m = 0; m < bmecobject.Ports.Count; m++)
+                        {
+                            IECInstance joint_instance = BMECApi.Instance.GetJointInstance(bmecobject.Ports[m]);
+                            if (joint_instance != null)
+                            {
+                                List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+
+                                foreach (BMECObject joint_bmecobject in joint_bmecobject_list)
+                                {
+
+                                    BMECObject exit_object = result_bmec_object_list.Find(delegate (BMECObject exit_object_temp)
+                                    {
+                                        return (exit_object_temp.Instance.InstanceId.Equals(joint_bmecobject.Instance.InstanceId));
+                                    });
+                                    if (exit_object == null)
+                                    {
+                                        result_bmec_object_list.Add(joint_bmecobject);
+                                    }
+                                }
+
+                                if (bmecobject.Instance.ClassDefinition.BaseClasses[0].BaseClasses[0].Name.Equals("VALVE") || bmecobject.Instance.ClassDefinition.BaseClasses[0].BaseClasses[0].BaseClasses[0].Name.Equals("INLINE_VALVE"))
+                                {
+                                    ECInstanceList ec_list = BMECApi.Instance.GetRelatedInstancesByStrength(bmecobject.Instance, "VALVE_HAS_VALVE_OPERATING_DEVICE", (Bentley.ECObjects.Schema.StrengthType)(-1), true);
+                                    if (ec_list.Count != 0)
+                                    {
+                                        foreach (BMECObject exit_object_temp in result_bmec_object_list)
+                                        {
+                                            if (!(exit_object_temp.Instance.InstanceId.Equals(ec_list[0].InstanceId)))
+                                            {
+                                                result_bmec_object_list.Add(new BMECObject(ec_list[0]));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                foreach (BMECObject connected_bmecobject in result_bmec_object_list)
+                {
+                    BMECApi.Instance.SelectComponent(connected_bmecobject.Instance, true);
+                }
+                if (unconnected_components.Count > 0)
+                {
+                    //MessageBox.Show("管线编号为'" + pipe_line + "'的构件中，无连接性的构件个数为" + unconnected_components.Count.ToString());
+                    //showpipingcomponentinfosform = new ShowPipingComponentInfosForm(unconnected_components);
+#if DEBUG
+
+#else
+                    //showpipingcomponentinfosform.AttachAsTopLevelForm(MyAddin.s_addin, true);
+#endif
+
+                    //showpipingcomponentinfosform.Show();
+                }
+            }
+        }
+
+        private bool is_valid_connected(BMECObject bmecobject1, BMECObject bmecobject2)
+        {
+            List<List<BMECObject>> result_bmec_object_list_list = new List<List<BMECObject>>();
+            get_all_extend_connectedComponents(bmecobject1, result_bmec_object_list_list,0,null, bmecobject1.Instance["LINENUMBER"].StringValue);
+
+            List<List<BMECObject>> result_bmec_object_list_list1 = new List<List<BMECObject>>();
+            foreach (List<BMECObject> result_bmec_object_list in result_bmec_object_list_list)
+            {
+                int index =result_bmec_object_list.FindIndex(delegate(BMECObject result_bmec_object) 
+                {
+                    return bmecobject2.Instance.InstanceId == result_bmec_object.Instance.InstanceId;
+                });
+                if (index != -1)
+                {
+                    result_bmec_object_list_list1.Add(result_bmec_object_list.GetRange(0, index + 1));
+                }
+            }
+            if (result_bmec_object_list_list1.Count!=0)
+            {
+                if (result_bmec_object_list_list1.Count > 1)
+                {
+                    ShowPipingGroupComponentInfosForm showpipinggroupcomponentinfosform = new ShowPipingGroupComponentInfosForm(result_bmec_object_list_list1);
+#if !DEBUG
+                    showpipinggroupcomponentinfosform.AttachAsTopLevelForm(MyAddin.s_addin, true);
+                    System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowPipingGroupComponentInfosForm));
+                    showpipinggroupcomponentinfosform.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+#endif
+                    showpipinggroupcomponentinfosform.Show();
+                }
+                else
+                {
+                    foreach (List<BMECObject> result_bmec_object_list in result_bmec_object_list_list1)
+                    {
+                        foreach (BMECObject connected_bmecobject in result_bmec_object_list)
+                        {
+                            BMECApi.Instance.SelectComponent(connected_bmecobject.Instance, true);
+                        }
+                    }
+                }
+                
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void get_all_extend_connectedComponents(BMECObject bmec_object,List< List<BMECObject>> result_bmec_object_list_list, int current_index,BMECObject pre_bmecobject,string pipe_line)
+        {
+            List<BMECObject> result_bmec_object_list;
+            if (result_bmec_object_list_list.Count <= current_index)
+            {
+                if (result_bmec_object_list_list.Count==0)
+                {
+                    result_bmec_object_list = new List<BMECObject>();
+                    
+                    result_bmec_object_list_list.Add(result_bmec_object_list);
+                }
+                else
+                {
+                    List<BMECObject> result_bmec_object_list_temp = result_bmec_object_list_list[current_index-1];
+                    if (pre_bmecobject == null)
+                    {
+                        result_bmec_object_list = result_bmec_object_list_temp;
+
+                    }
+                    else
+                    {
+                        int index = result_bmec_object_list_temp.FindIndex(delegate (BMECObject exit_bmec_object) {
+                            return exit_bmec_object.Instance.InstanceId == pre_bmecobject.Instance.InstanceId;
+                        });
+                        if (index == -1)
+                        {
+                            result_bmec_object_list = result_bmec_object_list_list[current_index];
+
+                        }
+                        else
+                        {
+                            result_bmec_object_list = new List<BMECObject>();
+                            result_bmec_object_list.AddRange(result_bmec_object_list_temp.GetRange(0, index + 1));
+                        }
+                    }
+                    result_bmec_object_list_list.Add(result_bmec_object_list);
+                }
+
+            }
+            else
+            {
+                result_bmec_object_list = result_bmec_object_list_list[current_index];
+                
+                
+            }
+
+            for (int i = 0; i < bmec_object.Ports.Count; i++)
+            {
+                IECInstance joint_instance = BMECApi.Instance.GetJointInstance(bmec_object.Ports[i]);
+                if (joint_instance != null)
+                {
+                    List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+
+                    foreach (BMECObject joint_bmecobject in joint_bmecobject_list)
+                    {
+
+                        BMECObject exit_object = result_bmec_object_list.Find(delegate (BMECObject exit_object_temp)
+                        {
+                            return (exit_object_temp.Instance.InstanceId.Equals(joint_bmecobject.Instance.InstanceId));
+                        });
+                        if (exit_object == null)
+                        {
+                            result_bmec_object_list.Add(joint_bmecobject);
+                        }
+                    }
+
+                    if (bmec_object.Instance.ClassDefinition.BaseClasses[0].BaseClasses[0].Name.Equals("VALVE") || bmec_object.Instance.ClassDefinition.BaseClasses[0].BaseClasses[0].BaseClasses[0].Name.Equals("INLINE_VALVE"))
+                    {
+                        ECInstanceList ec_list = BMECApi.Instance.GetRelatedInstancesByStrength(bmec_object.Instance, "VALVE_HAS_VALVE_OPERATING_DEVICE", (Bentley.ECObjects.Schema.StrengthType)(-1), true);
+                        if (ec_list.Count != 0)
+                        {
+                            foreach (BMECObject exit_object_temp in result_bmec_object_list)
+                            {
+                                if (!(exit_object_temp.Instance.InstanceId.Equals(ec_list[0].InstanceId)))
+                                {
+                                    result_bmec_object_list.Add(new BMECObject(ec_list[0]));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            result_bmec_object_list.Add(bmec_object);
+            int j = 0;
+            for (int i = 1; i < bmec_object.Ports.Count; i++)
+            {
+                BMECObject bmec_object_temp=BMECApi.Instance.GetConnectedComponent(bmec_object, bmec_object.Ports[i]) ;
+                if (bmec_object_temp!=null)
+                {
+                    BMECObject exit_object = result_bmec_object_list.Find(delegate (BMECObject exit_object_temp)
+                    {
+                        return (exit_object_temp.Instance.InstanceId.Equals(bmec_object_temp.Instance.InstanceId));
+                    });
+                    if (exit_object == null)
+                    {
+                        if (bmec_object_temp.Instance["LINENUMBER"].StringValue.Equals(pipe_line))
+                        {
+                            if (j == 0)
+                            {
+                                get_all_extend_connectedComponents(bmec_object_temp, result_bmec_object_list_list, result_bmec_object_list_list.Count - 1, null, pipe_line);
+                            }
+                            else
+                            {
+                                get_all_extend_connectedComponents(bmec_object_temp, result_bmec_object_list_list, result_bmec_object_list_list.Count, bmec_object, pipe_line);
+                            }
+
+                        }
+                        j++;
+                    }
+                }
+            
+
+            
+                
+
+            }
+        }
+    }
+}

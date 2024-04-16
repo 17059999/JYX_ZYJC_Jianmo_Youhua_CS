@@ -1,0 +1,815 @@
+﻿using Bentley.Building.Mechanical.Api;
+using Bentley.Building.Mechanical.Components;
+using Bentley.DgnPlatformNET;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.ECObjects.Instance;
+using Bentley.GeometryNET;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public class MovePipesTool : DgnElementSetTool
+    {
+        //properties
+        protected static BMECApi api = BMECApi.Instance;
+        protected static Bentley.Interop.MicroStationDGN.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+        public List<BMECObject> pipes = new List<BMECObject>();//选中的要移动的管道
+        private int dataButtonCount = 0;//记录点击状态，没有点击，选中管道，选择移动点
+        protected string errorMessage = "";
+
+        private DPoint3d startPoint = DPoint3d.Zero;//移动的起点与终点
+        private DPoint3d endPoint = DPoint3d.Zero;
+        BMECObject bmecObject = null;//选中的管道，暂时用一根代替整个管线的
+
+        DVector3d vec = DVector3d.Zero;//移动方向
+        DVector3d dynamicVec = DVector3d.Zero;//动态显示方向
+        //method
+        public static void InstallNewTool()
+        {
+            MovePipesTool movePipeTool = new MovePipesTool();
+            movePipeTool.InstallTool();
+        }
+        public override StatusInt OnElementModify(Element element)
+        {
+            return StatusInt.Error;
+        }
+
+        protected override void OnDynamicFrame(DgnButtonEvent ev)
+        {
+            if (dataButtonCount == 0) return;
+            if (dynamicPipes != null && dynamicPipes.Count != 0)
+            {
+                dynamicVec = new DVector3d(startPoint, ev.Point);
+                List<BMECObject> tempdynamicPipes = new List<BMECObject>();
+                foreach (var pipe in dynamicPipes)
+                {
+                    BMECObject tempObject = new BMECObject();
+                    tempObject.Copy(pipe);
+                    DTransform3d tempTransform3d = tempObject.Transform3d;
+                    DPoint3d tempLocation = tempTransform3d.Translation;
+                    tempTransform3d.Translation = tempLocation + dynamicVec;
+                    tempObject.Transform3d = tempTransform3d;
+                    tempdynamicPipes.Add(tempObject);
+                }
+                foreach (var pipe in tempdynamicPipes)
+                {
+                    JYX_ZYJC_CLR.PublicMethod.display_bmec_object(pipe);
+                }
+            }
+        }
+
+        protected override void OnRestartTool()
+        {
+            InstallNewTool();
+        }
+
+        protected override void OnPostInstall()
+        {
+            //先让用户点选管线，然后确定第二点进行移动
+            base.OnPostInstall();
+            dynamicPipes.Clear();
+            //TODO 先这么写着
+            ElementAgenda elementAgenda = new ElementAgenda();//选中Element的集合
+            SelectionSetManager.BuildAgenda(ref elementAgenda);//获取选中的元素的集合
+            for (uint i = 0; i < elementAgenda.GetCount(); i++)//获取选中 Element 的 BMECObject
+            {
+                Element element = elementAgenda.GetEntry(i);
+                BMECObject ec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(element.ElementId);//通过ElementId 获取 BMECObject
+                if (ec_object != null && ec_object.Instance != null)
+                {
+                    dynamicPipes.Add(ec_object);
+                }
+            }
+            pipes.Clear();
+            pipes = getSelectedPipes();//TODO 暂时先这样跟着初始化一下
+            if (pipes.Count == 0)
+            {
+                app.ShowCommand("移动管道");
+                app.ShowPrompt("请选择需要移动的管道");
+            }
+            else
+            {
+                app.ShowCommand("移动管道");
+                app.ShowPrompt("请确定移动的起点");
+            }
+        }
+
+        protected override bool OnResetButton(DgnButtonEvent ev)
+        {
+            //pipes.Clear();
+            app.CommandState.StartDefaultCommand();
+            return true;
+        }
+
+        List<BMECObject> dynamicPipes = new List<BMECObject>();
+        protected override bool OnDataButton(DgnButtonEvent ev)
+        {
+            //return true false随便写？区别是什么呢？
+            //点的是第一点时调用获取管道线方法，随后开启动态显示
+            //点的是第二点时调用移动管道方法
+            if (dataButtonCount == 0)
+            {
+                if (pipes.Count == 0)
+                {
+                    HitPath hit_path = DoLocate(ev, true, 1);
+                    if (hit_path == null)
+                    {
+                        return false;
+                    }
+                    Element elem = hit_path.GetHeadElement();
+                    bmecObject = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(elem.ElementId);
+
+                    List<BMECObject> connectedPipes = new List<BMECObject>();
+                    if (SelectPipesOfPipeLineWithPipe(bmecObject, out connectedPipes))
+                    {
+                        dynamicPipes.Clear();
+                        dynamicPipes.AddRange(connectedPipes);
+                        pipes.Clear();
+                        pipes = FilterPipe(connectedPipes);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    #region MyRegion
+
+                    //if (bmecObject == null || bmecObject.Instance == null)
+                    //{
+                    //    errorMessage = "选择的组件不是圆管，请重新选择！";
+                    //    System.Windows.Forms.MessageBox.Show(errorMessage);
+                    //    return false;
+                    //}
+                    //除了不是管道外，还有什么情况？父类要为piping component?
+                    //获取管道线
+                    //pipes.Clear();
+                    //pipes.Add(bmecObject);
+                    //if (!getPipes(bmecObject))//TODO 选中了一整条管道线的管道 always true
+                    //{
+                    //    errorMessage = "通过管道获取管道线失败";
+                    //    return false;
+                    //}
+                    #endregion
+                }
+                startPoint = ev.Point;
+                dataButtonCount = 1;//以获取管道状态
+                app.ShowCommand("移动管道");
+                app.ShowPrompt("请确定移动的终点");
+                BeginDynamics();
+               
+            }
+            else
+            {
+                endPoint = ev.Point;
+                vec = new DVector3d(startPoint, endPoint);
+                //移动管道，成功则初始化，否则继续选择第二点
+                if (movePipe(pipes, vec, out errorMessage))
+                {
+                    if (errorMessage == "")
+                    {
+                        errorMessage = "移动成功";
+                    }
+                    System.Windows.Forms.MessageBox.Show(errorMessage);
+                    dataButtonCount = 0;
+                    EndDynamics();
+                    InstallNewTool();
+                }
+                else
+                {
+                    //该移动点不合法，请重新选择等错误信息
+                    if (errorMessage == "")
+                    {
+                        errorMessage = "出现预期之外的错误，请记录具体情况以便排查";
+                    }
+                    else if (errorMessage == "移动超出范围")
+                    {
+                        if (System.Windows.Forms.DialogResult.Yes == System.Windows.Forms.MessageBox.Show("移动超出范围，是否移动？", "移动超出范围", System.Windows.Forms.MessageBoxButtons.YesNo))
+                        {
+                            movePipesWithVector(pipes, vec);
+                            foreach (BMECObject pipe in pipes)
+                            {
+                                pipe.DiscoverConnectionsEx();
+                                pipe.UpdateConnections();
+                            }
+                            System.Windows.Forms.MessageBox.Show("移动完毕");
+                        }
+                        errorMessage = "-1";
+                    }
+                    if (errorMessage != "-1")
+                    {
+                        System.Windows.Forms.MessageBox.Show(errorMessage);
+                    }
+                    pipes.Clear();
+                    pipes = getSelectedPipes();
+                    return false;
+                }
+            }
+            return true;
+        }
+        /// <summary>
+        /// TODO 临时先用着，获取整个管道线的管道
+        /// </summary>
+        /// <param name="pipe"></param>
+        /// <returns></returns>
+        public static List<BMECObject> FilterPipe(List<BMECObject> filterpipes)
+        {
+            if (filterpipes == null) return null;
+            List<BMECObject> result = new List<BMECObject>();
+            foreach (BMECObject ecobject in filterpipes)
+            {
+                if (ecobject != null && ecobject.Instance != null)
+                {
+                    if (api.InstanceDefinedAsClass(ecobject.Instance, "PIPE", true) || api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_ELBOW", true) ||
+                        api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_BEND", true) || api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_BRANCH", true) ||
+                        api.InstanceDefinedAsClass(ecobject.Instance, "FLUID_REGULATOR", true) || api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_FLANGE", true) ||
+                        api.InstanceDefinedAsClass(ecobject.Instance, "VALVE_OPERATING_DEVICE", true)
+                        )//TODO 类型为管道 或 执行机构
+                    {
+                        result.Add(ecobject);
+                    }
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// 获取选中的管道
+        /// </summary>
+        /// <returns></returns>
+        public static List<BMECObject> getSelectedPipes()
+        {
+            List<BMECObject> selectedpipes = new List<BMECObject>();//选中的管道的容器
+            List<BMECObject> tempECObject = new List<BMECObject>();//临时容器
+            ElementAgenda elementAgenda = new ElementAgenda();//选中Element的集合
+            SelectionSetManager.BuildAgenda(ref elementAgenda);//获取选中的元素的集合
+            for (uint i = 0; i < elementAgenda.GetCount(); i++)//获取选中 Element 的 BMECObject
+            {
+                Element element = elementAgenda.GetEntry(i);
+                BMECObject ec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(element.ElementId);//通过ElementId 获取 BMECObject
+                tempECObject.Add(ec_object);
+            }
+            if (tempECObject.Count > 0)
+            {
+                foreach (var ecobject in tempECObject)//将选中的类型为 PIPE 的 BMECObject 存到 selectedpipes 容器中
+                {
+                    if (ecobject!= null && ecobject.Instance != null)
+                    {
+                        if (api.InstanceDefinedAsClass(ecobject.Instance, "PIPE", true) || api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_ELBOW", true) || 
+                            api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_BEND", true) || api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_BRANCH", true) ||
+                            api.InstanceDefinedAsClass(ecobject.Instance, "FLUID_REGULATOR", true) || api.InstanceDefinedAsClass(ecobject.Instance, "PIPE_FLANGE", true) ||
+                            api.InstanceDefinedAsClass(ecobject.Instance, "VALVE_OPERATING_DEVICE", true)
+                            )//TODO 类型为管道即可
+                        {
+                            selectedpipes.Add(ecobject);
+                        }
+                    }
+                }
+            }
+            return selectedpipes;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static bool movePipe(List<BMECObject> pipes, DVector3d vec, out string errorMessage)
+        {
+            //TODO 处理单根管道前两边连接的为非直管的情况
+            errorMessage = "";
+            if (pipes == null)
+            {
+                errorMessage = "获取需要移动的管道异常";
+                return false;
+            }
+            //这样的话，需要先扫描并整理所有连接的组件与该组件是哪个端口与选中的需要移动的组件相连接的，当外部连接组件是非管道时，需要操作自己这边的组件，否则操作外部连接组件？
+            List<BMECObject> bianyuanlianjieguandao = new List<BMECObject>();//与外部有连接的管道
+            List<int> bianyuanPortsIndex = new List<int>();//与外部有连接的管道的连接端口
+            List<double> bianyuanguandaoLength = new List<double>();
+            List<DPoint3d> bianyuanguandaoLocation = new List<DPoint3d>();
+            List<BMECObject> waibulianjieguandao = new List<BMECObject>();//外部连接边缘的管道
+            List<int> waibuPortsIndex = new List<int>();//外部连接组件对应的连接端口
+            List<double> waibuguadnaoLength = new List<double>();
+            List<DPoint3d> waibuguandaoLocation = new List<DPoint3d>();
+            List<DVector3d> directions = new List<DVector3d>();
+            //拿到与外部有连接的成对管道
+            foreach (var pipe in pipes)
+            {
+                if (api.InstanceDefinedAsClass(pipe.Instance, "VALVE_OPERATING_DEVICE", true))
+                {
+                    continue;
+                }
+                //List<BMECObject> tempConnectedPipes = new List<BMECObject>();
+                List<Port> tempConnectedPipesPorts = pipe.Ports;
+                for (int i = 0; i < tempConnectedPipesPorts.Count; i++)
+                {
+                    //Port tempInitialPort = pipe.GetNthPort(i);//单纯是想初始化 port
+                    BMECObject tempConnectedComponent = pipe.GetConnectedComponentAtPort(tempConnectedPipesPorts[i].ID);
+
+                    DPoint3d tempInitialPipePortsLocation = pipe.GetNthPort(i).Location;//单纯初始化
+
+                    if (tempConnectedComponent == null || tempConnectedComponent.Instance == null) continue;
+                    if (!api.ObjectContained(tempConnectedComponent, pipes))
+                    {
+                        bianyuanlianjieguandao.Add(pipe);//将对外部有连接的管道添加进容器中
+                        bianyuanPortsIndex.Add(tempConnectedPipesPorts[i].ID);//记录该连接端口ID
+                        //判断外部连接管道哪个端口连接的
+                        List<Port> tempConnectedComponentPorts = tempConnectedComponent.Ports;
+                        for (int j = 0; j < tempConnectedComponentPorts.Count; j++)
+                        {
+                            //Port tempInitialPort2 = tempConnectedComponent.GetNthPort(j);
+                            BMECObject tempConnectedComponent1 = tempConnectedComponent.GetConnectedComponentAtPort(tempConnectedComponentPorts[j].ID);
+
+                            DPoint3d tempInitialConnectedComponentPortsLocation = tempConnectedComponent.GetNthPort(j).Location;//单纯的初始化
+
+                            if (tempConnectedComponent1 == null || tempConnectedComponent.Instance == null) continue;
+                            if (api.ObjectContained(tempConnectedComponent1, pipes))
+                            {
+                                //将外部有连接的管道添加到容器并记录连接端口ID
+                                waibulianjieguandao.Add(tempConnectedComponent);
+                                waibuPortsIndex.Add(tempConnectedComponentPorts[j].ID);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //看与外部连接的管道方向是否一致判断是否可移动
+            int icount = 0;
+            foreach (var pipe in bianyuanlianjieguandao)
+            {
+                int pindex = bianyuanPortsIndex[icount];
+                //DPoint3d tempinitPortLocation = pipe.GetNthPort(pindex - 1).Location;//单纯的想初始化
+                DVector3d direction = pipe.Ports[pindex - 1].Direction;
+                directions.Add(direction);
+                icount++;
+            }
+            DVector3d tempDir = DVector3d.Zero;
+            if (directions.Count > 0)
+            {
+                tempDir = directions[0];
+            }
+            else
+            {
+                //只选中了单根管道
+                //errorMessage = "无法移动，没有可供移动的方向选择";
+                //return false;
+                List<BMECObject> dangenguandao = movePipesWithVector(pipes, vec);
+                foreach (var pipe in dangenguandao)
+                {
+                    pipe.DiscoverConnectionsEx();
+                    pipe.UpdateConnections();
+                }
+                return true;
+            }
+
+            //TODO 先随便改下用着
+            bool DirectionsIsnAllParallel = true;//组件群的外部连接组件允许的移动方向是否一致，false : 不一致 true : 一致
+            foreach (var dir in directions)
+            {
+                //如果没有顺着的管道则直接移动
+                if (!vec.IsParallelOrOppositeTo(dir))
+                {
+                    //errorMessage = "该组件群的外部连接组件允许的移动方向不一致，无法对当前组件群进行移动";
+                    //return false;
+
+                    //List<BMECObject> newPipes = movePipesWithVector(pipes, vec);
+                    //foreach (var pipe in newPipes)
+                    //{
+                    //    pipe.DiscoverConnectionsEx();
+                    //    pipe.UpdateConnections();
+                    //}
+                    //return true;
+
+                    DirectionsIsnAllParallel = false;
+                }
+            }
+
+            //如果没有顺着的管道则直接移动
+            if (!DirectionsIsnAllParallel)
+            {
+                //找顺着方向的
+                List<int> PipesIndexWhichParalleOrOppositeToVec = new List<int>();
+                for (int i = 0; i < directions.Count; i++)
+                {
+                    if (vec.IsParallelOrOppositeTo(directions[i]))
+                    {
+                        PipesIndexWhichParalleOrOppositeToVec.Add(i);
+                    }
+                }
+                //处理顺着方向的管道
+                int feipingxingIndex = 0;
+                DVector3d tempvectorfeipingxing = DVector3d.Zero;
+                DPoint3d tempLocationfeipingxing = DPoint3d.Zero;
+                double tempLengthfeipingxing = 0.0;
+                for (int i = 0; i < PipesIndexWhichParalleOrOppositeToVec.Count; i++)
+                {
+                    feipingxingIndex = PipesIndexWhichParalleOrOppositeToVec[i];
+                    //要么外部连接是管道，要么内部连接是管道
+                    if (api.InstanceDefinedAsClass(waibulianjieguandao[feipingxingIndex].Instance, "PIPE", true))
+                    {
+                        int pindex = waibuPortsIndex[feipingxingIndex];
+                        //从连接的端口指向非连接端口
+                        if (pindex == 1)//main -> run
+                        {
+                            //DPoint3d initwaibulianjiePortPoint = waibulianjieguandao[i].GetNthPort(1).Location;
+                            tempvectorfeipingxing = new DVector3d(waibulianjieguandao[feipingxingIndex].Ports[0].Location, waibulianjieguandao[feipingxingIndex].Ports[1].Location);
+
+                            tempLengthfeipingxing = (tempvectorfeipingxing - vec).Magnitude / uorPerMaster;
+                            tempLocationfeipingxing = waibulianjieguandao[feipingxingIndex].Transform3d.Translation + vec;
+                        }
+                        else if (pindex == 2)//run -> main
+                        {
+                            //DPoint3d initwaibulianjiePortPoint = waibulianjieguandao[i].GetNthPort(0).Location;
+                            tempvectorfeipingxing = new DVector3d(waibulianjieguandao[feipingxingIndex].Ports[1].Location, waibulianjieguandao[feipingxingIndex].Ports[0].Location);
+
+                            tempLengthfeipingxing = (tempvectorfeipingxing - vec).Magnitude / uorPerMaster;
+                            tempLocationfeipingxing = DPoint3d.Zero;
+                        }
+                        if (vec.IsParallelTo(tempvectorfeipingxing))//同向需判断移动范围，反向不用管
+                        {
+                            if (vec.IsParallelTo(vec - tempvectorfeipingxing))
+                            {
+                                //TODO 暂时是这样的，之后需要改成控制了范围，用户随意选点，但只会移动到最大范围
+                                errorMessage = "移动超出范围";
+                                return false;
+                            }
+                        }
+                    }
+                    else if (api.InstanceDefinedAsClass(bianyuanlianjieguandao[feipingxingIndex].Instance, "PIPE", true))
+                    {
+                        int pindex = bianyuanPortsIndex[feipingxingIndex];
+                        if (pindex == 1)//main -> run
+                        {
+                            //DPoint3d initbianyuanlianjiePortPoint = bianyuanlianjieguandao[i].GetNthPort(1).Location;
+                            tempvectorfeipingxing = new DVector3d(bianyuanlianjieguandao[feipingxingIndex].Ports[0].Location, bianyuanlianjieguandao[feipingxingIndex].Ports[1].Location);
+
+                            tempLengthfeipingxing = (tempvectorfeipingxing + vec).Magnitude / uorPerMaster;
+                            tempLocationfeipingxing = bianyuanlianjieguandao[feipingxingIndex].Transform3d.Translation;
+                        }
+                        else if (pindex == 2)//run -> main
+                        {
+                            //DPoint3d initbianyuanlianjiePortPoint = bianyuanlianjieguandao[i].GetNthPort(0).Location;
+                            tempvectorfeipingxing = new DVector3d(bianyuanlianjieguandao[feipingxingIndex].Ports[1].Location, bianyuanlianjieguandao[feipingxingIndex].Ports[0].Location);
+
+                            tempLengthfeipingxing = (tempvectorfeipingxing + vec).Magnitude / uorPerMaster;
+                            tempLocationfeipingxing = DPoint3d.Zero;
+                        }
+                        if (!vec.IsParallelTo(tempvectorfeipingxing))//反向需判断移动范围，同向不用管
+                        {
+                            if (vec.IsParallelTo(vec + tempvectorfeipingxing))
+                            {
+                                //TODO 暂时是这样的，之后需要改成控制了范围，用户随意选点，但只会移动到最大范围
+                                errorMessage = "移动超出范围";
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        errorMessage = "检测到连接异常，存在非直管连续连接";
+                        return false;
+                    }
+                    //记录长度变化，位置变化，没有赋值过的就是跳过的，默认为0
+                    waibuguandaoLocation.Add(tempLocationfeipingxing);
+                    waibuguadnaoLength.Add(tempLengthfeipingxing);
+                    bianyuanguandaoLocation.Add(tempLocationfeipingxing);
+                    bianyuanguandaoLength.Add(tempLengthfeipingxing);
+
+                }
+                //记录完了移动管道
+                List<BMECObject> movePipesfeipingxing = movePipesWithVector(pipes, vec);
+                foreach (var pipe in movePipesfeipingxing)
+                {
+                    pipe.Create();
+                    pipe.DiscoverConnectionsEx();
+                    pipe.UpdateConnections();
+                }
+                //修改边缘连接管道的长度并更新连结性
+
+                DVector3d pipeVectorfeipingxing = DVector3d.Zero;
+                double pipeLengthfeipingxing = 0.0;
+                for (int i = 0; i < PipesIndexWhichParalleOrOppositeToVec.Count; i++)
+                {
+                    int feipingxingIndex2 = PipesIndexWhichParalleOrOppositeToVec[i];
+                    if (api.InstanceDefinedAsClass(waibulianjieguandao[feipingxingIndex2].Instance, "PIPE", true))
+                    {
+
+                        pipeLengthfeipingxing = waibuguadnaoLength[i];
+                        waibulianjieguandao[feipingxingIndex2].SetDoubleValue("LENGTH", pipeLengthfeipingxing);
+                        if (!(waibuguandaoLocation[i] == DPoint3d.Zero))
+                        {
+                            api.TranslateComponent(waibulianjieguandao[feipingxingIndex2], waibuguandaoLocation[i]);
+                        }
+                        waibulianjieguandao[feipingxingIndex2].Create();
+                        waibulianjieguandao[feipingxingIndex2].DiscoverConnectionsEx();
+                        waibulianjieguandao[feipingxingIndex2].UpdateConnections();
+                    }
+                    else
+                    {
+                        if (api.InstanceDefinedAsClass(bianyuanlianjieguandao[feipingxingIndex2].Instance, "PIPE", true))
+                        {
+                            pipeLengthfeipingxing = bianyuanguandaoLength[i];
+                            bianyuanlianjieguandao[feipingxingIndex2].SetDoubleValue("LENGTH", pipeLengthfeipingxing);
+                            if (!(bianyuanguandaoLocation[i] == DPoint3d.Zero))
+                            {
+                                api.TranslateComponent(bianyuanlianjieguandao[feipingxingIndex2], bianyuanguandaoLocation[i]);
+                            }
+                            bianyuanlianjieguandao[feipingxingIndex2].Create();
+                            bianyuanlianjieguandao[feipingxingIndex2].DiscoverConnectionsEx();
+                            bianyuanlianjieguandao[feipingxingIndex2].UpdateConnections();
+                        }
+                    }
+                }
+                return true;
+            }
+
+            //将用户鼠标指示的移动方向投影到可选的移动方向上
+            //求投影点，通过投影点构造新的向量
+            //double projectVectorMag =  vec.DotProduct(tempDir) / tempDir.Magnitude;
+            //Angle vectorTovectorAngle = vec.AngleTo(tempDir);
+            //DVector3d vector = DVector3d.Zero;
+            //double magnitude = 0.0;
+            //if (tempDir.TryScaleToLength(projectVectorMag, out vector, out magnitude))
+            //{
+            //    vec = vector;
+            //}
+
+            //可以移动，做后续处理
+            //遍历外部连接组件，当不是直管时，就要试图改变内部连接组件的长度，否则改变外部连接组件的长度
+            //即，外部连接组件是直管，判断外部的移动允许位移大小，否则判断内部可移动位移大小
+            DVector3d minMoveVectorZheng = DVector3d.Zero;
+            DVector3d minMoveVectorFu = DVector3d.Zero;
+            DVector3d tempvector = DVector3d.Zero;
+            DPoint3d tempLocation = DPoint3d.Zero;
+            double tempLength = 0.0;
+            for(int i = 0; i < waibulianjieguandao.Count; i++)
+            {
+                //要么外部连接组件是管道，要么内部连接组件是管道，如果内外连接没有一个是管道则不合法？
+                if (waibulianjieguandao[i].ClassName == "PIPE")
+                {
+                    int pindex = waibuPortsIndex[i];
+                    //从连接的端口指向非连接端口
+                    if (pindex == 1)//main -> run
+                    {
+                        //DPoint3d initwaibulianjiePortPoint = waibulianjieguandao[i].GetNthPort(1).Location;
+                        tempvector = new DVector3d(waibulianjieguandao[i].Ports[0].Location, waibulianjieguandao[i].Ports[1].Location);
+
+                        tempLength = (tempvector - vec).Magnitude / uorPerMaster;
+                        tempLocation = waibulianjieguandao[i].Transform3d.Translation + vec;
+                    }
+                    else if (pindex == 2)//run -> main
+                    {
+                        //DPoint3d initwaibulianjiePortPoint = waibulianjieguandao[i].GetNthPort(0).Location;
+                        tempvector = new DVector3d(waibulianjieguandao[i].Ports[1].Location, waibulianjieguandao[i].Ports[0].Location);
+
+                        tempLength = (tempvector - vec).Magnitude / uorPerMaster;
+                        tempLocation = DPoint3d.Zero;
+                    }
+                    if (vec.IsParallelTo(tempvector))//同向需判断移动范围，反向不用管
+                    {
+                        if (vec.IsParallelTo(vec - tempvector))
+                        {
+                            //TODO 暂时是这样的，之后需要改成控制了范围，用户随意选点，但只会移动到最大范围
+                            errorMessage = "移动超出范围";
+                            return false;
+                        }
+                    }
+                }
+                else if (bianyuanlianjieguandao[i].ClassName == "PIPE")//否则内部就必须是管道
+                {
+                    int pindex = bianyuanPortsIndex[i];
+                    if (pindex == 1)//main -> run
+                    {
+                        //DPoint3d initbianyuanlianjiePortPoint = bianyuanlianjieguandao[i].GetNthPort(1).Location;
+                        tempvector = new DVector3d(bianyuanlianjieguandao[i].Ports[0].Location, bianyuanlianjieguandao[i].Ports[1].Location);
+
+                        tempLength = (tempvector + vec).Magnitude / uorPerMaster;
+                        tempLocation = bianyuanlianjieguandao[i].Transform3d.Translation;
+                    }
+                    else if (pindex == 2)//run -> main
+                    {
+                        //DPoint3d initbianyuanlianjiePortPoint = bianyuanlianjieguandao[i].GetNthPort(0).Location;
+                        tempvector = new DVector3d(bianyuanlianjieguandao[i].Ports[1].Location, bianyuanlianjieguandao[i].Ports[0].Location);
+
+                        tempLength = (tempvector + vec).Magnitude / uorPerMaster;
+                        tempLocation = DPoint3d.Zero;
+                    }
+                    if (!vec.IsParallelTo(tempvector))//反向需判断移动范围，同向不用管
+                    {
+                        if (vec.IsParallelTo(vec + tempvector))
+                        {
+                            //TODO 暂时是这样的，之后需要改成控制了范围，用户随意选点，但只会移动到最大范围
+                            errorMessage = "移动超出范围";
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    errorMessage = "检测到连接异常，存在非直管连续连接";
+                    return false;
+                }
+                //记录长度变化，位置变化，没有赋值过的就是跳过的，默认为0
+                waibuguandaoLocation.Add(tempLocation);
+                waibuguadnaoLength.Add(tempLength);
+                bianyuanguandaoLocation.Add(tempLocation);
+                bianyuanguandaoLength.Add(tempLength);
+            }
+            //但上面漏了一种情况：选中的只有一根管道，且两端连接的为非直管时
+            //过滤这种情况
+            if (waibulianjieguandao.Count == 2 && api.ObjectContained(bianyuanlianjieguandao[0], new List<BMECObject>() { bianyuanlianjieguandao[1]}))
+            {
+                //暂时过滤掉这种情况
+                //errorMessage = "该移动不会产生任何效果";
+                //return false;
+                //double maxMoveDis = bianyuanlianjieguandao[0].GetDoubleValue("LENGTH");
+                //double uorPerMaster = Bentley.MstnPlatformNET.Session.Instance.GetActiveDgnModel().GetModelInfo().UorPerMaster;
+                //if (vec.Magnitude >= maxMoveDis * uorPerMaster)
+                //{
+                //    errorMessage = "移动超出范围";
+                //    return false;
+                //}
+                List<BMECObject> movePipesyigenguandao = movePipesWithVector(pipes, vec);
+                foreach (var pipe in movePipesyigenguandao)
+                {
+                    pipe.Create();
+                    pipe.DiscoverConnectionsEx();
+                    pipe.UpdateConnections();
+                }
+                return true;
+            }
+            List<BMECObject> movePipes = movePipesWithVector(pipes, vec);
+            foreach (var pipe in movePipes)
+            {
+                pipe.Create();
+                pipe.DiscoverConnectionsEx();
+                pipe.UpdateConnections();
+            }
+            //修改边缘连接管道的长度并更新连结性
+
+            DVector3d pipeVector = DVector3d.Zero;
+            double pipeLength = 0.0;
+            for (int i = 0; i < waibulianjieguandao.Count; i++)
+            {
+                if (api.InstanceDefinedAsClass(waibulianjieguandao[i].Instance, "PIPE", true))
+                {
+
+                    pipeLength = waibuguadnaoLength[i];
+                    waibulianjieguandao[i].SetDoubleValue("LENGTH", pipeLength);
+                    if (!(waibuguandaoLocation[i] == DPoint3d.Zero))
+                    {
+                        api.TranslateComponent(waibulianjieguandao[i], waibuguandaoLocation[i]);
+                    }
+                    waibulianjieguandao[i].Create();
+                    waibulianjieguandao[i].DiscoverConnectionsEx();
+                    waibulianjieguandao[i].UpdateConnections();
+                }
+                else
+                {
+                    if (api.InstanceDefinedAsClass(bianyuanlianjieguandao[i].Instance, "PIPE", true))
+                    {
+                        pipeLength = bianyuanguandaoLength[i];
+                        bianyuanlianjieguandao[i].SetDoubleValue("LENGTH", pipeLength);
+                        if (!(bianyuanguandaoLocation[i] == DPoint3d.Zero))
+                        {
+                            api.TranslateComponent(bianyuanlianjieguandao[i], bianyuanguandaoLocation[i]);
+                        }
+                        bianyuanlianjieguandao[i].Create();
+                        bianyuanlianjieguandao[i].DiscoverConnectionsEx();
+                        bianyuanlianjieguandao[i].UpdateConnections();
+                    }
+                }
+            }
+
+            return true;
+        }
+        public static double uorPerMaster = Bentley.MstnPlatformNET.Session.Instance.GetActiveDgnModel().GetModelInfo().UorPerMaster;
+        /// <summary>
+        /// 给定一个向量，对管道群进行移动
+        /// 此方法不会过滤移动是否合法
+        /// </summary>
+        /// <param name="pipes"></param>
+        /// <param name="dir"></param>
+        /// <returns></returns>
+        public static List<BMECObject> movePipesWithVector(List<BMECObject> pipes, DVector3d dir) {
+            DPoint3d location = DPoint3d.Zero;
+            foreach (var pipe in pipes)
+            {
+                location = pipe.Transform3d.Translation;
+                location += dir;
+                api.TranslateComponent(pipe, location);
+                pipe.Create();
+            }
+            return pipes;
+        }
+
+        public static bool SelectPipesOfPipeLineWithPipe(BMECObject ecobject, out List<BMECObject> connectPipesInPipeline) {
+            connectPipesInPipeline = null;
+            if (ecobject == null || ecobject.Instance == null)
+            {
+                System.Windows.Forms.MessageBox.Show("选择的组件不是圆管，请重新选择！");
+                return false;
+            }
+            else if (ecobject.ClassName != "PIPE")
+            {
+                System.Windows.Forms.MessageBox.Show("选择的组件不是圆管，请重新选择！");
+                return false;
+            }
+            else
+            {
+                List<BMECObject> result = new List<BMECObject>();
+                List<BMECObject> connected_bmecobject_list = ecobject.ConnectedComponents;
+                string pipe_line = ecobject.Instance["LINENUMBER"].StringValue;
+
+                if (connected_bmecobject_list.Count == 0)
+                {
+                    BMECApi.Instance.SelectComponent(ecobject.Instance, true);
+                    result.Add(ecobject);
+                    connectPipesInPipeline = result;
+                    return true;
+                }
+
+                IECInstance joint_instance = BMECApi.Instance.GetJointInstance(ecobject.Ports[0]);
+
+                if (joint_instance != null)
+                {
+                    List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                    if (joint_bmecobject_list != null)
+                    {
+                        result.AddRange(joint_bmecobject_list);
+                    }
+                }
+                joint_instance = BMECApi.Instance.GetJointInstance(ecobject.Ports[1]);
+                if (joint_instance != null)
+                {
+                    List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                    if (joint_bmecobject_list != null)
+                    {
+                        result.AddRange(joint_bmecobject_list);
+                    }
+                }
+                foreach (BMECObject connected_bmecobject in connected_bmecobject_list)
+                {
+                    get_all_extend_connectedComponents(connected_bmecobject, result, pipe_line);
+                }
+                foreach (BMECObject connected_bmecobject in result)
+                {
+                    BMECApi.Instance.SelectComponent(connected_bmecobject.Instance, true);
+                }
+                connectPipesInPipeline = result;
+            }
+            return true;
+        }
+
+        public static void get_all_extend_connectedComponents(BMECObject bmec_object, List<BMECObject> result_bmec_object_list, string pipe_line)
+        {
+            result_bmec_object_list.Add(bmec_object);
+            List<BMECObject> connected_bmec_object_list = bmec_object.ConnectedComponents;
+            foreach (BMECObject bmec_object_temp in connected_bmec_object_list)
+            {
+                BMECObject exit_object = result_bmec_object_list.Find(delegate (BMECObject exit_object_temp)
+                {
+                    return (exit_object_temp.Instance.InstanceId.Equals(bmec_object_temp.Instance.InstanceId));
+                });
+                if (exit_object == null)
+                {
+                    IECInstance joint_instance = BMECApi.Instance.GetJointInstance(bmec_object.Ports[0]);
+                    if (joint_instance != null)
+                    {
+                        List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                        if (joint_bmecobject_list != null)
+                        {
+                            result_bmec_object_list.AddRange(joint_bmecobject_list);
+                        }
+                    }
+                    joint_instance = BMECApi.Instance.GetJointInstance(bmec_object.Ports[1]);
+                    if (joint_instance != null)
+                    {
+                        //Bentley.Building.Mechanical.ComponentLibrary.Common.DrawGeometry.BMEndPrep
+                        List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                        if (joint_bmecobject_list != null)
+                        {
+                            result_bmec_object_list.AddRange(joint_bmecobject_list);
+                        }
+                    }
+                    if (bmec_object.Instance.ClassDefinition.BaseClasses[0].BaseClasses[0].Name.Equals("VALVE") || bmec_object.Instance.ClassDefinition.BaseClasses[0].BaseClasses[0].BaseClasses[0].Name.Equals("INLINE_VALVE"))
+                    {
+                        ECInstanceList ec_list = BMECApi.Instance.GetRelatedInstancesByStrength(bmec_object.Instance, "VALVE_HAS_VALVE_OPERATING_DEVICE", (Bentley.ECObjects.Schema.StrengthType)(-1), true);
+                        if (ec_list.Count != 0)
+                        {
+                            result_bmec_object_list.Add(new BMECObject(ec_list[0]));
+                        }
+
+                    }
+                    if (bmec_object_temp.Instance["LINENUMBER"].StringValue.Equals(pipe_line))
+                    {
+                        get_all_extend_connectedComponents(bmec_object_temp, result_bmec_object_list, pipe_line);
+                    }
+
+                }
+
+            }
+        }
+    }
+}

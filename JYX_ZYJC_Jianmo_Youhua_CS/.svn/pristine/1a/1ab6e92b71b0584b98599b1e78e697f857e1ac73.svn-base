@@ -1,0 +1,160 @@
+﻿namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    partial class EquipmentManagerModifyForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EquipmentManagerModifyForm));
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.comboBox_equipmentunit = new System.Windows.Forms.ComboBox();
+            this.comboBox_equipmentservice = new System.Windows.Forms.ComboBox();
+            this.button_OK = new System.Windows.Forms.Button();
+            this.button_Cancel = new System.Windows.Forms.Button();
+            this.textBox_equipmentNumber = new System.Windows.Forms.TextBox();
+            this.SuspendLayout();
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(16, 11);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(67, 15);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "设备编号";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(16, 45);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(39, 15);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "UNIT";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 79);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(63, 15);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "SERVICE";
+            // 
+            // comboBox_equipmentunit
+            // 
+            this.comboBox_equipmentunit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_equipmentunit.FormattingEnabled = true;
+            this.comboBox_equipmentunit.Location = new System.Drawing.Point(95, 40);
+            this.comboBox_equipmentunit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBox_equipmentunit.Name = "comboBox_equipmentunit";
+            this.comboBox_equipmentunit.Size = new System.Drawing.Size(160, 23);
+            this.comboBox_equipmentunit.TabIndex = 4;
+            // 
+            // comboBox_equipmentservice
+            // 
+            this.comboBox_equipmentservice.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox_equipmentservice.FormattingEnabled = true;
+            this.comboBox_equipmentservice.Location = new System.Drawing.Point(95, 72);
+            this.comboBox_equipmentservice.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.comboBox_equipmentservice.Name = "comboBox_equipmentservice";
+            this.comboBox_equipmentservice.Size = new System.Drawing.Size(160, 23);
+            this.comboBox_equipmentservice.TabIndex = 5;
+            // 
+            // button_OK
+            // 
+            this.button_OK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button_OK.Location = new System.Drawing.Point(19, 105);
+            this.button_OK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button_OK.Name = "button_OK";
+            this.button_OK.Size = new System.Drawing.Size(100, 29);
+            this.button_OK.TabIndex = 6;
+            this.button_OK.Text = "确认";
+            this.button_OK.UseVisualStyleBackColor = true;
+            this.button_OK.Click += new System.EventHandler(this.button_OK_Click);
+            // 
+            // button_Cancel
+            // 
+            this.button_Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.button_Cancel.Location = new System.Drawing.Point(156, 105);
+            this.button_Cancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button_Cancel.Name = "button_Cancel";
+            this.button_Cancel.Size = new System.Drawing.Size(100, 29);
+            this.button_Cancel.TabIndex = 7;
+            this.button_Cancel.Text = "取消";
+            this.button_Cancel.UseVisualStyleBackColor = true;
+            // 
+            // textBox_equipmentNumber
+            // 
+            this.textBox_equipmentNumber.Location = new System.Drawing.Point(95, 8);
+            this.textBox_equipmentNumber.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox_equipmentNumber.Name = "textBox_equipmentNumber";
+            this.textBox_equipmentNumber.Size = new System.Drawing.Size(159, 25);
+            this.textBox_equipmentNumber.TabIndex = 8;
+            // 
+            // EquipmentManagerModifyForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(271, 144);
+            this.Controls.Add(this.textBox_equipmentNumber);
+            this.Controls.Add(this.button_Cancel);
+            this.Controls.Add(this.button_OK);
+            this.Controls.Add(this.comboBox_equipmentservice);
+            this.Controls.Add(this.comboBox_equipmentunit);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "EquipmentManagerModifyForm";
+            this.Text = "设备管理器";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox comboBox_equipmentunit;
+        private System.Windows.Forms.ComboBox comboBox_equipmentservice;
+        private System.Windows.Forms.Button button_OK;
+        private System.Windows.Forms.Button button_Cancel;
+        private System.Windows.Forms.TextBox textBox_equipmentNumber;
+    }
+}

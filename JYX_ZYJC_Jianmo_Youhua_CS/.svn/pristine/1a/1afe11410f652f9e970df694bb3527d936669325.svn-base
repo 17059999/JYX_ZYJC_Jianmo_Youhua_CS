@@ -1,0 +1,987 @@
+﻿using Bentley.DgnPlatformNET;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.MstnPlatformNET;
+using System;
+using Bentley.Building.Mechanical.Api;
+using System.Collections.Generic;
+using BIM = Bentley.Interop.MicroStationDGN;
+using BG = Bentley.GeometryNET;
+using Bentley.MstnPlatformNET.InteropServices;
+using Bentley.ECObjects.Instance;
+using System.Windows.Forms;
+using Bentley.Plant.StandardPreferences;
+using Bentley.OpenPlantModeler.SDK.Components;
+using Bentley.Building.Mechanical.ComponentLibrary.Equipment;
+using Bentley.Building.Mechanical.Components;
+using Bentley.ECObjects.Schema;
+using System.Collections;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public class OPM_Public_Api
+    {
+        static double uor_per_master = Session.Instance.GetActiveDgnModel().GetModelInfo().UorPerMaster;//当前设计文件的主单位
+        protected static BMECApi api = BMECApi.Instance;
+
+        protected static BIM.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+        public static BMECObject create_elbow(double nominal_diameter, double angle, double center_to_outlet_end, double center_to_run_end, double insulation_thickness, string insulation, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            IECInstance elbow_iec_instance = BMECInstanceManager.Instance.CreateECInstance("LONG_RADIUS_90_DEGREE_PIPE_ELBOW", true);
+            ISpecProcessor specProcessor = api.SpecProcessor;
+            specProcessor.FillCurrentPreferences(elbow_iec_instance, null);
+            elbow_iec_instance["NOMINAL_DIAMETER"].DoubleValue = nominal_diameter;
+            ECInstanceList ec_instance_list = specProcessor.SelectSpec(elbow_iec_instance, true);
+            BMECObject ec_object = null;
+
+            if (ec_instance_list.Count == 0)
+            {
+                errorMessage = "当前Specification为配置弯管。";
+                return null;
+            }
+            if (null != ec_instance_list && ec_instance_list.Count > 0)
+            {
+                IECInstance instance = ec_instance_list[0];
+                instance["ANGLE"].DoubleValue = angle;
+                instance["DESIGN_LENGTH_CENTER_TO_OUTLET_END"].DoubleValue = center_to_outlet_end;
+                instance["EC_CLASS_NAME"].StringValue = "LONG_RADIUS_" + angle + "_DEGREE_PIPE_ELBOW";
+                instance["DESIGN_LENGTH_CENTER_TO_RUN_END"].DoubleValue = center_to_run_end;
+                instance["SPECIFICATION"].StringValue = DlgStandardPreference.GetPreferenceValue("SPECIFICATION").ToString();
+                instance["INSULATION_THICKNESS"].DoubleValue = insulation_thickness;
+                instance["INSULATION"].StringValue = insulation;
+                //instance["caizhi"].StringValue = caizhi;
+                ec_object = new BMECObject(instance);
+            }
+            return ec_object;
+        }
+
+        /// <summary>
+        /// 获取选中的管道
+        /// </summary>
+        /// <returns>选中管道的 BMECObject 的集合</returns>
+        public static List<BMECObject> get_selected_pipes()
+        {
+            List<BMECObject> selectedpipes = new List<BMECObject>();//选中的管道的容器
+            List<BMECObject> tempECObject = new List<BMECObject>();//临时容器
+            ElementAgenda elementAgenda = new ElementAgenda();//选中Element的集合
+            SelectionSetManager.BuildAgenda(ref elementAgenda);//获取选中的元素的集合
+            for (uint i = 0; i < elementAgenda.GetCount(); i++)//获取选中 Element 的 BMECObject
+            {
+                Element element = elementAgenda.GetEntry(i);
+                BMECObject ec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(element.ElementId);//通过ElementId 获取 BMECObject
+                tempECObject.Add(ec_object);
+            }
+            if (tempECObject.Count > 0)
+            {
+                foreach (var ecobject in tempECObject)//将选中的类型为 PIPE 的 BMECObject 存到 selectedpipes 容器中
+                {
+                    if (ecobject.ClassName == "PIPE")
+                    {
+                        selectedpipes.Add(ecobject);
+                    }
+                }
+            }
+            return selectedpipes;
+        }
+        public static BMECObject create_pipe(BG.DPoint3d startPoint, BG.DPoint3d endPoint, double nominal_diameter, double insulation_thickness = 0)
+        {
+            IECInstance elbow_iec_instance = BMECInstanceManager.Instance.CreateECInstance("PIPE", true);
+            BMECApi api = BMECApi.Instance;
+            ISpecProcessor specProcessor = api.SpecProcessor;
+
+            specProcessor.FillCurrentPreferences(elbow_iec_instance, null);
+            elbow_iec_instance["NOMINAL_DIAMETER"].DoubleValue = nominal_diameter;
+            //elbow_iec_instance["INSULATION_THICKNESS"].DoubleValue = insulation_thickness;
+
+            ECInstanceList ec_instance_list = specProcessor.SelectSpec(elbow_iec_instance, true);
+            BMECObject ec_object = null;
+            if (null != ec_instance_list && ec_instance_list.Count > 0)
+            {
+                IECInstance instance = ec_instance_list[0];
+                instance["INSULATION_THICKNESS"].DoubleValue = insulation_thickness;
+                ec_object = new BMECObject(instance);
+                ec_object.SetLinearPoints(startPoint, endPoint);
+            }
+            return ec_object;
+
+        }
+
+        public static bool huiqie_pipe(BMECObject bmec_object1, BMECObject bmec_object2, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            BIM.Point3d[] line1_end_pts = new BIM.Point3d[2];
+            BIM.Point3d[] line2_end_pts = new BIM.Point3d[2];
+            line1_end_pts[0] = Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object1.GetNthPort(0).Location);
+            line1_end_pts[1] = Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object1.GetNthPort(1).Location);
+
+
+            line2_end_pts[0] = Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object2.GetNthPort(0).Location);
+            line2_end_pts[1] = Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object2.GetNthPort(1).Location);
+
+            BIM.Ray3d ray3d1 = app.Ray3dFromPoint3dStartEnd(line1_end_pts[0], line1_end_pts[1]);
+            BIM.Ray3d ray3d2 = app.Ray3dFromPoint3dStartEnd(line2_end_pts[0], line2_end_pts[1]);
+
+
+            BIM.Point3d intersect_point1, intersect_point2;
+            intersect_point1 = intersect_point2 = app.Point3dZero();
+            double fraction1, fraction2;
+            fraction1 = fraction2 = 0.0;
+            bool reuslt = app.Ray3dRay3dClosestApproach(ray3d1, ray3d2, ref intersect_point1, ref fraction1, ref intersect_point2, ref fraction2);
+
+
+            if (!reuslt)
+            {
+                errorMessage = "选中的管道不在一个平面上或平行";
+                return false;
+            }
+            else
+            {
+                BIM.Point3d interset = intersect_point1;
+                BIM.Point3d nearest_point1 = Mstn_Public_Api.get_nearest_point(interset, line1_end_pts[0], line1_end_pts[1]);
+                BIM.Point3d faster_point1 = Mstn_Public_Api.get_faster_point(interset, line1_end_pts[0], line1_end_pts[1]);
+                if (app.Point3dEqual(nearest_point1, faster_point1))
+                {
+                    nearest_point1 = line1_end_pts[0];
+                    faster_point1 = line1_end_pts[1];
+                }
+
+                BIM.Point3d nearest_point2 = Mstn_Public_Api.get_nearest_point(interset, line2_end_pts[0], line2_end_pts[1]);
+                BIM.Point3d faster_point2 = Mstn_Public_Api.get_faster_point(interset, line2_end_pts[0], line2_end_pts[1]);
+                if (app.Point3dEqual(nearest_point2, faster_point2))
+                {
+                    nearest_point2 = line2_end_pts[0];
+                    faster_point2 = line2_end_pts[1];
+                }
+
+                BIM.Point3d v1 = app.Point3dSubtract(nearest_point1, faster_point1);
+                BIM.Point3d v2 = app.Point3dSubtract(faster_point2, nearest_point2);
+                double angle = BG.Angle.RadiansToDegrees(app.Point3dAngleBetweenVectors(v1, v2));
+                if (MyPublic_Api.is_double_xiangdeng(angle, 180.0))
+                {
+                    errorMessage = "选中的管道接近平行";
+                    return false;
+                }
+
+                double baowen_houdu = bmec_object1.Instance["INSULATION_THICKNESS"].DoubleValue;
+                if (baowen_houdu < bmec_object2.Instance["INSULATION_THICKNESS"].DoubleValue)
+                {
+                    baowen_houdu = bmec_object2.Instance["INSULATION_THICKNESS"].DoubleValue;
+                }
+
+                double r = Convert.ToDouble(bmec_object1.Ports[0].Instance["OUTSIDE_DIAMETER"].DoubleValue) / 2.0 + baowen_houdu;
+                double d = r * Math.Tan(BG.Angle.DegreesToRadians(angle / 2));
+                double d1 = app.Point3dDistance(interset, faster_point1);
+                double d2 = app.Point3dDistance(interset, faster_point2);
+
+                BIM.Point3d line_start1 = faster_point1;
+                BIM.Point3d line_start2 = faster_point2;
+                BIM.Point3d line_v1 = app.Point3dSubtract(interset, faster_point1);
+                BIM.Point3d line_v2 = app.Point3dSubtract(interset, faster_point2);
+                BIM.Point3d line_end1 = app.Point3dAdd(interset, app.Point3dScale(line_v1, d / d1));
+                BIM.Point3d line_end2 = app.Point3dAdd(interset, app.Point3dScale(line_v2, d / d2));
+
+                bool has_huiqie1 = JYX_ZYJC_CLR.PublicMethod.has_huiqie(bmec_object1);
+                bool has_huiqie2 = JYX_ZYJC_CLR.PublicMethod.has_huiqie(bmec_object2);
+                bool has_baowenceng1 = false;
+                bool has_baowenceng2 = false;
+                ulong baowen_cone_surface_id1 = 0, baowen_cone_surface_id2 = 0;
+                ulong cone_surface_id1 = 0;
+                ulong cone_surface_id2 = 0;
+                double baowen_houdu1 = bmec_object1.Instance["INSULATION_THICKNESS"].DoubleValue;
+                double baowen_houdu2 = bmec_object2.Instance["INSULATION_THICKNESS"].DoubleValue;
+                double pipe_od1 = bmec_object1.Ports[0].Instance["OUTSIDE_DIAMETER"].DoubleValue;
+                double pipe_od2 = bmec_object2.Ports[0].Instance["OUTSIDE_DIAMETER"].DoubleValue;
+                double baowenceng_od1 = pipe_od1 + baowen_houdu1 * 2;
+                double baowenceng_od2 = pipe_od2 + baowen_houdu2 * 2;
+                ElementHolder new_cone_surface1;
+                ElementHolder new_baowen_cone_surface1 = null;
+                ElementHolder new_cone_surface2;
+                ElementHolder new_baowen_cone_surface2 = null;
+
+                if (!has_huiqie1)
+                {
+                    new_cone_surface1 = OPM_Public_Api.create_cone_surface(pipe_od1, line_start1, line_end1);
+                    if (baowen_houdu1 > 0)
+                    {
+                        new_baowen_cone_surface1 = OPM_Public_Api.create_cone_surface(baowenceng_od1, line_start1, line_end1);
+                        has_baowenceng1 = true;
+                    }
+                }
+                else
+                {
+
+                    if (baowen_houdu1 > 0)
+                    {
+                        ulong[] element_ids = { 0, 0 };
+                        element_ids = JYX_ZYJC_CLR.PublicMethod.get_pipe_baowenceng_geometry(bmec_object1);
+                        cone_surface_id1 = element_ids[0];
+                        baowen_cone_surface_id1 = element_ids[1];
+
+                        ElementHolder add_cone_surface1 = OPM_Public_Api.create_cone_surface(pipe_od1, interset, line_end1);
+                        ElementHolder add_baowen_cone_surface1 = OPM_Public_Api.create_cone_surface(baowenceng_od1, interset, line_end1);
+
+                        new_cone_surface1 = JYX_ZYJC_CLR.PublicMethod.unite_elem(cone_surface_id1, add_cone_surface1);
+                        new_baowen_cone_surface1 = JYX_ZYJC_CLR.PublicMethod.unite_elem(baowen_cone_surface_id1, add_baowen_cone_surface1);
+
+                        //JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(add_cone_surface_id1);
+                        //JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(add_baowen_cone_surface_id1);
+
+                        JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(cone_surface_id1);
+                        JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(baowen_cone_surface_id1);
+                        has_baowenceng1 = true;
+                    }
+                    else
+                    {
+                        cone_surface_id1 = JYX_ZYJC_CLR.PublicMethod.get_pipe_geometry(bmec_object1);
+                        ElementHolder add_cone_surface1 = create_cone_surface(pipe_od1, interset, line_end1);
+
+                        new_cone_surface1 = JYX_ZYJC_CLR.PublicMethod.unite_elem(cone_surface_id1, add_cone_surface1);
+
+                        JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(cone_surface_id1);
+                    }
+                }
+                if (!has_huiqie2)
+                {
+
+                    new_cone_surface2 = create_cone_surface(pipe_od2, line_start2, line_end2);
+                    if (baowen_houdu2 > 0)
+                    {
+                        new_baowen_cone_surface2 = create_cone_surface(baowenceng_od2, line_start2, line_end2);
+                        has_baowenceng2 = true;
+                    }
+                }
+                else
+                {
+                    if (baowen_houdu2 > 0)
+                    {
+                        ulong[] element_ids = { 0, 0 };
+                        element_ids = JYX_ZYJC_CLR.PublicMethod.get_pipe_baowenceng_geometry(bmec_object2);
+                        cone_surface_id2 = element_ids[0];
+                        baowen_cone_surface_id2 = element_ids[1];
+
+                        ElementHolder add_cone_surface2 = create_cone_surface(pipe_od2, interset, line_end2);
+                        ElementHolder add_baowen_cone_surface2 = create_cone_surface(baowenceng_od2, interset, line_end2);
+
+                        new_cone_surface2 = JYX_ZYJC_CLR.PublicMethod.unite_elem(cone_surface_id2, add_cone_surface2);
+                        new_baowen_cone_surface2 = JYX_ZYJC_CLR.PublicMethod.unite_elem(baowen_cone_surface_id2, add_baowen_cone_surface2);
+
+                        JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(cone_surface_id2);
+                        JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(baowen_cone_surface_id2);
+
+                        has_baowenceng2 = true;
+                    }
+                    else
+                    {
+                        ElementHolder add_cone_surface2 = create_cone_surface(pipe_od2, interset, line_end2);
+                        cone_surface_id2 = JYX_ZYJC_CLR.PublicMethod.get_pipe_geometry(bmec_object2);
+                        new_cone_surface2 = JYX_ZYJC_CLR.PublicMethod.unite_elem(cone_surface_id2, add_cone_surface2);
+
+                        JYX_ZYJC_CLR.PublicMethod.delete_elem_by_id(cone_surface_id2);
+                    }
+                }
+
+                if (d1 < Parameters_Setting.huitu_tolerance || d2 < Parameters_Setting.huitu_tolerance)
+                {
+                    errorMessage = "角度过小或弯曲半径过大，无法回切";
+                    return false;
+                }
+                else
+                {
+                }
+
+                BIM.Point3d new_faster_point1 = Mstn_Public_Api.get_faster_point(interset, line_start1, line_end1);
+                BIM.Point3d new_faster_point2 = Mstn_Public_Api.get_faster_point(interset, line_start2, line_end2);
+                BIM.Point3d new_nearest_point1 = Mstn_Public_Api.get_nearest_point(interset, line_start1, line_end1);
+                BIM.Point3d new_nearest_point2 = Mstn_Public_Api.get_nearest_point(interset, line_start2, line_end2);
+
+                if (app.Point3dEqual(new_faster_point1, new_nearest_point1))
+                {
+                    new_nearest_point1 = line_start1;
+                    new_faster_point1 = line_end1;
+                }
+                if (app.Point3dEqual(new_faster_point2, new_nearest_point2))
+                {
+                    new_nearest_point2 = line_start2;
+                    new_faster_point2 = line_end2;
+                }
+                double dn = bmec_object1.Instance["NOMINAL_DIAMETER"].DoubleValue;
+
+
+                //BMECObject tap_object = api.TapConnUtil.Create(bmec_object2.Instance["NOMINAL_DIAMETER"].DoubleValue);
+                //JYX_ZYJC_CLR.PublicMethod.transform_tap(bmec_object2, tap_object, interset);
+                //api.TapConnUtil.AddTapConnectionToComponent(bmec_object1, tap_object);
+
+                //tap_object.UpdateConnections();
+
+                //tap_object = null;
+                string text = BMECInstanceManager.FindConfigVariableName("OPM_ALIGNMENT_TOLERANCE");
+                BMECInstanceManager.SetConfigVariable("OPM_ALIGNMENT_TOLERANCE", (179).ToString());
+                bmec_object1.DiscoverConnectionsEx();
+                bmec_object1.UpdateConnections();
+                bmec_object2.DiscoverConnectionsEx();
+                bmec_object2.UpdateConnections();
+
+
+                if (has_baowenceng1)
+                {
+                    try
+                    {
+
+                        JYX_ZYJC_CLR.PublicMethod.huiqie_replace_pipe_cone(bmec_object1, new_cone_surface1, new_baowen_cone_surface1);
+                    }
+                    catch { }
+
+                }
+                else
+                {
+                    try
+                    {
+                        //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(new_cone_surface1);
+
+                        //ElementHolder new_cone_surface_temp2 = OPM_Public_Api.create_cone_surface(pipe_od2 * 2, line_start2, line_end2);
+                        //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(new_cone_surface1);
+                        //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(new_cone_surface_temp2);
+                        //new_cone_surface1 = JYX_ZYJC_CLR.PublicMethod.solid_subtract(new_cone_surface1, new_cone_surface_temp2);
+
+
+                        JYX_ZYJC_CLR.PublicMethod.huiqie_replace_pipe_cone(bmec_object1, new_cone_surface1);
+                    }
+                    catch { }
+
+                }
+
+                if (has_baowenceng2)
+                {
+                    try
+                    {
+
+                        JYX_ZYJC_CLR.PublicMethod.huiqie_replace_pipe_cone(bmec_object2, new_cone_surface2, new_baowen_cone_surface2);
+                    }
+                    catch { }
+
+                }
+                else
+                {
+                    try
+                    {
+
+                        JYX_ZYJC_CLR.PublicMethod.huiqie_replace_pipe_cone(bmec_object2, new_cone_surface2);
+                        //JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(new_cone_surface2);
+                    }
+                    catch { }
+
+                }
+
+                double[] mianjis = new double[2];
+                ulong cell_id1 = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_id(bmec_object1);
+                ulong cell_id2 = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_id(bmec_object2);
+                mianjis = JYX_ZYJC_CLR.PublicMethod.huiqie(cell_id1, cell_id2, new_faster_point1, new_faster_point2,
+                    new_nearest_point1, new_nearest_point2, interset, dn, has_baowenceng1, has_baowenceng2);
+                BMECInstanceManager.SetConfigVariable("OPM_ALIGNMENT_TOLERANCE", text);
+
+                //double tiji1 = mianjis[0] * bmec_object1.Instance["WALL_THICKNESS"].DoubleValue / 1000;
+                //double tiji2 = mianjis[1] * bmec_object2.Instance["WALL_THICKNESS"].DoubleValue / 1000;
+                ////double midu1 = OPM_Public_Api.get_midu("MIDU_VALUE_MAP", "_" + bmec_object1.Instance["MATERIAL"].StringValue);
+                ////double midu2 =OPM_Public_Api.get_midu("MIDU_VALUE_MAP", "_" + bmec_object2.Instance["MATERIAL"].StringValue);
+                //IECInstance ec_instance1 = bmec_object1.Instance;
+                //IECInstance ec_instance2 = bmec_object2.Instance;
+
+                //ec_instance1["tiji"].StringValue = tiji1.ToString();
+                // ec_instance2["tiji"].StringValue = tiji2.ToString();
+                // ec_instance1["caizhi"].StringValue = "_" + bmec_object1.Instance["MATERIAL"].StringValue;
+                // ec_instance2["caizhi"].StringValue = "_" + bmec_object2.Instance["MATERIAL"].StringValue;
+                //ec_instance1["zhongliang"].StringValue = Convert.ToString(tiji1 * midu1);
+                //ec_instance2["zhongliang"].StringValue = Convert.ToString(tiji2 * midu2);
+                //ec_instance1["DRY_WEIGHT"].StringValue = Convert.ToString(tiji1 * midu1);
+                //ec_instance2["DRY_WEIGHT"].StringValue = Convert.ToString(tiji2 * midu2);
+                //var model_refP = (IntPtr)app.ActiveModelReference.MdlModelRefP();
+
+
+                //bmec_object1.Instance.
+                //XmlInstanceUpdate.UpdateInstance(ec_instance1, model_refP, false);
+                // XmlInstanceUpdate.UpdateInstance(ec_instance2, model_refP, false);
+                return true;
+            }
+        }
+        public static double get_midu(string value_map, string caizhi)
+        {
+            IECClass iec_class = BMECInstanceManager.Instance.Schema.GetClass(value_map);
+            Hashtable hashtable = new Hashtable();
+            IEnumerator<IECProperty> enumerator = iec_class.GetEnumerator();
+            double midu = 0;
+            while (enumerator.MoveNext())
+            {
+                hashtable.Add(enumerator.Current.Name, enumerator.Current.DisplayLabel);
+            }
+            midu = Convert.ToDouble(hashtable[caizhi]);
+            return midu;
+        }
+        public static ElementHolder create_cone_surface(double d, BIM.Point3d start_point, BIM.Point3d end_point)
+        {
+
+            d *= uor_per_master;
+            double length = app.Point3dDistance(start_point, end_point) * uor_per_master;
+            BG.DVector3d dir = BG.DVector3d.FromXYZ(end_point.X - start_point.X, end_point.Y - start_point.Y, end_point.Z - start_point.Z);
+            BG.DPoint3d location = JYX_ZYJC_CLR.PublicMethod.V8Point3d_to_CEDPoint3d(start_point);
+            Cylindrical cylindrical = new Cylindrical(d, d, length, 0, location, dir);
+
+            List<ElementHolder> element_holder_list = cylindrical.CreateSimpleCylinderElements(false);
+            element_holder_list[0].SetGraphicsType(BMdGraphicsType.bmdGraphicsTypeInsulation, false);
+
+            //ulong id = JYX_ZYJC_CLR.PublicMethod.add_element_holder_to_model(element_holder_list[0]);
+            return element_holder_list[0];
+        }
+
+        /// <summary>
+        /// TODO 获取元素的类型
+        /// </summary>
+        public static string getBMECObjectTypeName(Element element)
+        {
+            BMApplication aa = new BMApplication();
+
+            string elementTypeName = string.Empty;
+            BMECObject ec_object = null;
+            ec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(element.ElementId);
+            if (ec_object != null && ec_object.Instance != null)
+            {
+                elementTypeName = ec_object.ClassName;
+            }
+            else
+            {
+                elementTypeName = element.TypeName;
+            }
+            return elementTypeName;
+        }
+
+        public static ElementHolder create_elliptic_cylinder_solid(BG.DPoint3d center_dpoint, double xR, double yR, BG.DMatrix3d ma, double start, double sweep, double height)
+        {
+            BMApplication bm_app = new BMApplication();
+            List<ElementHolder> element_holder_list = new List<ElementHolder>();
+
+            ArcElement arc_temp = new ArcElement(Session.Instance.GetActiveDgnModel(), null, center_dpoint, xR, yR, ma, start, sweep);
+
+            ElementHolder arc_element_holder = bm_app.CreateArcElement(center_dpoint, xR, yR, ma, start, sweep);
+            element_holder_list.Add(arc_element_holder);
+            BG.DPoint3d start_dpt, end_dpt;
+            arc_temp.GetCurveVector().GetStartEnd(out start_dpt, out end_dpt);
+            ElementHolder line_element_holder = bm_app.CreateLineElement(start_dpt, end_dpt);
+            element_holder_list.Add(line_element_holder);
+
+            ElementHolder complexshapeelement = bm_app.CreateComplexShapeElement(element_holder_list.ToArray(), 1);
+
+            BMGatheredElement bmgatheredelement = bm_app.CreateGatheredElement();
+            bmgatheredelement.Cursor.Initialize();
+            bmgatheredelement.Cursor.Location = center_dpoint;
+            bmgatheredelement.AddProjectedSurfaceWithFaceRemoval(complexshapeelement, null, BMdGraphicsType.bmdGraphicsTypeEdge, BMdComponentType.bmdComponentTypeBody, height, BG.DPoint3d.FromXYZ(0.0, 0.0, 1.0));
+
+            return bmgatheredelement.Create();
+        }
+
+        public static ElementHolder create_prism_solid(double length, double height, int numSides, BG.DPoint3d location, BG.DVector3d direction)
+        {
+            BMApplication bm_app = new BMApplication();
+            List<ElementHolder> list = new List<ElementHolder>();
+            BG.DPoint3d[] array = new BG.DPoint3d[numSides];
+            double a = Math.PI / (double)numSides;
+            double r = length / (2.0 * Math.Sin(a));
+
+            double num = 2 * Math.PI / (double)numSides;
+
+            BG.Angle theta = default(BG.Angle);
+            theta.Radians = num / 2.0;
+            for (int i = 0; i < numSides; i++)
+            {
+                theta.Radians += num;
+
+                array[i] = Utils.FromCylindrical(r, theta, height);
+            }
+
+            ElementHolder item2 = bm_app.CreateShapeElement(array, -1);
+            ElementHolder path = bm_app.CreateLineElement(BG.DPoint3d.FromXYZ(0, 0, -height), BG.DPoint3d.Zero);
+            list.Add(JYX_ZYJC_CLR.PublicMethod.solid_sweepbodywire(item2, path));
+
+            return bm_app.TranslateElement(bm_app.TranslateElement(list, BG.DVector3d.FromXYZ(0.0, 0.0, 1.0), BG.DPoint3d.Zero), direction, location)[0];
+        }
+        public static ElementHolder create_bsplinecurve(BG.DPoint3d[] ptArr)
+        {
+            DgnModel dgnModel = Session.Instance.GetActiveDgnModel();
+
+            BG.MSBsplineCurve msBsplineCurve = BG.MSBsplineCurve.CreateFromPoles(ptArr, null, null, 3, false, true);
+            BG.CurvePrimitive curvePri = BG.CurvePrimitive.CreateBsplineCurve(msBsplineCurve);
+            Element ele = DraftingElementSchema.ToElement(dgnModel, curvePri, null);
+            return JYX_ZYJC_CLR.PublicMethod.convertToElementHolder(ele.ElementHandle);
+        }
+
+        private IECInstance elbowOrBendInstance;//应该从选择到创建都为同一个实例
+        private BMECObject elbowOrBendECObject=new BMECObject();
+        //private int chuangjianleixing = 1;
+        /// <summary>
+        /// 根据选中的两个管道创建自动生成的弯头
+        /// </summary>
+        /// <param name="bmec_object1"></param>
+        /// <param name="bmec_object2"></param>
+        /// <param name="errorMessage"></param>
+        /// <returns></returns>
+        public BMECObject create_elbow1(BMECObject bmec_object1, BMECObject bmec_object2, out string errorMessage, elbowOrBend elbowBend, ref ECInstanceList ecinList)
+        {
+            initelbowDic();
+            errorMessage = string.Empty;
+            //ecinList[0].Clone();
+            eCInstanceList = ecinList;
+
+            BIM.Point3d[] line1_end_pts = new BIM.Point3d[2];//第一根管道的端点
+            BIM.Point3d[] line2_end_pts = new BIM.Point3d[2];//第二根管道的端点
+            line1_end_pts[0] = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object1.GetNthPort(0).Location);
+            line1_end_pts[1] = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object1.GetNthPort(1).Location);
+            line2_end_pts[0] = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object2.GetNthPort(0).Location);
+            line2_end_pts[1] = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.DPoint3d_To_Point3d(bmec_object2.GetNthPort(1).Location);
+
+            BIM.Ray3d ray3d1 = app.Ray3dFromPoint3dStartEnd(line1_end_pts[0], line1_end_pts[1]);//TODO 根据两个管道的端点构造两条射线
+            BIM.Ray3d ray3d2 = app.Ray3dFromPoint3dStartEnd(line2_end_pts[0], line2_end_pts[1]);
+
+            BIM.Point3d intersect_point1, intersect_point2;
+            intersect_point1 = intersect_point2 = app.Point3dZero();
+            double fraction1, fraction2;
+            fraction1 = fraction2 = 0.0;
+            bool reuslt = app.Ray3dRay3dClosestApproach(ray3d1, ray3d2, ref intersect_point1, ref fraction1, ref intersect_point2, ref fraction2);//两条射线是否有交点
+
+            if (!reuslt)
+            {
+                errorMessage = "选中的管道不在一个平面上";
+                return null;
+            }
+            BIM.Point3d intersect_point = intersect_point1;
+            BIM.LineElement line = app.CreateLineElement2(null, app.Point3dZero(), intersect_point);
+
+            //m_myForm.textBox_guandao_guid2.Text = bmec_object2.Instance["GUID"].StringValue;
+            BIM.Point3d nearest_point1 = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.get_nearest_point(intersect_point, line1_end_pts[0], line1_end_pts[1]);
+            BIM.Point3d faster_point1 = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.get_faster_point(intersect_point, line1_end_pts[0], line1_end_pts[1]);
+            if (app.Point3dEqual(nearest_point1, faster_point1))
+            {
+                nearest_point1 = line1_end_pts[0];
+                faster_point1 = line1_end_pts[1];
+            }
+
+            BIM.Point3d nearest_point2 = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.get_nearest_point(intersect_point, line2_end_pts[0], line2_end_pts[1]);
+            BIM.Point3d faster_point2 = JYX_ZYJC_Jianmo_Youhua_CS.Mstn_Public_Api.get_faster_point(intersect_point, line2_end_pts[0], line2_end_pts[1]);
+            if (app.Point3dEqual(nearest_point2, faster_point2))
+            {
+                nearest_point2 = line2_end_pts[0];
+                faster_point2 = line2_end_pts[1];
+            }
+            BIM.Point3d v1 = app.Point3dSubtract(nearest_point1, faster_point1);//管道一方向向量
+            BIM.Point3d v2 = app.Point3dSubtract(faster_point2, nearest_point2);//管道二方向向量
+            double angle = BG.Angle.RadiansToDegrees(app.Point3dAngleBetweenVectors(v1, v2));
+            if (JYX_ZYJC_Jianmo_Youhua_CS.MyPublic_Api.is_double_xiangdeng(angle, 180))
+            {
+                errorMessage = "两个管道互相平行!";
+                return null;
+            }
+
+            #region MyRegion
+
+            //double t = Math.Tan(BG.Angle.DegreesToRadians(angle / 2.0));
+            //double t2 = Math.Tan(BG.Angle.DegreesToRadians((180.0 - angle) / 2.0));
+            //double wanqu_banjing = 0.0;
+            //double nominalDiameter = bmec_object1.GetDoubleValue("NOMINAL_DIAMETER");
+            //double d = 0.0;
+            //double d1, d2;
+            //d1 = app.Point3dDistance(intersect_point, faster_point1);
+            //d2 = app.Point3dDistance(intersect_point, faster_point2);
+            //double ltb = 0.0;
+            //double lab = 0.0;
+            //double pipeLength1,pipeLength2;
+            //double bihou = bmec_object1.Instance["WALL_THICKNESS"].DoubleValue;
+            //string caizhi = bmec_object1.Instance["MATERIAL"].StringValue;
+            //double new_angle = angle;
+            //double insulation_thickness = bmec_object1.Instance["INSULATION_THICKNESS"].DoubleValue;
+            //string insulation = bmec_object1.Instance["INSULATION"].StringValue;
+            //double center_to_outlet_end = 0.0;//应该根据半径变化
+            //double center_to_run_end = 0.0;//应该根据半径变化
+            //BIM.Point3d start_point1;
+            //BIM.Point3d start_point2;
+            //if (chuangjianleixing == 1)
+            //{
+            //    start_point1 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point1), (d1 - pipeLength1) / d1));
+            //    start_point2 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point2), (d2 - pipeLength2) / d2));
+            //}
+            //else
+            //{
+            //    start_point1 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point1), (d + ltb) / d1));
+            //    start_point2 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point2), (d + lab) / d2));
+            //}
+            //if (chuangjianleixing == 1)
+            //{
+            //    elbowecclassname = getElbowECClassName(m_myForm.comboBox_elbow_radius.Text, m_myForm.comboBox_elbow_angle.Text);
+            //    elbowOrBend = BMECInstanceManager.Instance.CreateECInstance(elbowecclassname, true);
+
+            //    ISpecProcessor isp = BMECApi.Instance.SpecProcessor;
+            //    isp.FillCurrentPreferences(elbowOrBend, null);
+            //    elbowOrBend["NOMINAL_DIAMETER"].DoubleValue = nominalDiameter;
+            //    ECInstanceList eCInstanceList = isp.SelectSpec(elbowOrBend, true);
+            //    if (eCInstanceList.Count == 0)
+            //    {
+            //        errorMessage = "当前Specification为配置弯管。";
+            //        return false;
+            //    }
+            //    elbowOrBend = eCInstanceList[0];
+            //    double majorRadius = elbowOrBend["DESIGN_LENGTH_CENTER_TO_OUTLET_END"].DoubleValue;
+            //    //ecinstance["ANGLE"].DoubleValue = angle;
+            //    //ecinstance["DESIGN_LENGTH_CENTER_TO_OUTLET_END"].DoubleValue = center_to_outlet_end;
+            //    //ecinstance["DESIGN_LENGTH_CENTER_TO_RUN_END"].DoubleValue = center_to_run_end;
+            //    //ecinstance["SPECIFICATION"].StringValue = Bentley.Plant.StandardPreferences.DlgStandardPreference.GetPreferenceValue("SPECIFICATION").ToString();
+            //    //ecinstance["INSULATION_THICKNESS"].DoubleValue = insulation_thickness;
+            //    //ecinstance["INSULATION"].StringValue = insulation;
+            //    wanqu_banjing = majorRadius;
+            //    d = wanqu_banjing * Math.Tan((angle / 2.0) * Math.PI / 360.0);
+            //    ltb = lab = 0.0;
+            //    BMECObject m_ecObject = new BMECObject(elbowOrBend);
+            //    if (m_ecObject.Ports[0].Instance["END_PREPARATION"].StringValue == "SOCKET_WELD_FEMALE")
+            //    {
+            //        ltb = m_ecObject.Ports[0].Instance["SOCKET_DEPTH"].DoubleValue;
+            //        lab = m_ecObject.Ports[1].Instance["SOCKET_DEPTH"].DoubleValue;
+            //    }
+            //    else if (m_ecObject.Ports[0].Instance["END_PREPARATION"].StringValue == "THREADED_FEMALE")
+            //    {
+            //        ltb = m_ecObject.Ports[0].Instance["THREADED_LENGTH"].DoubleValue;
+            //        lab = m_ecObject.Ports[1].Instance["THREADED_LENGTH"].DoubleValue;
+            //    }
+            //    pipeLength1 = d1 - d + ltb;
+            //    pipeLength2 = d2 - d + lab;
+            //    center_to_outlet_end = d;
+            //    center_to_run_end = d;
+            //}
+            //else
+            //{
+            //    wanqu_banjing = Convert.ToDouble(m_myForm.textBox_radius.Text.Trim()) * Convert.ToDouble(m_myForm.textBox_radiusFactor.Text);
+            //    d = wanqu_banjing * Math.Tan((angle / 2.0) * Math.PI / 360.0);
+            //    ltb = Convert.ToDouble(m_myForm.textBox_lengthToBend.Text);
+            //    lab = Convert.ToDouble(m_myForm.textBox_lengthAfterBend.Text);
+            //    pipeLength1 = d1 - d - ltb;
+            //    pipeLength2 = d2 - d - lab;
+            //}
+            //d = wanqu_banjing;
+            //bmec_object1.Instance["LENGTH"].DoubleValue = pipeLength1;
+            //bmec_object2.Instance["LENGTH"].DoubleValue = pipeLength2;
+            //if (d1 - d < JYX_ZYJC_Jianmo_Youhua_CS.Parameters_Setting.huitu_tolerance || d2 - d < JYX_ZYJC_Jianmo_Youhua_CS.Parameters_Setting.huitu_tolerance)
+            //{
+            //    errorMessage="角度过小或弯曲半径过大，无法布置，请调整弯曲半径等参数";
+            //    return false;
+            //}
+            //BIM.Point3d start_point1;
+            //BIM.Point3d start_point2;
+            //start_point1 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point1), (d1 - pipeLength1) / d1));
+            //start_point2 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point2), (d2 - pipeLength2) / d2));
+            //double elbow_dn = Convert.ToDouble(m_myForm.textBox_elbow_dn.Text.Trim());
+            //double bihou = Convert.ToDouble(m_myForm.textBox_elbow_bihou.Text.Trim());
+            //string caizhi = m_myForm.comboBox_caizhi.SelectedValue.ToString();
+            //double new_angle = Convert.ToDouble(m_myForm.textBox_elbow_wanqu_jiaodu.Text);
+            //double insulation_thickness = bmec_object1.Instance["INSULATION_THICKNESS"].DoubleValue;
+            //string insulation= bmec_object1.Instance["INSULATION"].StringValue;
+            //double center_to_outlet_end = Convert.ToDouble(m_myForm.xiaoshuBox_elbow_wanqu_banjing.Text);//应该根据半径变化
+            //double center_to_run_end= Convert.ToDouble(m_myForm.xiaoshuBox_elbow_wanqu_banjing.Text);//应该根据半径变化
+            //TODO 改类型
+            //BMECObject ec_object = null;
+            //ec_object = JYX_ZYJC_Jianmo_Youhua_CS.OPM_Public_Api.create_elbow(elbow_dn, new_angle, center_to_outlet_end, center_to_run_end, insulation_thickness, insulation, out errorMessage);
+            //double lengthToBend;
+            //double lengthAfterBend;
+            //double radiusFactor;
+            //switch (chuangjianleixing)
+            //{
+            //    case 1:
+            //        elbowOrBendECObject = createElbow(elbowecclassname, nominalDiameter, new_angle, center_to_outlet_end, center_to_run_end, insulation_thickness, insulation, out errorMessage);
+            //        break;
+            //    case 2:
+            //        elbowecclassname = "PIPE_BEND";
+            //        lengthToBend = Convert.ToDouble(m_myForm.textBox_lengthToBend.Text);
+            //        lengthAfterBend = Convert.ToDouble(m_myForm.textBox_lengthAfterBend.Text);
+            //        radiusFactor = Convert.ToDouble(m_myForm.textBox_radiusFactor.Text);
+            //        elbowOrBendECObject = createBend(elbowecclassname, nominalDiameter, new_angle, center_to_outlet_end, center_to_run_end, insulation_thickness, insulation, out errorMessage, lengthToBend, lengthAfterBend, radiusFactor);
+            //        break;
+            //    case 3:
+            //        elbowecclassname = "MITERED_PIPE_BEND";
+            //        lengthToBend = Convert.ToDouble(m_myForm.textBox_lengthToBend.Text);
+            //        lengthAfterBend = Convert.ToDouble(m_myForm.textBox_lengthAfterBend.Text);
+            //        radiusFactor = Convert.ToDouble(m_myForm.textBox_radiusFactor.Text);
+            //        int xiamiwanjieshu = Convert.ToInt32(m_myForm.textBox_xiamiwan_jieshu.Text);
+            //        elbowOrBendECObject = createBend(elbowecclassname, nominalDiameter, new_angle, center_to_outlet_end, center_to_run_end, insulation_thickness, insulation, out errorMessage, lengthToBend, lengthAfterBend, radiusFactor, xiamiwanjieshu);
+            //        break;
+            //    default:
+            //        break;
+            //}
+            #endregion
+
+            string elbowOrBendECClassName = "";
+            double nominalDiameter = bmec_object1.GetDoubleValue("NOMINAL_DIAMETER");
+            double insulationThickness = bmec_object1.Instance["INSULATION_THICKNESS"].DoubleValue;
+            string insulation = bmec_object1.Instance["INSULATION"].StringValue;
+            double wallThickness = bmec_object1.Instance["WALL_THICKNESS"].DoubleValue;
+            string material = bmec_object1.Instance["MATERIAL"].StringValue;
+
+            double centerToMainPort = 0.0;
+            double centerToRunPort = 0.0;
+            double lengthToBend = 0.0;
+            double lengthAfterBend = 0.0;
+            double pipeLength1 = 0.0;
+            double pipeLength2 = 0.0;
+            double d1, d2;
+            d1 = app.Point3dDistance(intersect_point, faster_point1);
+            d2 = app.Point3dDistance(intersect_point, faster_point2);
+            double radius = 0.0;
+
+            if (elbowBend.elbowOrBendName == "Elbow")//elbow
+            {
+                if (elbowBend.elbowRadius != "虾米弯")
+                {
+                    elbowOrBendECClassName = getElbowECClassName(elbowBend.elbowRadius, elbowBend.elbowAngle);
+                }
+                else if (elbowBend.elbowRadius == "虾米弯")
+                {
+                    elbowOrBendECClassName = "PIPE_ELBOW_TRIMMED_JYX";
+                }
+                elbowOrBendInstance = BMECInstanceManager.Instance.CreateECInstance(elbowOrBendECClassName, true);
+                if (elbowOrBendInstance == null)
+                {
+                    errorMessage = "没有找到该ECClass类型，请确认已配置该类型";
+                    return null;
+                }
+                if(elbowBend.typeNumber==0)
+                {
+                    ISpecProcessor isp = api.SpecProcessor;
+                    isp.FillCurrentPreferences(elbowOrBendInstance, null);
+                    elbowOrBendInstance["NOMINAL_DIAMETER"].DoubleValue = nominalDiameter;
+                    eCInstanceList = isp.SelectSpec(elbowOrBendInstance, true);
+                    ecinList = eCInstanceList;
+                }
+                
+                if (eCInstanceList.Count == 0)
+                {
+                    errorMessage = "没有找到该ECClass的对应数据项，请确认已配置数据";
+                    return null;
+                }
+                BMECObject origanBmec = new BMECObject(eCInstanceList[0]);
+                BMECObject copyBmec = new BMECObject();
+                copyBmec.Copy(origanBmec);
+                elbowOrBendInstance = copyBmec.Instance;
+                //elbowOrBendInstance = eCInstanceList[0];
+
+                centerToMainPort = elbowOrBendInstance["DESIGN_LENGTH_CENTER_TO_OUTLET_END"].DoubleValue;
+                centerToRunPort = centerToMainPort;
+
+                BMECObject tempObject = new BMECObject(elbowOrBendInstance);
+
+                if (tempObject.Ports[0].Instance["END_PREPARATION"].StringValue == "SOCKET_WELD_FEMALE")
+                {
+                    lengthToBend = tempObject.Ports[0].Instance["SOCKET_DEPTH"].DoubleValue;
+                    lengthAfterBend = tempObject.Ports[1].Instance["SOCKET_DEPTH"].DoubleValue;
+                }
+                else if (tempObject.Ports[0].Instance["END_PREPARATION"].StringValue == "THREADED_FEMALE")
+                {
+                    lengthToBend = tempObject.Ports[0].Instance["THREADED_LENGTH"].DoubleValue;
+                    lengthAfterBend = tempObject.Ports[1].Instance["THREADED_LENGTH"].DoubleValue;
+                }
+                double anglera = Convert.ToDouble(elbowBend.elbowAngle.Substring(0, 2));
+                double radus = BG.Angle.DegreesToRadians(anglera);
+                radius = (centerToMainPort - lengthToBend) / Math.Tan(radus / 2);
+                double centerToPort = radius * Math.Tan(BG.Angle.DegreesToRadians(angle / 2.0));
+                centerToMainPort = centerToPort + lengthToBend;
+                centerToRunPort = centerToMainPort;
+
+                if (elbowBend.elbowRadius == "虾米弯")
+                {
+                    elbowOrBendInstance["NUM_PIECES"].IntValue = elbowBend.pitchNumber;
+
+                    radius = elbowOrBendInstance["wanqu_banjing"].DoubleValue;
+
+                    //centerToMainPort = radius;
+                    //centerToRunPort = centerToMainPort;
+                    double centerToPort1 = radius * Math.Tan(BG.Angle.DegreesToRadians(angle / 2.0));
+                    centerToMainPort = centerToPort1 + lengthToBend;
+                    centerToRunPort = centerToPort1 + lengthAfterBend;
+                    elbowOrBendInstance["jieshu"].IntValue = elbowBend.pitchNumber;
+                    //elbowOrBendInstance["wanqu_banjing"].DoubleValue = radius;
+                    elbowOrBendInstance["wanqu_jiaodu"].DoubleValue = angle;
+
+                    pipeLength1 = d1 - centerToMainPort + lengthToBend;
+                    pipeLength2 = d2 - centerToRunPort + lengthAfterBend;
+                    elbowOrBendInstance["caizhi"].StringValue = "";
+                    elbowOrBendInstance["bihou"].DoubleValue = wallThickness;
+                }
+                else
+                {
+                    pipeLength1 = d1 - centerToMainPort + lengthToBend;
+                    pipeLength2 = d2 - centerToRunPort + lengthAfterBend;
+                }
+
+                //create elbow
+                elbowOrBendInstance["DESIGN_LENGTH_CENTER_TO_OUTLET_END"].DoubleValue = centerToMainPort;
+                //DESIGN_LENGTH_CENTER_TO_RUN_END
+                elbowOrBendInstance["DESIGN_LENGTH_CENTER_TO_RUN_END"].DoubleValue = centerToRunPort;
+                elbowOrBendInstance["ANGLE"].DoubleValue = angle;
+                elbowOrBendInstance["SPECIFICATION"].StringValue = Bentley.Plant.StandardPreferences.DlgStandardPreference.GetPreferenceValue("SPECIFICATION").ToString();
+                elbowOrBendInstance["INSULATION_THICKNESS"].DoubleValue = insulationThickness;
+                elbowOrBendInstance["INSULATION"].StringValue = insulation;
+            }
+            else//bend
+            {
+                double radiusFactor = elbowBend.bendRadiusRatio;
+                radius = elbowBend.bendRadius;
+                lengthToBend = elbowBend.bendFrontLong;
+                lengthAfterBend = elbowBend.bendAfterLong;
+                //m_myForm.textBox_radius.Text = radius.ToString();
+                elbowOrBendECClassName = "PIPE_BEND";
+                elbowOrBendInstance = BMECInstanceManager.Instance.CreateECInstance(elbowOrBendECClassName, true);
+                if (elbowOrBendInstance == null)
+                {
+                    errorMessage = "没有找到该ECClass类型，请确认已配置该类型";
+                    return null;
+                }
+                if(elbowBend.typeNumber==0)
+                {
+                    ISpecProcessor isp = api.SpecProcessor;
+                    isp.FillCurrentPreferences(elbowOrBendInstance, null);
+                    elbowOrBendInstance["NOMINAL_DIAMETER"].DoubleValue = nominalDiameter;
+                    eCInstanceList = isp.SelectSpec(elbowOrBendInstance, true);
+                    ecinList = eCInstanceList;
+                }               
+                if (eCInstanceList.Count == 0)
+                {
+                    errorMessage = "没有找到该ECClass的对应数据项，请确认已配置数据";
+                    return null;
+                }
+                elbowOrBendInstance = eCInstanceList[0];
+
+                elbowOrBendInstance["ANGLE"].DoubleValue = angle;
+                elbowOrBendInstance["SPECIFICATION"].StringValue = Bentley.Plant.StandardPreferences.DlgStandardPreference.GetPreferenceValue("SPECIFICATION").ToString();
+                elbowOrBendInstance["INSULATION_THICKNESS"].DoubleValue = insulationThickness;
+                elbowOrBendInstance["INSULATION"].StringValue = insulation;
+                elbowOrBendInstance["LENGTH_TO_BEND"].DoubleValue = lengthToBend;
+                elbowOrBendInstance["LENGTH_AFTER_BEND"].DoubleValue = lengthAfterBend;
+                elbowOrBendInstance["BEND_POINT_RADIUS"].DoubleValue = radiusFactor;
+                elbowOrBendInstance["WALL_THICKNESS"].DoubleValue = wallThickness;
+                elbowOrBendInstance["MATERIAL"].StringValue = material;
+                double tanA = Math.Tan(BG.Angle.DegreesToRadians((180.0 - angle) / 2.0));
+                centerToMainPort = radius / tanA;
+                centerToRunPort = centerToMainPort;
+
+                pipeLength1 = d1 - centerToMainPort - lengthToBend;
+                pipeLength2 = d2 - centerToRunPort - lengthAfterBend;
+            }
+            BMECObject bmec = new BMECObject(elbowOrBendInstance);
+            elbowOrBendECObject.Copy(bmec);
+
+            //当管道过短时，无法生成
+            if (pipeLength1 <= 0 || pipeLength2 <= 0)
+            {
+                errorMessage = "所连接的管道过短，无法生成弯头";
+                return null;
+            }
+            //TODO 随便写的
+            //double temp1 = elbowOrBendECObject.GetDoubleValue("OD");
+            //double temp2 = elbowOrBendECObject.GetDoubleValue("wanqu_banjing");
+            //double temp3 = elbowOrBendECObject.GetDoubleValue("wanqu_jiaodu");
+            //double temp4 = elbowOrBendECObject.GetDoubleValue("NOMINAL_DIAMETER");
+            //double temp5 = elbowOrBendECObject.GetDoubleValue("OUTSIDE_DIAMETER");
+
+            //fill form
+            //m_myForm.textBox_elbow_dn.Text = nominalDiameter.ToString();
+            //m_myForm.textBox_elbow_bihou.Text = wallThickness.ToString();
+            //m_myForm.textBox_elbow_wanqu_jiaodu.Text = Math.Round(angle, 2).ToString();
+            //m_myForm.xiaoshuBox_elbow_wanqu_banjing.Text = radius.ToString();
+            //m_myForm.comboBox_caizhi.Text = material;
+
+            bmec_object1.Instance["LENGTH"].DoubleValue = pipeLength1;
+            bmec_object2.Instance["LENGTH"].DoubleValue = pipeLength2;
+
+            BIM.Point3d start_point1;
+            BIM.Point3d start_point2;
+            start_point1 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point1), (d1 - pipeLength1) / d1));
+            start_point2 = app.Point3dSubtract(intersect_point, app.Point3dScale(app.Point3dSubtract(intersect_point, faster_point2), (d2 - pipeLength2) / d2));
+
+            if (elbowOrBendECObject == null)
+            {
+                errorMessage = "无法通过该实例创建对象";
+                return null;
+            }
+            BIM.Point3d dir1 = app.Point3dFromXYZ(1, 0, 0);
+            BIM.Point3d dir2 = app.Point3dFromXYZ(0, 0, 1);
+
+            JYX_ZYJC_CLR.PublicMethod.transform_pipe(bmec_object1, faster_point1, start_point1);
+            JYX_ZYJC_CLR.PublicMethod.transform_pipe(bmec_object2, start_point2, faster_point2);
+            try
+            {
+                elbowOrBendECObject.Create();
+            }
+            catch (System.Exception)
+            {
+                errorMessage = "Pipeline不存在，请打开Create Pipeline创建处理。";
+                return null;
+            }
+            //ec_object.LegacyGraphicsId
+            JYX_ZYJC_CLR.PublicMethod.transform_xiamiwan(elbowOrBendECObject, dir1, v1, dir2, v2, start_point1, start_point2);
+
+            bmec_object1.DiscoverConnectionsEx();
+            bmec_object1.UpdateConnections();
+
+            bmec_object2.DiscoverConnectionsEx();
+            bmec_object2.UpdateConnections();
+
+            elbowOrBendECObject.UpdateConnections();
+            elbowOrBendECObject.DiscoverConnectionsEx();
+
+            return elbowOrBendECObject;
+        }
+        private ECInstanceList eCInstanceList = new ECInstanceList();
+        private Dictionary<string, string> elbowradiusdic = new Dictionary<string, string>();
+        private Dictionary<string, string> elbowangledic = new Dictionary<string, string>();
+        private string getElbowECClassName(string radius, string angle)
+        {
+            string elbowecclassname = "";
+            //特殊的两个
+            //if (angle.Contains("30度弯头") && radius.Contains("长半径")) return "PIPE_ELBOW_30_DEGREE_LONG_RADIUS";
+            //if (angle.Contains("30度弯头") && radius.Contains("短半径")) return "PIPE_ELBOW_SHORT_RADIUS_30_DEGREE";
+
+            //if (radius.Contains("长半径"))
+            //{
+            //    elbowecclassname = elbowradiusdic[radius] + "_" + elbowangledic[angle] + "_" + "DEGREE" + "_" + "PIPE_ELBOW";
+            //}
+            //else
+            //{
+            //    elbowecclassname = "PIPE_ELBOW" + "_" + elbowangledic[angle] + "_" + "DEGREE" + "_" + elbowradiusdic[radius];
+            //}
+            if (angle.Contains("15度弯头") && radius.Contains("短半径")) return "PIPE_ELBOW_SHORT_RADIUS_15_DEGREE";
+            if (angle.Contains("30度弯头") && radius.Contains("短半径")) return "PIPE_ELBOW_SHORT_RADIUS_30_DEGREE";
+            if (angle.Contains("45度弯头") && radius.Contains("长半径")) return "LONG_RADIUS_45_DEGREE_PIPE_ELBOW";
+            if (angle.Contains("60度弯头") && radius.Contains("长半径")) return "LONG_RADIUS_60_DEGREE_PIPE_ELBOW";
+            if (angle.Contains("90度弯头") && radius.Contains("长半径")) return "LONG_RADIUS_90_DEGREE_PIPE_ELBOW";
+
+            elbowecclassname = "PIPE_ELBOW" + "_" + elbowangledic[angle] + "_" + "DEGREE" + "_" + elbowradiusdic[radius];
+
+            return elbowecclassname;
+        }
+        //TODO
+        //改了原本的ECClass类中的命名
+        //PIPE_ELBOW_30_DEGREE_LONG_RADIUS  ---
+        //PIPE_ELBOW_SHORT_RADIUS_30_DEGREE ---
+        private void initelbowDic()
+        {
+            elbowradiusdic.Clear();
+            elbowangledic.Clear();
+            elbowradiusdic.Add("长半径弯头", "LONG_RADIUS");
+            elbowradiusdic.Add("短半径弯头", "SHORT_RADIUS");
+            elbowradiusdic.Add("内外丝弯头", "INNER_AND_OUTER_WIRE_ELBOWS");
+            elbowradiusdic.Add("1.5倍弯曲半径弯头", "1_POINT_5R");
+            elbowradiusdic.Add("2倍弯曲半径弯头", "2R");
+            elbowradiusdic.Add("2.5倍弯曲半径弯头", "2_POINT_5R");
+            elbowradiusdic.Add("3倍弯曲半径弯头", "3R");
+            elbowradiusdic.Add("4倍弯曲半径弯头", "4R");
+            elbowangledic.Add("15度弯头", "15");
+            elbowangledic.Add("30度弯头", "30");
+            elbowangledic.Add("45度弯头", "45");
+            elbowangledic.Add("60度弯头", "60");
+            elbowangledic.Add("90度弯头", "90");
+        }
+
+    }
+}
+

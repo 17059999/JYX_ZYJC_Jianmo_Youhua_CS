@@ -1,0 +1,561 @@
+﻿using Bentley.Building.Mechanical.Api;
+using Bentley.ECObjects.Instance;
+using Bentley.MstnPlatformNET.InteropServices;
+using Bentley.MstnPlatformNET.WinForms;
+using Bentley.OpenPlantModeler.SDK.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MOIE = Microsoft.Office.Interop.Excel;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public partial class ReportFrom : //Form
+#if DEBUG
+        Form
+#else
+        Adapter
+#endif
+    {
+        //bool isSele = false;
+        static bool isCailiao = true;
+        public static ReportFrom reportFrom = null;
+        public Dictionary<int, Dictionary<int, List<IECInstance>>> itemList = new Dictionary<int, Dictionary<int, List<IECInstance>>>();
+        private static Bentley.Interop.MicroStationDGN.Application app1 = Utilities.ComApp;
+        private static string path0 = app1.ActiveWorkspace.ConfigurationVariableValue("OPENPLANT_WORKSET_STANDARDS"); //相对路径
+        //C:\ProgramData\Bentley\OpenPlant CONNECT Edition\Configuration\Workspaces\WorkSpace\WorkSets\OpenPlantMetric\Standards\OpenPlant
+        public ReportFrom()
+        {
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// 限制只能打开一个from
+        /// </summary>
+        /// <param name="isCai"></param>
+        /// <returns></returns>
+        public static ReportFrom instence(bool isCai)
+        {
+            isCailiao = isCai;
+            if(reportFrom==null)
+            {
+                reportFrom = new ReportFrom();
+            }
+            else
+            {
+                reportFrom.Close();
+                reportFrom = new ReportFrom();
+            }
+            return reportFrom;
+        }
+
+        /// <summary>
+        /// 导出报表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Dictionary<int, string> dicPipeLine = new Dictionary<int, string>(); //与itemList字典类的key相同
+            Dictionary<int, List<pipingPro>> sxList = new Dictionary<int, List<pipingPro>>(); //筛选条件的集合
+            if(dataGridView1.Rows.Count>0)
+            {
+                #region 得到选择的管线编号
+                for (int i=0;i<dataGridView1.Rows.Count;i++)
+                {
+                    bool b = Convert.ToBoolean(dataGridView1.Rows[i].Cells[0].Value);
+                    if(b)
+                    {
+                        dicPipeLine.Add(i, dataGridView1.Rows[i].Cells["PipeLineName"].Value.ToString());
+                    }
+                }
+                if(dicPipeLine.Count==0)
+                {
+                    MessageBox.Show("请至少选择一个管线编号！");
+                    return;
+                }
+                #endregion
+                #region 根据选择的管线编号 查找勾选的元件
+                foreach (KeyValuePair<int,string> kv in dicPipeLine)
+                {
+                    List<pipingPro> proList = new List<pipingPro>();
+                    for(int j=0;j<dataGridView2.Rows.Count;j++)
+                    {
+                        bool b1 = Convert.ToBoolean(dataGridView2.Rows[j].Cells[0].Value);
+                        if(b1)
+                        {
+                            string pipeLine = dataGridView2.Rows[j].Cells["pipeLineName1"].Value.ToString();
+                            if(pipeLine==kv.Value)
+                            {
+                                pipingPro pipClass = new pipingPro();
+                                string ecName = dataGridView2.Rows[j].Cells["ecName"].Value.ToString();
+                                double dn = Convert.ToDouble(dataGridView2.Rows[j].Cells["DN"].Value);
+                                pipClass.pipeLineName = pipeLine;
+                                pipClass.ecName = ecName;
+                                pipClass.DN = dn;
+                                proList.Add(pipClass);
+                            }
+                        }
+                    }
+                    if(proList.Count>0)
+                    {
+                        sxList.Add(kv.Key, proList);
+                    }
+                }
+                if(sxList.Count==0)
+                {
+                    MessageBox.Show("所选管线编号上没有选择相应的元件！");
+                    return;
+                }
+                #endregion
+                #region 得到筛选后的数据
+                Dictionary<int, Dictionary<int, List<IECInstance>>> sxItemList = new Dictionary<int, Dictionary<int, List<IECInstance>>>();
+                foreach(KeyValuePair<int,List<pipingPro>> kv in sxList)
+                {
+                    Dictionary<int, List<IECInstance>> sxIecList = new Dictionary<int, List<IECInstance>>();
+                    foreach(KeyValuePair<int,List<IECInstance>> kv1 in itemList[kv.Key])
+                    {
+                        string pipeLineName = kv1.Value[0]["LINENUMBER"].StringValue;
+                        string ecName = kv1.Value[0].ClassDefinition.Name;
+                        double dn = kv1.Value[0]["NOMINAL_DIAMETER"].DoubleValue;
+                        bool isCz = false;
+                        foreach(pipingPro proClass in kv.Value)
+                        {
+                            if(pipeLineName==proClass.pipeLineName&&ecName==proClass.ecName&&dn==proClass.DN)
+                            {
+                                isCz = true;
+                            }
+                        }
+                        if(isCz)
+                        {
+                            sxIecList.Add(kv1.Key,kv1.Value);
+                        }
+                    }
+                    sxItemList.Add(kv.Key, sxIecList);
+                }
+                #endregion
+                ExportExcel(sxItemList);
+            }
+            #region 导出报表 （没有筛选条件）
+            //ExportMaterials exClass = new ExportMaterials();
+            //if(radioButton1.Checked==true)
+            //{
+            //    isSele = false;
+            //}
+            //if(radioButton2.Checked==true)
+            //{
+            //    isSele = true;
+            //}
+            //if(isCailiao)
+            //{
+            //    exClass.selectExportExcel(isSele);
+            //}
+            //else
+            //{
+            //    exClass.selectEquipmentExcel(isSele);
+            //}
+            #endregion
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// 窗体加载时，给DataGridView附加checkBox表头以及给dataGridView赋值
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReportFrom_Load(object sender, EventArgs e)
+        {
+            AddCheckBoxToDataGridView.dgv = dataGridView1;
+            AddCheckBoxToDataGridView.AddFullSelect();
+            AddCheckBoxToDataGridView.dgv1 = dataGridView2;
+            AddCheckBoxToDataGridView.AddFullSelect1();
+            ECInstanceList ecList = DgnUtilities.GetAllInstancesFromDgn();
+            itemList = fuzhi(ecList);
+            if(itemList.Count>0)
+            {
+                foreach(KeyValuePair<int,Dictionary<int,List<IECInstance>>> kv in itemList)
+                {
+                    dataGridView1.Rows.Add(true, kv.Value[0][0]["LINENUMBER"].StringValue, kv.Value[0][0]["SPECIFICATION"].StringValue);
+                    foreach(KeyValuePair<int,List<IECInstance>> kv1 in kv.Value)
+                    {
+                        dataGridView2.Rows.Add(true, kv1.Value[0].ClassDefinition.Name, kv1.Value[0]["NOMINAL_DIAMETER"].DoubleValue.ToString(), kv1.Value[0]["LINENUMBER"].StringValue);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 得到要导出的数据，并按字典类格式存储
+        /// </summary>
+        /// <param name="ecList"></param>
+        /// <returns></returns>
+        public Dictionary<int, Dictionary<int, List<IECInstance>>> fuzhi(ECInstanceList ecList)
+        {
+            Dictionary<int, Dictionary<int, List<IECInstance>>> dicEcList = new Dictionary<int, Dictionary<int, List<IECInstance>>>();
+            if (ecList.Count>0)
+            {
+                Dictionary<int, string> lineList = new Dictionary<int, string>();
+                Dictionary<int, List<IECInstance>> iecDicInstanceList = new Dictionary<int, List<IECInstance>>();
+                #region 将数据按管线编号进行分组
+                int keyNumber = 0;
+                foreach(IECInstance ec in ecList)
+                {
+                    bool b = BMECApi.Instance.InstanceDefinedAsClass(ec, "PIPING_COMPONENT", true);
+                    if(b)
+                    {
+                        string fenlei = ec["CERI_Classify"].StringValue;
+                        if(fenlei=="材料"||fenlei=="cailiao")
+                        {
+                            string LineNumber = ec["LINENUMBER"].StringValue;
+                            if(lineList.Count==0)
+                            {
+                                lineList.Add(keyNumber, LineNumber);
+                                List<IECInstance> iecList = new List<IECInstance>();
+                                iecList.Add(ec);
+                                iecDicInstanceList.Add(keyNumber, iecList);
+                            }
+                            else
+                            {
+                                bool b1 = lineList.ContainsValue(LineNumber);
+                                if(!b1)
+                                {
+                                    keyNumber += 1;
+                                    lineList.Add(keyNumber, LineNumber);
+                                    List<IECInstance> iecList = new List<IECInstance>();
+                                    iecList.Add(ec);
+                                    iecDicInstanceList.Add(keyNumber, iecList);
+                                }
+                                else
+                                {
+                                    int indexKey = 0;
+                                    foreach(KeyValuePair<int,string> kv in lineList)
+                                    {
+                                        if(kv.Value==LineNumber)
+                                        {
+                                            indexKey = kv.Key;
+                                        }
+                                    }
+                                    iecDicInstanceList[indexKey].Add(ec);
+                                }
+                            }
+                        }
+                    }
+                }
+                #endregion
+                Dictionary<int, Dictionary<int,List<IECInstance>>> rowIecList = new Dictionary<int, Dictionary<int,List<IECInstance>>>();
+                if(iecDicInstanceList.Count>0)
+                {
+                    foreach(KeyValuePair<int,List<IECInstance>> kv in iecDicInstanceList)
+                    {
+                        Dictionary<int, List<IECInstance>> rowList = new Dictionary<int, List<IECInstance>>();
+                        #region 将元件按ecClass和DN进行分组
+                        int rowm = 0;
+                        foreach(IECInstance iec in iecDicInstanceList[kv.Key])
+                        {
+                            string ecName = iec.ClassDefinition.Name;
+                            double dn = iec["NOMINAL_DIAMETER"].DoubleValue;
+                            if(rowList.Count==0)
+                            {
+                                List<IECInstance> iecList = new List<IECInstance>();
+                                iecList.Add(iec);
+                                rowList.Add(rowm, iecList);
+                            }
+                            else
+                            {
+                                int kv_key = 0;
+                                bool bbb = true;
+                                foreach(KeyValuePair<int,List<IECInstance>> kv1 in rowList)
+                                {
+                                    foreach(IECInstance iecinstan in kv1.Value)
+                                    {
+                                        string ecName1 = iecinstan.ClassDefinition.Name;
+                                        double dn1 = iecinstan["NOMINAL_DIAMETER"].DoubleValue;
+                                        if(ecName==ecName1&&dn==dn1)
+                                        {
+                                            bbb = false;
+                                            kv_key = kv1.Key;
+                                        }
+                                    }
+                                }
+                                if(bbb)
+                                {
+                                    rowm++;
+                                    List<IECInstance> iecList = new List<IECInstance>();
+                                    iecList.Add(iec);
+                                    rowList.Add(rowm, iecList);
+                                }
+                                else
+                                {
+                                    rowList[kv_key].Add(iec);
+                                }
+                            }
+
+                        }
+                        rowIecList.Add(kv.Key, rowList);
+                        #endregion
+                    }
+
+                    dicEcList = rowIecList;
+                }
+            }
+            return dicEcList;
+        }
+
+        /// <summary>
+        /// 点击全部时，获取dgn下的所有元素
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if(radioButton1.Checked==true)
+            {
+                dataGridView1.Rows.Clear();
+                dataGridView2.Rows.Clear();
+                ECInstanceList ecList = DgnUtilities.GetAllInstancesFromDgn();
+                itemList = fuzhi(ecList);
+                if (itemList.Count > 0)
+                {
+                    foreach (KeyValuePair<int, Dictionary<int, List<IECInstance>>> kv in itemList)
+                    {
+                        dataGridView1.Rows.Add(true, kv.Value[0][0]["LINENUMBER"].StringValue, kv.Value[0][0]["SPECIFICATION"].StringValue);
+                        foreach (KeyValuePair<int, List<IECInstance>> kv1 in kv.Value)
+                        {
+                            dataGridView2.Rows.Add(true, kv1.Value[0].ClassDefinition.Name, kv1.Value[0]["NOMINAL_DIAMETER"].DoubleValue.ToString(), kv1.Value[0]["LINENUMBER"].StringValue);
+                        }
+                    }
+                }
+            }          
+        }
+
+        /// <summary>
+        /// 点击选中时获取选中的元素
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            if(radioButton2.Checked==true)
+            {
+                ECInstanceList ecList = DgnUtilities.GetSelectedInstances();
+                if (ecList.Count > 0)
+                {
+                    dataGridView1.Rows.Clear();
+                    dataGridView2.Rows.Clear();
+                    itemList = fuzhi(ecList);
+                    if (itemList.Count > 0)
+                    {
+                        foreach (KeyValuePair<int, Dictionary<int, List<IECInstance>>> kv in itemList)
+                        {
+                            dataGridView1.Rows.Add(true, kv.Value[0][0]["LINENUMBER"].StringValue, kv.Value[0][0]["SPECIFICATION"].StringValue);
+                            foreach (KeyValuePair<int, List<IECInstance>> kv1 in kv.Value)
+                            {
+                                dataGridView2.Rows.Add(true, kv1.Value[0].ClassDefinition.Name, kv1.Value[0]["NOMINAL_DIAMETER"].DoubleValue.ToString(), kv1.Value[0]["LINENUMBER"].StringValue);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("请先选择元素！");
+                    radioButton1.Checked = true;
+                }
+            }            
+        }
+
+        /// <summary>
+        /// 导出材料报表
+        /// </summary>
+        /// <param name="itemList"></param>
+        public void ExportExcel(Dictionary<int, Dictionary<int, List<IECInstance>>> itemList)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = path0; //设置初始目录
+            sfd.Filter = "Excel Files(*.xlsx)|*.xlsx";
+            sfd.RestoreDirectory = true;
+
+            if(sfd.ShowDialog()==DialogResult.OK)
+            {
+                string excelPath = sfd.FileName.ToString();
+                string excelName = excelPath.Substring(excelPath.LastIndexOf("\\") + 1);
+                int i = excelName.LastIndexOf(".");
+                string houzhui = excelName.Substring(i + 1);
+                if (houzhui != "xlsx")
+                {
+                    MessageBox.Show("输入文件名格式不正确");
+                    return;
+                }
+                if (File.Exists(excelPath)) //判断是否有同名的文件
+                {
+                    string excelname = excelName.Substring(0, excelName.LastIndexOf("."));
+                    string datetime = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+                    //string.Format("{0:yyyyMMddHHmmssffff}",dt);
+                    //string datetime = string.Format("{ 0:yyyyMMddHHmmssffff}", dt.ToString());
+                    //excelname += "1.xlsx";
+                    excelname = excelname + datetime + ".xlsx";
+                    //string name = excelname.Substring(excelPath1.LastIndexOf("\\") + 1);
+                    MessageBox.Show("该路径下存在同名的文件。修改后的文件名为：" + excelname);
+                    string path = excelPath.Substring(0, excelPath.LastIndexOf("\\") + 1);
+                    excelPath = path + excelname;
+                }
+                try
+                {
+                    File.Copy(path0 + "\\JYXConfig\\MaterialsList.xlsx", excelPath);
+                }
+                catch
+                {
+                    MessageBox.Show("路径" + path0 + "\\JYXConfig下没有找到MaterialsList.xlsx文件");
+                    return;
+                }
+                MOIE.Application app = new MOIE.Application();
+                MOIE.Workbooks wkb = app.Workbooks;
+                MOIE.Workbook wb = wkb.Open(excelPath);
+                //app.Visible = true;
+                //wb=wkb.Open(excelPath1);
+                MOIE.Worksheet s = (MOIE.Worksheet)wb.Worksheets["通用材料表-国内"];
+                if(itemList.Count>0)
+                {
+                    int row = 5; //行号
+                    int lineindex = 0; //序号
+                    foreach(KeyValuePair<int,Dictionary<int,List<IECInstance>>> kv in itemList)
+                    {
+                        row++;
+                        lineindex++;
+                        s.Cells[row, 1] = lineindex;
+                        bool biaoshi = true;//避免重复添加管线编号
+                        //s.Cells[row, 2] = kv.Value.Values[0]["LINENUMBER"].StringValue;
+                        foreach(KeyValuePair<int,List<IECInstance>> kv1 in kv.Value)
+                        {
+                            if(biaoshi)
+                            {
+                                s.Cells[row, 2] = kv1.Value[0]["LINENUMBER"].StringValue;
+                                biaoshi = false;
+                            }                          
+                            row++;
+                            string ecname = "";
+                            string dn = "";
+                            string unit = "";
+                            double qty = 0;
+                            string materialNum = "";
+                            string pipece_mare = "";
+                            string material = "";
+                            double dry_weight = 0;
+                            string catalog_name = "";
+                            string media = "";
+                            double totalweight = 0;
+                            ecname = kv1.Value[0].ClassDefinition.Name;
+                            if (kv1.Value[0].GetPropertyValue("CERI_MAIN_SIZE") != null)
+                            {
+                                dn = kv1.Value[0]["CERI_MAIN_SIZE"].StringValue;
+                            }
+                            if (kv1.Value[0].GetPropertyValue("CERI MAT_GRADE") != null)
+                            {
+                                materialNum = kv1.Value[0]["CERI MAT_GRADE"].StringValue;
+                            }
+                            if (kv1.Value[0].GetPropertyValue("CERI_PIECE_MARK") != null)
+                            {
+                                pipece_mare = kv1.Value[0]["CERI_PIECE_MARK"].StringValue;
+                            }
+                            if (kv1.Value[0].GetPropertyValue("CERI_MATERIAL") != null)
+                            {
+                                material = kv1.Value[0]["CERI_MATERIAL"].StringValue;
+                            }
+                            if (kv1.Value[0].GetPropertyValue("CERI_CATALOG") != null)
+                            {
+                                catalog_name = kv1.Value[0]["CERI_CATALOG"].StringValue;
+                            }
+                            if (kv1.Value[0].GetPropertyValue("CERI_Media_Name") != null)
+                            {
+                                media = kv1.Value[0]["CERI_Media_Name"].StringValue;
+                            }
+
+                            bool b = BMECApi.Instance.InstanceDefinedAsClass(kv1.Value[0], "PIPE", true);
+                            if (b)
+                            {
+                                if (kv1.Value[0].GetPropertyValue("CERI_WEIGHT_DRY") != null)
+                                {
+                                    dry_weight = kv1.Value[0]["CERI_WEIGHT_DRY"].DoubleValue * 1000;
+                                }
+                                unit = "米";
+                                double length = 0;
+                                foreach (IECInstance iec2 in kv1.Value)
+                                {
+                                    length += iec2["LENGTH"].DoubleValue / 1000;
+                                    //dry_weight = iec.Value[0]["DRY_WEIGHT"].DoubleValue * 1000;
+                                }
+                                qty = length;
+                                totalweight = qty * dry_weight;
+                            }
+                            else
+                            {
+                                unit = "个";
+                                if (kv1.Value[0].GetPropertyValue("CERI_WEIGHT_DRY") != null)
+                                {
+                                    dry_weight = kv1.Value[0]["CERI_WEIGHT_DRY"].DoubleValue;
+                                }
+                                qty = kv1.Value.Count;
+                                totalweight = qty * dry_weight;
+                            }
+                            s.Cells[row, 3] = materialNum;
+                            s.Cells[row, 4] = ecname;
+                            s.Cells[row, 5] = pipece_mare;
+                            s.Cells[row, 6] = "DN" + dn;
+                            s.Cells[row, 7] = material;
+                            s.Cells[row, 9] = unit;
+                            s.Cells[row, 10] = qty;
+                            s.Cells[row, 11] = dry_weight;
+                            s.Cells[row, 12] = totalweight;
+                            s.Cells[row, 13] = catalog_name;
+                            s.Cells[row, 16] = media;
+                        }
+                    }
+                    wb.Save();
+                    wb.Close();
+                    wkb.Close();
+                    app.Quit();
+                    MOIE.Application app1 = new MOIE.Application();
+                    MOIE.Workbooks wbs = app1.Workbooks;
+                    MOIE.Workbook wb1 = app1.Workbooks.Open(excelPath);
+                    app1.Visible = true;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 元件属性类
+    /// </summary>
+    public class pipingPro
+    {
+        /// <summary>
+        /// 管线编号
+        /// </summary>
+        public string pipeLineName { get; set; }
+
+        /// <summary>
+        /// 元件名称
+        /// </summary>
+        public string ecName { get; set; }
+
+        /// <summary>
+        /// DN
+        /// </summary>
+        public double DN { get; set; }
+    }
+}

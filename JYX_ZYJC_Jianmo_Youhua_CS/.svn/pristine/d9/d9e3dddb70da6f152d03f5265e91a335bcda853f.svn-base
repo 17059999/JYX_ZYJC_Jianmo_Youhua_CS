@@ -1,0 +1,207 @@
+﻿
+
+using Bentley;
+using Bentley.ApplicationFramework.Interfaces;
+using Bentley.Building.Mechanical;
+using Bentley.Building.Mechanical.Api;
+using Bentley.Building.Mechanical.Components;
+using Bentley.DgnPlatformNET;
+using Bentley.ECObjects.Instance;
+using Bentley.GeometryNET;
+using Bentley.MstnPlatformNET;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public class MyLinearPlacementTool : LinearPlacementTool
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="linearTool"></param>
+        public MyLinearPlacementTool(MyLinearPlacementTool linearTool) : base(linearTool)
+        {
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="addIn"></param>
+        /// <param name="cmdNumber"></param>
+        public MyLinearPlacementTool(AddIn addIn, int cmdNumber) : base(addIn, cmdNumber)
+        {
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void _OnDataButton(Bentley.DgnPlatformNET.DgnButtonEvent e)
+        {
+           
+            base._OnDataButton(e);
+            if (base.ObjectAtOrigin != null)
+            {
+                if (base.ObjectAtOrigin.ClassName.Equals("PIPE"))
+                {
+                    foreach (BMECObject bmec_object in base.ObjectAtOrigin.ConnectedComponents)
+                    {
+                        if (bmec_object.ClassName.Equals("EQUAL_PIPE_TEE"))
+                        {
+                            //通过创建一个于原来的 EQUAL_PIPE_TEE 相同的 ECInstance 来获取 mdb 中对应字段的值
+                            try
+                            {
+                                IECInstance elbow_iec_instance = BMECInstanceManager.Instance.CreateECInstance("EQUAL_PIPE_TEE", true);//创建一个ECInstance
+                                BMECApi api = BMECApi.Instance;
+                                ISpecProcessor specProcessor = api.SpecProcessor;
+                                specProcessor.FillCurrentPreferences(elbow_iec_instance, null);
+                                elbow_iec_instance["NOMINAL_DIAMETER"].DoubleValue = bmec_object.GetDoubleValue("NOMINAL_DIAMETER");//设置管径
+                                ECInstanceList ec_instance_list = specProcessor.SelectSpec(elbow_iec_instance, false);//获取选择数据
+
+                                string standard = string.Empty;
+                                if (null != ec_instance_list && ec_instance_list.Count > 0)
+                                {
+                                    IECInstance instance = ec_instance_list[0];
+                                    standard = instance["STANDARD"].StringValue;
+                                }
+                                bmec_object.Instance["STANDARD"].StringValue = standard;
+                                bmec_object.Create();
+                                //MessageBox.Show("当前生成的Tee中Standard属性为：" + standard);//TODO 测试完了记得注释掉
+                            }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
+                        }
+                        else if (bmec_object.ClassName.Equals("PIPE"))
+                        {
+                            Bentley.GeometryNET.DPoint3d new_start_dpt, new_end_dpt, old_start_dpt, old_end_dpt;
+
+                            new_start_dpt = new_end_dpt = old_start_dpt = old_end_dpt = Bentley.GeometryNET.DPoint3d.Zero;
+                            JYX_ZYJC_CLR.PublicMethod.get_two_port_object_end_points(base.ObjectAtOrigin, ref new_start_dpt, ref new_end_dpt);
+                            JYX_ZYJC_CLR.PublicMethod.get_two_port_object_end_points(bmec_object, ref old_start_dpt, ref old_end_dpt);
+
+                            DVector3d new_vec = Bentley.GeometryNET.DPoint3d.Subtract(new_start_dpt, new_end_dpt);
+                            DVector3d old_vec = Bentley.GeometryNET.DPoint3d.Subtract(old_start_dpt, old_end_dpt);
+                            if (new_vec.IsParallelTo(old_vec))
+                            {
+                                if (MessageBox.Show("是否自动合并管道？", "合并管道", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                {
+                                    base.ObjectAtOrigin.Instance["LENGTH"].DoubleValue = base.ObjectAtOrigin.GetDoubleValue("LENGTH") + bmec_object.GetDoubleValue("LENGTH");
+
+                                    BMECApi.Instance.DeleteFromModel(bmec_object);
+                                    JYX_ZYJC_CLR.PublicMethod.transform_bmec_object(base.ObjectAtOrigin, old_start_dpt);
+                                    base.ObjectAtOrigin.Create();
+                                    base.ObjectAtOrigin.DiscoverConnectionsEx();
+                                    base.ObjectAtOrigin.UpdateConnections();
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                BMECObject bm1 = JYX_ZYJC_CLR.PublicMethod.ScanObjectAtPoint(this.Origin);
+                if (bm1 == null)
+                {
+                    return;
+                }else if(bm1.ClassName.Equals("EQUAL_PIPE_TEE"))
+                {
+                    //通过创建一个于原来的 EQUAL_PIPE_TEE 相同的 ECInstance 来获取 mdb 中对应字段的值
+                    try
+                    {
+                        foreach (BMECObject bmec_object in bm1.ConnectedComponents)
+                        {
+                            if (bmec_object.ClassName.Equals("PIPE"))
+                            {
+                                IECInstance elbow_iec_instance = BMECInstanceManager.Instance.CreateECInstance("EQUAL_PIPE_TEE", true);//创建一个ECInstance
+                                BMECApi api = BMECApi.Instance;
+                                ISpecProcessor specProcessor = api.SpecProcessor;
+                                specProcessor.FillCurrentPreferences(elbow_iec_instance, null);
+                                elbow_iec_instance["NOMINAL_DIAMETER"].DoubleValue = bmec_object.GetDoubleValue("NOMINAL_DIAMETER");//设置管径
+                                ECInstanceList ec_instance_list = specProcessor.SelectSpec(elbow_iec_instance, false);//获取选择数据
+
+                                string standard = string.Empty;
+                                if (null != ec_instance_list && ec_instance_list.Count > 0)
+                                {
+                                    IECInstance instance = ec_instance_list[0];
+                                    standard = instance["STANDARD"].StringValue;
+                                }
+                                bm1.Instance["STANDARD"].StringValue = standard;
+                                bm1.Create();
+                                break;
+                            }
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+
+                BMECObject bm2 = JYX_ZYJC_CLR.PublicMethod.ScanObjectAtPoint(this.LastDataPoint);
+                if (bm2 == null)
+                {
+                    return;
+                }
+                
+                if (bm2.ClassName.Equals("EQUAL_PIPE_TEE"))
+                {
+                    //通过创建一个于原来的 EQUAL_PIPE_TEE 相同的 ECInstance 来获取 mdb 中对应字段的值
+                    try
+                    {
+                        foreach (BMECObject bmec_object in bm2.ConnectedComponents)
+                        {
+                            if (bmec_object.ClassName.Equals("PIPE"))
+                            {
+                                IECInstance elbow_iec_instance = BMECInstanceManager.Instance.CreateECInstance("EQUAL_PIPE_TEE", true);//创建一个ECInstance
+                                BMECApi api = BMECApi.Instance;
+                                ISpecProcessor specProcessor = api.SpecProcessor;
+                                specProcessor.FillCurrentPreferences(elbow_iec_instance, null);
+                                elbow_iec_instance["NOMINAL_DIAMETER"].DoubleValue = bmec_object.GetDoubleValue("NOMINAL_DIAMETER");//设置管径
+                                ECInstanceList ec_instance_list = specProcessor.SelectSpec(elbow_iec_instance, false);//获取选择数据
+
+                                string standard = string.Empty;
+                                if (null != ec_instance_list && ec_instance_list.Count > 0)
+                                {
+                                    IECInstance instance = ec_instance_list[0];
+                                    standard = instance["STANDARD"].StringValue;
+                                }
+                                bm2.Instance["STANDARD"].StringValue = standard;
+                                bm2.Create();
+                                break;
+                            }
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
+            }
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void CreateTool() { new MyLinearPlacementTool(this).InstallTool(); }
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void OnRestartCommand()
+        {
+            base.RestartCommand(new MyLinearPlacementTool(this));
+        }
+
+    }
+}

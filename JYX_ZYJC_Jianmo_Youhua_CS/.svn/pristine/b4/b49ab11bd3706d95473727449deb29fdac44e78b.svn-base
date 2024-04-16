@@ -1,0 +1,56 @@
+﻿using Bentley.MstnPlatformNET.WinForms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public partial class EquipmentReportFrom : //Form
+#if DEBUG
+        Form
+#else
+        Adapter
+#endif
+    {
+        bool isSele = false;
+        public static EquipmentReportFrom reportFrom = null;
+        public EquipmentReportFrom()
+        {
+            InitializeComponent();
+        }
+
+        public static EquipmentReportFrom instence()
+        {
+            if(reportFrom==null)
+            {
+                reportFrom = new EquipmentReportFrom();
+            }
+            else
+            {
+                reportFrom.Close();
+                reportFrom = new EquipmentReportFrom();
+            }
+            return reportFrom;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ExportMaterials exClass = new ExportMaterials();
+            if(radioButton1.Checked==true)
+            {
+                isSele = false;
+            }
+            if(radioButton2.Checked==true)
+            {
+                isSele = true;
+            }
+            exClass.selectEquipmentExcel(isSele);
+        }
+    }
+}

@@ -1,0 +1,270 @@
+﻿using Bentley.Building.Mechanical.Api;
+using Bentley.Building.Mechanical.Components;
+using Bentley.DgnPlatformNET;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.ECObjects.Instance;
+using Bentley.GeometryNET;
+using Bentley.MstnPlatformNET;
+using Bentley.OpenPlantModeler.SDK.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 多余图形清理
+    /// </summary>
+    public class ElementClear
+    {
+        /*更新当前 Model 中元素的连结性*/
+        /// <summary>
+        /// 更新所有 ECInstance 的连结性
+        /// </summary>
+        /// <returns></returns>
+        public static void updateConnectionOfAllECInstance() {
+            ModelElementsCollection elements = Session.Instance.GetActiveDgnModel().GetGraphicElements();//扫描所有元素
+            List<Element> elementlist = new List<Element>();
+            foreach (var element in elements)//将扫描到的 Element 存放到 list 中
+            {
+                elementlist.Add(element);
+            }
+            List<BMECObject> ecObjectList = new List<BMECObject>();//所有图形的 ECInstance 容器
+
+            foreach (var element in elementlist)
+            {
+                //首先需要是 ECInstance
+                BMECObject ec_object = null;
+                ec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(element.ElementId);
+                if (ec_object != null && ec_object.Instance != null)
+                {
+                    ecObjectList.Add(ec_object);
+                }
+            }
+            BMECApi api = BMECApi.Instance;
+            foreach (var ec_object in ecObjectList)
+            {
+                if (ec_object.Ports != null)
+                {
+                    if (ec_object.ConnectedComponents != null && ec_object.ConnectedComponents.Count != 0)
+                    {
+                        ec_object.DiscoverConnectionsEx();
+                        ec_object.UpdateConnections();
+                    }
+                }
+            }
+        }
+        public static void updateConnectionOfAllECInstance(long elementId) {
+            BMECObject ecObject = null;
+            ecObject = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(Convert.ToUInt64(elementId));
+            if (ecObject != null && ecObject.Instance != null)
+            {
+                //ecObjectList.Add(ecObject);
+                BMECApi api = BMECApi.Instance;
+                ecObject.DiscoverConnectionsEx();
+                api.DoSettingsForFastenerUtility(ecObject, ecObject.Ports[0]);
+                api.DoSettingsForFastenerUtility(ecObject, ecObject.Ports[1]);
+            }
+        }
+
+        /*物理上孤立*/
+        /// <summary>
+        /// 获取物理距离上孤立的元素
+        /// 从元素的原点算距离是不合理的，当元素本身过大时，显然不合理，初步想法是将每个元素当成一个球体，算距离时，加上本身的半径，但并不是每个元素的原点都在其中心
+        /// </summary>
+        /// <param name="distance"></param>
+        /// <returns></returns>
+        public List<Element> filterElementByDistance(double distance) {
+            ModelElementsCollection elements = Session.Instance.GetActiveDgnModel().GetGraphicElements();//扫描所有元素
+            List<Element> elementlist = new List<Element>();
+            //foreach (var element in elements)//将扫描到的 Element 存放到 list 中
+            //{
+            //    elementlist.Add(element);
+            //}
+            elementlist = elements.ToList();
+            List<Element> separateElements = new List<Element>();//距离上孤立元素的容器
+            separateElements = this.getSeparateElements(elementlist, distance);//获取距离上孤立的元素
+            return separateElements;
+        }
+        /// <summary>
+        /// 获取大范围内没有其它元素的元素
+        /// </summary>
+        /// <param name="elements"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public List<Element> getSeparateElements(List<Element> elements, double radius) {
+            double uor_per_master = Session.Instance.GetActiveDgnModel().GetModelInfo().UorPerMaster;//当前设计文件的主单位
+            List<Element> list = new List<Element>();//孤立元素容器
+            List<DPoint3d> locations = new List<DPoint3d>();//孤立元素位置
+            double bijiao_radius = 0.0;//两个元素的自身半径加上孤立判断距离
+            double radius1 = 0.0;//元素一的自身半径
+            double radius2 = 0.0;//元素二的自身半径
+            DPoint3d point1 = new DPoint3d();//元素一的中心点
+            DPoint3d point2 = new DPoint3d();//元素二的中心点
+            double distance = 0.0;//两个元素中心点间距离
+            for (int i = 0; i < elements.Count; i++)//TODO 这个比较方法的时间复杂度太高了，希望换一种方法
+            {
+                bool flag = true;
+                for (int j = 0; j < elements.Count; j++)
+                {
+                    if (i == j) continue;
+                    this.getElementCenterPointAndRadius(elements[i], out point1, out radius1);
+                    this.getElementCenterPointAndRadius(elements[j], out point2, out radius2);
+                    bijiao_radius = radius * uor_per_master + radius1 + radius2;
+                    distance = point1.Distance(point2);
+                    if (distance <= bijiao_radius)
+                    {
+                        flag = false;
+                        break;
+                    }
+
+                }
+                if (flag)
+                {
+                    list.Add(elements[i]);
+                }
+            }
+
+            return list;
+        }
+        /// <summary>
+        /// 获取元素的中心点(通过range.high - range.low)以及最大半径(XSize、YSize、ZSize)
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="centerPoint"></param>
+        /// <param name="radius"></param>
+        public void getElementCenterPointAndRadius(Element element, out DPoint3d centerPoint, out double radius)
+        {
+            DRange3d range;
+            ((DisplayableElement)element).CalcElementRange(out range);
+            DPoint3d duijiaoxian = range.High - range.Low;
+            centerPoint = DPoint3d.Add(range.Low, duijiaoxian, 0.5);
+            radius = Math.Max(Math.Max(range.XSize, range.YSize), range.ZSize) / 2;
+        }
+
+        /*连接性上孤立*/
+        /// <summary>
+        /// 获取连结性上孤立的元素
+        /// </summary>
+        /// <returns></returns>
+        public List<Element> filterElementByConnection() {
+            List<Element> separateElements = new List<Element>();//连结性上孤立元素的容器
+            ModelElementsCollection elements = Session.Instance.GetActiveDgnModel().GetGraphicElements();//扫描所有元素
+            List<BMECObject> elementlist = new List<BMECObject>();
+            List<Element> solidElement = new List<Element>();//不具有 EC 属性的智能实体
+            foreach (var element in elements)
+            {
+                BMECObject ec_object = null;
+                ec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(element.ElementId);
+                if (ec_object != null && ec_object.Instance != null)//是否为 ECInstance
+                {
+                    if (ec_object.Ports != null && ec_object.Ports.Count != 0)//判断 ECInstance 是否有具连结性的可能
+                    {
+                        if (ec_object.ConnectedComponents != null && ec_object.ConnectedComponents.Count == 0)// ECInstance 不具有连接元素
+                        {
+                            separateElements.Add(element);
+                            elementlist.Add(ec_object);
+                        }
+                    }
+                }
+            }
+            return separateElements;
+        }
+
+        /*其他功能*/
+        /// <summary>
+        ///定位到元素
+        /// </summary>
+        public static void locateElement(long elementId) {
+            Bentley.Interop.MicroStationDGN.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+            Bentley.Interop.MicroStationDGN.Element ielement = app.ActiveModelReference.GetElementByID(elementId);
+            Bentley.Interop.MicroStationDGN.View viewport = app.CommandState.LastView();
+
+            int view = viewport.Index;
+            JYX_ZYJC_CLR.PublicMethod.zoom_elem(ielement, view);
+            ielement.IsHighlighted = true;
+        }
+        /// <summary>
+        /// 从当前 Model 中删除元素
+        /// </summary>
+        /// <param name="elementId"></param>
+        public static void deleteElement(List<long> elementId) {
+            List<Element> elements = ElementClear.getCEElementById(elementId);
+            if (elements != null)
+            {
+                foreach (var element in elements)
+                {
+                    element.DeleteFromModel();
+                }
+            }
+        }
+        /// <summary>
+        /// 通过 elementId 获取对应的 V8i 的 ELement
+        /// </summary>
+        /// <param name="elementId"></param>
+        /// <returns></returns>
+        public static List<Bentley.Interop.MicroStationDGN.Element> getV8iElementById(List<long> elementId) {
+            List<Bentley.Interop.MicroStationDGN.Element> elements = new List<Bentley.Interop.MicroStationDGN.Element>();
+            Bentley.Interop.MicroStationDGN.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+            foreach (var id in elementId)
+            {
+                Bentley.Interop.MicroStationDGN.Element element = app.ActiveModelReference.GetElementByID(id);
+                elements.Add(element);
+            }
+            return elements;
+        }
+        /// <summary>
+        /// 通过 elementId 获取对应的 CE 的 ELement
+        /// </summary>
+        /// <param name="elementId"></param>
+        /// <returns></returns>
+        public static List<Element> getCEElementById(List<long> elementId)
+        {
+            List<Element> elements = new List<Element>();
+            foreach (var id in elementId)
+            {
+                long tempid = id;
+                Element element = Session.Instance.GetActiveDgnModel().FindElementById(new ElementId(ref tempid));
+                elements.Add(element);
+            }
+            return elements;
+        }
+        /// <summary>
+        /// 无重复元素添加
+        /// </summary>
+        /// <param name="list1"></param>
+        /// <param name="list2"></param>
+        /// <returns></returns>
+        public static List<Element> addElementListNorepeat(List<Element> list1, List<Element> list2) {
+            List<Element> elements = new List<Element>();
+            elements = list1;
+            foreach (var list2element in list2)
+            {
+                if (!ElementClear.isContainElement(list1,list2element))
+                {
+                    elements.Add(list2element);
+                }
+            }
+            return elements;
+        }
+        /// <summary>
+        /// List中是否包含某 Element 元素
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static bool isContainElement(List<Element> list, Element element) {
+            bool isContain = false;
+            foreach (var ele in list)
+            {
+                if (ele.ElementId == element.ElementId)
+                {
+                    isContain = true;
+                }
+            }
+            return isContain;
+        }
+    }
+}

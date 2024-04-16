@@ -1,0 +1,104 @@
+﻿using Bentley.ApplicationFramework.UI;
+using Bentley.Building.Mechanical;
+using Bentley.ECObjects.Instance;
+using Bentley.MstnPlatformNET;
+using Bentley.MstnPlatformNET.WinForms;
+using Bentley.MstnPlatformNET.WinForms.Controls;
+using Bentley.OpenPlant.Modeler.Api;
+using System;
+using System.Drawing;
+using BIM = Bentley.Interop.MicroStationDGN;
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    class CloupingView : BaseContainerView
+    {
+        private static CloupingView s_instance = null;
+        private BIM.Application app = Bentley.MstnPlatformNET.InteropServices.Utilities.ComApp;
+        public override Adapter ToolFrameAdapter
+        {
+            get
+            {
+                if (null == base.ToolAdapter)
+                {
+                    base.ToolAdapter = new ToolAdapter(base.AddIn, base.ToolName, this.PropertyContainer, null);
+                    BMECApi instance = BMECApi.Instance;
+
+                    this.AddToolStrip();
+                    
+                    this.AddPreviewGroupPanel();
+                    base.AddSettingsGroupPanel();
+                    this.AddPropertiesPaneGroupPanel();
+                    base.WindowContentHost.CanDockHorizontally = false;
+                    this.SetFormClosingEvents(base.ToolAdapter);
+                }
+                return base.ToolAdapter;
+            }
+        }
+
+        public CloupingView(AddIn addIn, string toolName) : base(addIn, toolName)
+        {
+            try
+            {
+                CloupingView.s_instance = this;
+            }
+            catch
+            {
+                base.Dispose();
+                throw;
+            }
+        }
+        protected override void AddPreviewGroupPanel()
+        {
+            base.AddPreviewGroupPanel();
+            
+            Size size = new Size(201, 240);
+            Color color = Color.Black;
+            base.PictureBoxControl.BackColor = color;
+            base.PreviewControl.Size = size;
+            base.PictureBoxControl.Width = 201;
+            base.PictureBoxControl.Height = 240;
+            SetupPreviewControl();
+        }
+        public static CloupingView Instance
+        {
+            get
+            {
+                return CloupingView.s_instance;
+            }
+        }
+
+        #region 加载略缩图
+        //获取单元名和单元库名
+        public void SetupPreviewControl()
+        {
+
+            BMECInstanceManager bmecinstancemanager = BMECApi.Instance.InstanceManager;
+            string name = this.PropertyContainer.Instance.ClassDefinition.Name;
+            IECInstance customAttributes = bmecinstancemanager.Schema[name].GetCustomAttributes("CREATION_ATTRIBUTE");
+            if (customAttributes != null && customAttributes.GetPropertyValue("DIAGRAM_CELL_NAME") != null && customAttributes.GetPropertyValue("CELL_LIBRARY") != null)
+            {
+                string cellName = customAttributes["DIAGRAM_CELL_NAME"].StringValue.Trim();
+                string libraryName = customAttributes["CELL_LIBRARY"].StringValue.Trim();
+                if (!(cellName == string.Empty) && !(libraryName == string.Empty))
+                {
+                    string str = BMECInstanceManager.FindConfigVariableName("OPM_DIR_WORKSPACE_CELLS");
+                    app.AttachCellLibrary(str + libraryName);
+                    BIM.CellElement cell_elem = app.CreateCellElement3(cellName, app.Point3dZero(), true);
+                    if (cell_elem != null)
+                    {
+                        System.IntPtr metafileHandle = new IntPtr(cell_elem.DrawToEnhancedMetafile(base.PictureBoxControl.Width*2, base.PictureBoxControl.Height, false));
+                        System.Drawing.Imaging.Metafile metafile = new System.Drawing.Imaging.Metafile(metafileHandle, true);
+                        base.PictureBoxControl.Image = metafile;
+                        base.PictureBoxControl.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+                    }
+                }
+            }
+        }
+
+        
+
+        
+        #endregion
+
+    }
+}

@@ -1,0 +1,435 @@
+﻿namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    partial class ReportFrom
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReportFrom));
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.quanxuan = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.PipeLineName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.specName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.quanxuan1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.ecName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DN = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pipeLineName1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.FlcheckBox = new System.Windows.Forms.CheckBox();
+            this.gtcheckBox = new System.Windows.Forms.CheckBox();
+            this.mtcheckBox = new System.Windows.Forms.CheckBox();
+            this.otcheckBox = new System.Windows.Forms.CheckBox();
+            this.pecheckBox = new System.Windows.Forms.CheckBox();
+            this.cscheckBox = new System.Windows.Forms.CheckBox();
+            this.ybcheckBox = new System.Windows.Forms.CheckBox();
+            this.fmcheckBox = new System.Windows.Forms.CheckBox();
+            this.ewcheckBox = new System.Windows.Forms.CheckBox();
+            this.techeckBox1 = new System.Windows.Forms.CheckBox();
+            this.qxcheckBox1 = new System.Windows.Forms.CheckBox();
+            this.zlcomboBox1 = new System.Windows.Forms.ComboBox();
+            this.lxcomboBox1 = new System.Windows.Forms.ComboBox();
+            this.wlbmGroupcheckBox1 = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.groupBox1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Checked = true;
+            this.radioButton1.Location = new System.Drawing.Point(12, 12);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(47, 16);
+            this.radioButton1.TabIndex = 0;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "全部";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(234, 13);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(47, 16);
+            this.radioButton2.TabIndex = 1;
+            this.radioButton2.Text = "选中";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(106, 428);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "导出";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.quanxuan,
+            this.PipeLineName,
+            this.specName});
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dataGridView1.Location = new System.Drawing.Point(13, 35);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.Size = new System.Drawing.Size(268, 103);
+            this.dataGridView1.TabIndex = 3;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // quanxuan
+            // 
+            this.quanxuan.FillWeight = 35F;
+            this.quanxuan.HeaderText = "";
+            this.quanxuan.Name = "quanxuan";
+            // 
+            // PipeLineName
+            // 
+            this.PipeLineName.HeaderText = "管线编号";
+            this.PipeLineName.Name = "PipeLineName";
+            this.PipeLineName.ReadOnly = true;
+            // 
+            // specName
+            // 
+            this.specName.HeaderText = "等级库";
+            this.specName.Name = "specName";
+            this.specName.ReadOnly = true;
+            // 
+            // dataGridView2
+            // 
+            this.dataGridView2.AllowUserToAddRows = false;
+            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView2.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.quanxuan1,
+            this.ecName,
+            this.DN,
+            this.pipeLineName1});
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView2.DefaultCellStyle = dataGridViewCellStyle4;
+            this.dataGridView2.Location = new System.Drawing.Point(13, 156);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.RowTemplate.Height = 23;
+            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView2.Size = new System.Drawing.Size(268, 103);
+            this.dataGridView2.TabIndex = 4;
+            this.dataGridView2.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView2_CellContentClick);
+            // 
+            // quanxuan1
+            // 
+            this.quanxuan1.FillWeight = 55F;
+            this.quanxuan1.HeaderText = "";
+            this.quanxuan1.Name = "quanxuan1";
+            // 
+            // ecName
+            // 
+            this.ecName.FillWeight = 162.4366F;
+            this.ecName.HeaderText = "元件名称";
+            this.ecName.Name = "ecName";
+            this.ecName.ReadOnly = true;
+            // 
+            // DN
+            // 
+            this.DN.FillWeight = 80F;
+            this.DN.HeaderText = "DN";
+            this.DN.Name = "DN";
+            this.DN.ReadOnly = true;
+            // 
+            // pipeLineName1
+            // 
+            this.pipeLineName1.FillWeight = 160.8509F;
+            this.pipeLineName1.HeaderText = "管线编号";
+            this.pipeLineName1.Name = "pipeLineName1";
+            this.pipeLineName1.ReadOnly = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.FlcheckBox);
+            this.groupBox1.Controls.Add(this.gtcheckBox);
+            this.groupBox1.Controls.Add(this.mtcheckBox);
+            this.groupBox1.Controls.Add(this.otcheckBox);
+            this.groupBox1.Controls.Add(this.pecheckBox);
+            this.groupBox1.Controls.Add(this.cscheckBox);
+            this.groupBox1.Controls.Add(this.ybcheckBox);
+            this.groupBox1.Controls.Add(this.fmcheckBox);
+            this.groupBox1.Controls.Add(this.ewcheckBox);
+            this.groupBox1.Controls.Add(this.techeckBox1);
+            this.groupBox1.Controls.Add(this.qxcheckBox1);
+            this.groupBox1.Location = new System.Drawing.Point(13, 156);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(276, 156);
+            this.groupBox1.TabIndex = 5;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "筛选条件";
+            // 
+            // FlcheckBox
+            // 
+            this.FlcheckBox.AutoSize = true;
+            this.FlcheckBox.Location = new System.Drawing.Point(6, 46);
+            this.FlcheckBox.Name = "FlcheckBox";
+            this.FlcheckBox.Size = new System.Drawing.Size(60, 16);
+            this.FlcheckBox.TabIndex = 10;
+            this.FlcheckBox.Text = "Flange";
+            this.FlcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // gtcheckBox
+            // 
+            this.gtcheckBox.AutoSize = true;
+            this.gtcheckBox.Location = new System.Drawing.Point(72, 46);
+            this.gtcheckBox.Name = "gtcheckBox";
+            this.gtcheckBox.Size = new System.Drawing.Size(60, 16);
+            this.gtcheckBox.TabIndex = 9;
+            this.gtcheckBox.Text = "Gasket";
+            this.gtcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // mtcheckBox
+            // 
+            this.mtcheckBox.AutoSize = true;
+            this.mtcheckBox.Location = new System.Drawing.Point(138, 46);
+            this.mtcheckBox.Name = "mtcheckBox";
+            this.mtcheckBox.Size = new System.Drawing.Size(72, 16);
+            this.mtcheckBox.TabIndex = 8;
+            this.mtcheckBox.Text = "Misc_Fit";
+            this.mtcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // otcheckBox
+            // 
+            this.otcheckBox.AutoSize = true;
+            this.otcheckBox.Location = new System.Drawing.Point(215, 46);
+            this.otcheckBox.Name = "otcheckBox";
+            this.otcheckBox.Size = new System.Drawing.Size(48, 16);
+            this.otcheckBox.TabIndex = 7;
+            this.otcheckBox.Text = "Olet";
+            this.otcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // pecheckBox
+            // 
+            this.pecheckBox.AutoSize = true;
+            this.pecheckBox.Location = new System.Drawing.Point(6, 73);
+            this.pecheckBox.Name = "pecheckBox";
+            this.pecheckBox.Size = new System.Drawing.Size(48, 16);
+            this.pecheckBox.TabIndex = 6;
+            this.pecheckBox.Text = "Pipe";
+            this.pecheckBox.UseVisualStyleBackColor = true;
+            // 
+            // cscheckBox
+            // 
+            this.cscheckBox.AutoSize = true;
+            this.cscheckBox.Location = new System.Drawing.Point(72, 73);
+            this.cscheckBox.Name = "cscheckBox";
+            this.cscheckBox.Size = new System.Drawing.Size(66, 16);
+            this.cscheckBox.TabIndex = 5;
+            this.cscheckBox.Text = "Crosses";
+            this.cscheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ybcheckBox
+            // 
+            this.ybcheckBox.AutoSize = true;
+            this.ybcheckBox.Location = new System.Drawing.Point(72, 102);
+            this.ybcheckBox.Name = "ybcheckBox";
+            this.ybcheckBox.Size = new System.Drawing.Size(48, 16);
+            this.ybcheckBox.TabIndex = 4;
+            this.ybcheckBox.Text = "仪表";
+            this.ybcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // fmcheckBox
+            // 
+            this.fmcheckBox.AutoSize = true;
+            this.fmcheckBox.Location = new System.Drawing.Point(6, 102);
+            this.fmcheckBox.Name = "fmcheckBox";
+            this.fmcheckBox.Size = new System.Drawing.Size(48, 16);
+            this.fmcheckBox.TabIndex = 3;
+            this.fmcheckBox.Text = "阀门";
+            this.fmcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // ewcheckBox
+            // 
+            this.ewcheckBox.AutoSize = true;
+            this.ewcheckBox.Location = new System.Drawing.Point(215, 73);
+            this.ewcheckBox.Name = "ewcheckBox";
+            this.ewcheckBox.Size = new System.Drawing.Size(54, 16);
+            this.ewcheckBox.TabIndex = 2;
+            this.ewcheckBox.Text = "Elbow";
+            this.ewcheckBox.UseVisualStyleBackColor = true;
+            // 
+            // techeckBox1
+            // 
+            this.techeckBox1.AutoSize = true;
+            this.techeckBox1.Location = new System.Drawing.Point(138, 73);
+            this.techeckBox1.Name = "techeckBox1";
+            this.techeckBox1.Size = new System.Drawing.Size(42, 16);
+            this.techeckBox1.TabIndex = 1;
+            this.techeckBox1.Text = "Tee";
+            this.techeckBox1.UseVisualStyleBackColor = true;
+            // 
+            // qxcheckBox1
+            // 
+            this.qxcheckBox1.AutoSize = true;
+            this.qxcheckBox1.Location = new System.Drawing.Point(7, 21);
+            this.qxcheckBox1.Name = "qxcheckBox1";
+            this.qxcheckBox1.Size = new System.Drawing.Size(48, 16);
+            this.qxcheckBox1.TabIndex = 0;
+            this.qxcheckBox1.Text = "全选";
+            this.qxcheckBox1.UseVisualStyleBackColor = true;
+            this.qxcheckBox1.CheckedChanged += new System.EventHandler(this.qxcheckBox1_CheckedChanged);
+            // 
+            // zlcomboBox1
+            // 
+            this.zlcomboBox1.FormattingEnabled = true;
+            this.zlcomboBox1.Location = new System.Drawing.Point(13, 330);
+            this.zlcomboBox1.Name = "zlcomboBox1";
+            this.zlcomboBox1.Size = new System.Drawing.Size(121, 20);
+            this.zlcomboBox1.TabIndex = 6;
+            this.zlcomboBox1.SelectedIndexChanged += new System.EventHandler(this.zlcomboBox1_SelectedIndexChanged);
+            // 
+            // lxcomboBox1
+            // 
+            this.lxcomboBox1.FormattingEnabled = true;
+            this.lxcomboBox1.Location = new System.Drawing.Point(155, 330);
+            this.lxcomboBox1.Name = "lxcomboBox1";
+            this.lxcomboBox1.Size = new System.Drawing.Size(121, 20);
+            this.lxcomboBox1.TabIndex = 7;
+            // 
+            // wlbmGroupcheckBox1
+            // 
+            this.wlbmGroupcheckBox1.AutoSize = true;
+            this.wlbmGroupcheckBox1.Location = new System.Drawing.Point(103, 370);
+            this.wlbmGroupcheckBox1.Name = "wlbmGroupcheckBox1";
+            this.wlbmGroupcheckBox1.Size = new System.Drawing.Size(96, 16);
+            this.wlbmGroupcheckBox1.TabIndex = 8;
+            this.wlbmGroupcheckBox1.Text = "物料编码分组";
+            this.wlbmGroupcheckBox1.UseVisualStyleBackColor = true;
+            // 
+            // ReportFrom
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(298, 463);
+            this.Controls.Add(this.wlbmGroupcheckBox1);
+            this.Controls.Add(this.lxcomboBox1);
+            this.Controls.Add(this.zlcomboBox1);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.dataGridView2);
+            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.radioButton2);
+            this.Controls.Add(this.radioButton1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "ReportFrom";
+            this.Text = "报表";
+            this.Load += new System.EventHandler(this.ReportFrom_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+        private System.Windows.Forms.Button button1;
+        public System.Windows.Forms.RadioButton radioButton1;
+        public System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn quanxuan;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PipeLineName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn specName;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn quanxuan1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ecName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DN;
+        private System.Windows.Forms.DataGridViewTextBoxColumn pipeLineName1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox FlcheckBox;
+        private System.Windows.Forms.CheckBox gtcheckBox;
+        private System.Windows.Forms.CheckBox mtcheckBox;
+        private System.Windows.Forms.CheckBox otcheckBox;
+        private System.Windows.Forms.CheckBox pecheckBox;
+        private System.Windows.Forms.CheckBox cscheckBox;
+        private System.Windows.Forms.CheckBox ybcheckBox;
+        private System.Windows.Forms.CheckBox fmcheckBox;
+        private System.Windows.Forms.CheckBox ewcheckBox;
+        private System.Windows.Forms.CheckBox techeckBox1;
+        private System.Windows.Forms.CheckBox qxcheckBox1;
+        private System.Windows.Forms.ComboBox zlcomboBox1;
+        private System.Windows.Forms.ComboBox lxcomboBox1;
+        private System.Windows.Forms.CheckBox wlbmGroupcheckBox1;
+    }
+}

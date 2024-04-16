@@ -1,0 +1,66 @@
+﻿
+using BIM = Bentley.Interop.MicroStationDGN;
+using BG = Bentley.GeometryNET;
+using Bentley.MstnPlatformNET;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Bentley.MstnPlatformNET.InteropServices;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public class Mstn_Public_Api
+    {
+        static BIM.Application app = Utilities.ComApp;
+        static double uor_per_master = Session.Instance.GetActiveDgnModel().GetModelInfo().UorPerMaster;//当前设计文件的主单位
+        public  static BIM.Point3d DPoint3d_To_Point3d(BG.DPoint3d dpoint3d)
+        {
+            BIM.Point3d point = app.Point3dFromXYZ(dpoint3d.X / uor_per_master, dpoint3d.Y / uor_per_master, dpoint3d.Z / uor_per_master);
+            return point;
+        }
+        public static BG.DPoint3d Point3d_to_GDPoint3d(BIM.Point3d point3d)
+        {
+            
+            BG.DPoint3d gdpoint = new BG.DPoint3d();
+            gdpoint.X = point3d.X * uor_per_master;
+            gdpoint.Y = point3d.Y * uor_per_master;
+            gdpoint.Z = point3d.Z * uor_per_master;
+            return gdpoint;
+        }
+
+        public static BIM.Point3d get_nearest_point(BIM.Point3d p, BIM.Point3d p1, BIM.Point3d p2)
+        {
+            BIM.Point3d nearest_point;
+
+            double distance1 = app.Point3dDistance(p, p1);
+            double distance2 = app.Point3dDistance(p, p2);
+            if (distance1 < distance2)
+            {
+                nearest_point = p1;
+            }
+            else
+            {
+                nearest_point = p2;
+            }
+            return nearest_point;
+        }
+        public static BIM.Point3d get_faster_point(BIM.Point3d p, BIM.Point3d p1, BIM.Point3d p2)
+        {
+            BIM.Point3d faster_point;
+            
+            double distance1 = app.Point3dDistance(p, p1);
+            double distance2 = app.Point3dDistance(p, p2);
+            if (distance1 > distance2)
+            {
+                faster_point = p1;
+            }
+            else
+            {
+                faster_point = p2;
+            }
+            return faster_point;
+        }
+    }
+}

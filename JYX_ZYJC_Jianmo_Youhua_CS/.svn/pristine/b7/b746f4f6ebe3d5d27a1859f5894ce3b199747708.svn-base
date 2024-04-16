@@ -1,0 +1,130 @@
+﻿namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    partial class EquipmentReportFrom
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EquipmentReportFrom));
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
+            this.zlcomboBox1 = new System.Windows.Forms.ComboBox();
+            this.lxcomboBox1 = new System.Windows.Forms.ComboBox();
+            this.wlbmGroupcheckBox1 = new System.Windows.Forms.CheckBox();
+            this.SuspendLayout();
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(21, 14);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(47, 16);
+            this.radioButton1.TabIndex = 1;
+            this.radioButton1.Text = "全部";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(117, 14);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(47, 16);
+            this.radioButton2.TabIndex = 2;
+            this.radioButton2.Text = "选中";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(50, 141);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "导出";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // zlcomboBox1
+            // 
+            this.zlcomboBox1.FormattingEnabled = true;
+            this.zlcomboBox1.Location = new System.Drawing.Point(21, 46);
+            this.zlcomboBox1.Name = "zlcomboBox1";
+            this.zlcomboBox1.Size = new System.Drawing.Size(143, 20);
+            this.zlcomboBox1.TabIndex = 7;
+            this.zlcomboBox1.SelectedIndexChanged += new System.EventHandler(this.zlcomboBox1_SelectedIndexChanged);
+            // 
+            // lxcomboBox1
+            // 
+            this.lxcomboBox1.FormattingEnabled = true;
+            this.lxcomboBox1.Location = new System.Drawing.Point(21, 84);
+            this.lxcomboBox1.Name = "lxcomboBox1";
+            this.lxcomboBox1.Size = new System.Drawing.Size(143, 20);
+            this.lxcomboBox1.TabIndex = 8;
+            // 
+            // wlbmGroupcheckBox1
+            // 
+            this.wlbmGroupcheckBox1.AutoSize = true;
+            this.wlbmGroupcheckBox1.Location = new System.Drawing.Point(40, 116);
+            this.wlbmGroupcheckBox1.Name = "wlbmGroupcheckBox1";
+            this.wlbmGroupcheckBox1.Size = new System.Drawing.Size(96, 16);
+            this.wlbmGroupcheckBox1.TabIndex = 9;
+            this.wlbmGroupcheckBox1.Text = "物料编码分组";
+            this.wlbmGroupcheckBox1.UseVisualStyleBackColor = true;
+            // 
+            // EquipmentReportFrom
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(184, 172);
+            this.Controls.Add(this.wlbmGroupcheckBox1);
+            this.Controls.Add(this.lxcomboBox1);
+            this.Controls.Add(this.zlcomboBox1);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.radioButton2);
+            this.Controls.Add(this.radioButton1);
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "EquipmentReportFrom";
+            this.Text = "设备报表";
+            this.Load += new System.EventHandler(this.EquipmentReportFrom_Load);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        public System.Windows.Forms.RadioButton radioButton1;
+        public System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ComboBox zlcomboBox1;
+        private System.Windows.Forms.ComboBox lxcomboBox1;
+        private System.Windows.Forms.CheckBox wlbmGroupcheckBox1;
+    }
+}

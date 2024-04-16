@@ -1,0 +1,130 @@
+﻿using System.Windows.Forms;
+using BCOM = Bentley.Interop.MicroStationDGN;
+using System.Collections;
+using Bentley.MstnPlatformNET.WinForms;
+using Bentley.MstnPlatformNET.InteropServices;
+using Bentley.ECObjects.Schema;
+using Bentley.Building.Mechanical.Api;
+using System.Collections.Generic;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public partial class elbowBuzhiForm :
+#if DEBUG
+                     Form
+#else
+                     Adapter
+#endif
+
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public elbowBuzhiForm()
+        {
+            InitializeComponent();
+            xiaoshuBox_elbow_wanqu_banjing.Text = "";
+            init_comboBox_caizhi();
+            initRadiusNAngle();
+        }
+        private void initRadiusNAngle() {
+            this.comboBox_elbow_radius.Text = "长半径弯头";
+            this.comboBox_elbow_angle.Text = "90度弯头";
+
+            this.comboBox_elbowOrBend.Text = "Elbow";
+            this.comboBox_bendOrXiamiwan.Text = "Bend";
+        }
+
+        private void elbowBuzhiForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            elbow.m_formClosed();
+            BCOM.Application app = Utilities.ComApp;
+            app.CommandState.StartDefaultCommand();
+        }
+
+        private void init_comboBox_caizhi()
+        {
+            //Hashtable caizhi_list = get_caizhi_list("CAIZHI_VALUE_MAP");
+            ArrayList caizhi_arraylist = new ArrayList();
+            caizhi_arraylist.Add(new DictionaryEntry("default", ""));
+            //foreach (DictionaryEntry caizhi in caizhi_list) //ht为一个Hashtable实例
+            //{
+               // caizhi_arraylist.Add(caizhi);
+            //}
+            comboBox_caizhi.DataSource = caizhi_arraylist;
+            comboBox_caizhi.DisplayMember = "Value";
+            comboBox_caizhi.ValueMember = "Key";
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value_map"></param>
+        /// <returns></returns>
+        public Hashtable get_caizhi_list(string value_map)
+        {
+            IECClass iec_class = BMECInstanceManager.Instance.Schema.GetClass(value_map);
+            Hashtable hashtable = new Hashtable();
+            IEnumerator<IECProperty> enumerator = iec_class.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                hashtable.Add(enumerator.Current.Name, enumerator.Current.DisplayLabel);
+            }
+            return hashtable;
+            
+        }
+        private int groupBoxBendHeight = 0;
+        private int groupBoxElbowHeight = 0;
+        private void comboBox1_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            groupBoxBendHeight = this.groupBox_bend.Height;
+            groupBoxElbowHeight = this.groupBox_elbow.Height;
+            int difHeight = groupBoxBendHeight - groupBoxElbowHeight;
+            ComboBox tempComboBox = (ComboBox)sender;
+            switch (tempComboBox.Text)
+            {
+                case "Elbow":
+                    this.groupBox_elbow.Visible = true;
+                    this.groupBox_bend.Visible = false;
+                    this.Height = 447 - difHeight;
+                    break;
+                case "Bend":
+                    this.groupBox_bend.Visible = true;
+                    this.groupBox_elbow.Visible = false;
+                    this.Height = 447;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            ComboBox tempComboBox = (ComboBox)sender;
+            switch (tempComboBox.Text)
+            {
+                case "Bend":
+                    this.textBox_xiamiwan_jieshu.Enabled = false;
+                    break;
+                case "虾米弯":
+                    this.textBox_xiamiwan_jieshu.Enabled = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+        public static double dn = 100;
+        public static int flag = 2;//1 for radius, 2 for radiusFactor
+        //textbox_raidus change
+        private void textBox_radius_TextChanged(object sender, System.EventArgs e) {
+
+        }
+        //textbox_radius_factor change
+        private void textBox_radiusFactor_TextChanged(object sender, System.EventArgs e)
+        {
+
+        }
+    }
+}

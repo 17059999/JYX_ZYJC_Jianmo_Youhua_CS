@@ -1,0 +1,27 @@
+﻿using Bentley.MstnPlatformNET.InteropServices;
+using Bentley.OpenPlant.Modeler.Api;
+using System.Data;
+using System.Data.OleDb;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    class Utility
+    {
+        public static DataTable seleteMdb()
+        {
+            Bentley.Interop.MicroStationDGN.Application app = Utilities.ComApp;
+            string path1 = BMECInstanceManager.FindConfigVariableName("OP_SPEC_DIR") + @"SUPPORT.mdb";
+            string path = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path1;
+            OleDbConnection _oleDbConn = new OleDbConnection(path);
+            _oleDbConn.Open();
+
+            OleDbDataAdapter _oleDbAda = new OleDbDataAdapter("select * from SUPPORTS where EC_CLASS_NAME='C'", _oleDbConn);
+            DataTable dt = new DataTable();
+
+            _oleDbAda.Fill(dt);
+
+            _oleDbConn.Close();
+            return dt;
+        }
+    }
+}

@@ -1,0 +1,320 @@
+﻿using Bentley.Building.Mechanical.Api;
+using Bentley.MstnPlatformNET.WinForms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    public partial class UpdateProForm : //Form
+#if DEBUG
+        Form
+#else
+        Adapter
+#endif
+    {
+        public Dictionary<string, string> dicList = new Dictionary<string, string>();
+        public static UpdateProForm updateForm=null;
+        public static List<BMECObject> bmecList = new List<BMECObject>();
+        public UpdateProForm()
+        {
+            InitializeComponent();
+            dicFhuz();
+        }
+
+        public static UpdateProForm instance(List<BMECObject> listBmec)
+        {
+            bmecList = listBmec;
+            if(updateForm==null)
+            {
+                updateForm = new UpdateProForm();
+            }
+            else
+            {
+                updateForm.Close();
+                updateForm = new UpdateProForm();
+            }
+            return updateForm;
+        }
+
+        public void dicFhuz()
+        {
+            dicList.Add("H", "保温");
+            dicList.Add("C", "保冷");
+            dicList.Add("P", "防烫");
+            dicList.Add("D", "防结露");
+            dicList.Add("S", "蒸汽伴热");
+            dicList.Add("E", "电伴热");
+            dicList.Add("N", "隔声");
+        }
+
+        private void UpdateProForm_Load(object sender, EventArgs e)
+        {
+            grdhcomboBox1.Text = "";
+            cstextBox1.Text = "1";
+            azbwcomboBox1.Text = "室内";
+            mdcomboBox1.Text = "否";
+            gnbffcomboBox1.Text = "否";
+            dqyqzltextBox1.Text = "醇酸防锈漆G53-1";
+            dqbstextBox1.Text = "2";
+            zjqbstextBox1.Text = "0";
+            mqyqzltextBox1.Text = "酚醛调和漆";
+            mqbstextBox1.Text = "2";
+            fhcltextBox1.Text = "镀锌铁皮";
+            fhggtextBox1.Text = "0.5mm";
+            tsfscomboBox1.Text = "无损";
+            ylsycomboBox1.Text = "是";
+            scxcomboBox1.Text = "是";
+            kqcscomboBox1.SelectedIndex = 0;
+            zqcscomboBox1.SelectedIndex = 0;
+            jxcomboBox1.SelectedIndex = 0;
+            sxcomboBox1.SelectedIndex = 0;
+            gdtzcomboBox1.SelectedIndex = 0;
+            yqxcomboBox1.SelectedIndex = 0;
+        }
+
+        private void grdhcomboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(grdhcomboBox1.Text=="")
+            {
+                grdhtextBox1.Text = "";
+            }
+            else
+            {
+                grdhtextBox1.Text = dicList[grdhcomboBox1.Text];
+            }
+        }
+
+        private void wdtextBox1_TextChanged(object sender, EventArgs e)
+        {
+            if(wdtextBox1.Text=="")
+            {
+                return;
+            }
+            double wdValue;
+            bool b = double.TryParse(wdtextBox1.Text, out wdValue);
+            if(!b)
+            {
+                MessageBox.Show("温度属性请输入有效的数字");
+                wdtextBox1.Text = "";
+                return;
+            }
+        }
+
+        private void cstextBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char result = e.KeyChar;
+            if (char.IsDigit(result) || result == 8)
+            {
+                e.Handled = false;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void yldjtextBox1_TextChanged(object sender, EventArgs e)
+        {
+            if(yldjtextBox1.Text=="")
+            {
+                return;
+            }
+            double ylValue;
+            bool b = double.TryParse(yldjtextBox1.Text, out ylValue);
+            if(!b)
+            {
+                MessageBox.Show("压力等级属性请输入有效的数字");
+                yldjtextBox1.Text = "";
+                return;
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            #region 获取输入值
+            string grdhValue = grdhcomboBox1.Text;
+            string wdValue = wdtextBox1.Text + "℃";
+            int csValue = Convert.ToInt32(cstextBox1.Text);
+            string wlbmValue = wlbmtextBox1.Text;
+            string xtmcValue = xtmctextBox1.Text;
+            string ljfsValue = ljfstextBox1.Text;
+            string yldjValue = yldjtextBox1.Text + "MPa";
+            string azbwValue = azbwcomboBox1.Text;
+            string mdValue = mdcomboBox1.Text;
+            string gnbffValue = gnbffcomboBox1.Text;
+            string gnbffjtyqValue = gnbffjtyqtextBox1.Text;
+            string cxdjValue = cxdjtextBox1.Text;
+            string dqyqzlValue = dqyqzltextBox1.Text;
+            int dqbsValue = Convert.ToInt32(dqbstextBox1.Text);
+            string zjqyqzlValue = zjqyqzltextBox1.Text;
+            int zjqbsValue = Convert.ToInt32(zjqbstextBox1.Text);
+            string mqyqzlValue = mqyqzltextBox1.Text;
+            int mqbsValue = Convert.ToInt32(mqbstextBox1.Text);
+            string fhclValue = fhcltextBox1.Text;
+            string fhggValue = fhggtextBox1.Text;
+            string tsblValue = tsbltextBox1.Text + "%";
+            string tsfsValue = tsfscomboBox1.Text;
+            string ylsyValue = ylsycomboBox1.Text;
+            string scxValue = scxcomboBox1.Text;
+            string kqcsValue = kqcscomboBox1.Text;
+            string zqcsValue = zqcscomboBox1.Text;
+            string jxValue = jxcomboBox1.Text;
+            string sxValue = sxcomboBox1.Text;
+            string gdtzValue = gdtzcomboBox1.Text;
+            string yqxValue = yqxcomboBox1.Text;
+            #endregion
+
+            if(bmecList.Count>0)
+            {
+                foreach(BMECObject bmec in bmecList)
+                {
+                    if(bmec.Instance.GetPropertyValue("CERI_Insulation_code")!=null)
+                    {
+                        bmec.Instance["CERI_Insulation_code"].StringValue = grdhValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_TEMP")!=null)
+                    {
+                        bmec.Instance["CERI_TEMP"].StringValue = wdValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Layer")!=null)
+                    {
+                        bmec.Instance["CERI_Layer"].IntValue = csValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Material_Code")!=null)
+                    {
+                        bmec.Instance["CERI_Material_Code"].StringValue = wlbmValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_System_Name")!=null)
+                    {
+                        bmec.Instance["CERI_System_Name"].StringValue = xtmcValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Connection_Type")!=null)
+                    {
+                        bmec.Instance["CERI_Connection_Type"].StringValue = ljfsValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Pressure_Rating")!=null)
+                    {
+                        bmec.Instance["CERI_Pressure_Rating"].StringValue = yldjValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Installation_Site")!=null)
+                    {
+                        bmec.Instance["CERI_Installation_Site"].StringValue = azbwValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Buried")!=null)
+                    {
+                        bmec.Instance["CERI_Buried"].StringValue = mdValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Pipe_Lining_Anticorrosion")!=null)
+                    {
+                        bmec.Instance["CERI_Pipe_Lining_Anticorrosion"].StringValue = gnbffValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Specification")!=null)
+                    {
+                        bmec.Instance["CERI_Specification"].StringValue = gnbffjtyqValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Derusting_Grade")!=null)
+                    {
+                        bmec.Instance["CERI_Derusting_Grade"].StringValue = cxdjValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Primer_Paint")!=null)
+                    {
+                        bmec.Instance["CERI_Primer_Paint"].StringValue = dqyqzlValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Primer_Pass")!=null)
+                    {
+                        bmec.Instance["CERI_Primer_Pass"].IntValue = dqbsValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Intermediate_Paint")!=null)
+                    {
+                        bmec.Instance["CERI_Intermediate_Paint"].StringValue = zjqyqzlValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Middle_Number")!=null)
+                    {
+                        bmec.Instance["CERI_Middle_Number"].IntValue = zjqbsValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Topcoat_Paint")!=null)
+                    {
+                        bmec.Instance["CERI_Topcoat_Paint"].StringValue = mqyqzlValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Finish_Times")!=null)
+                    {
+                        bmec.Instance["CERI_Finish_Times"].IntValue = mqbsValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Shielding_Material")!=null)
+                    {
+                        bmec.Instance["CERI_Shielding_Material"].StringValue = fhclValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Protection_Specification")!=null)
+                    {
+                        bmec.Instance["CERI_Protection_Specification"].StringValue = fhggValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Percentage_Detection")!=null)
+                    {
+                        bmec.Instance["CERI_Percentage_Detection"].StringValue = tsblValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Inspection_Way")!=null)
+                    {
+                        bmec.Instance["CERI_Inspection_Way"].StringValue = tsfsValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Pressure_Testing")!=null)
+                    {
+                        bmec.Instance["CERI_Pressure_Testing"].StringValue = ylsyValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Water_Washing")!=null)
+                    {
+                        bmec.Instance["CERI_Water_Washing"].StringValue = scxValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Air_Purge")!=null)
+                    {
+                        bmec.Instance["CERI_Air_Purge"].StringValue = kqcsValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Steam_Blowing")!=null)
+                    {
+                        bmec.Instance["CERI_Steam_Blowing"].StringValue = zqcsValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Alkali_Wash")!=null)
+                    {
+                        bmec.Instance["CERI_Alkali_Wash"].StringValue = jxValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Acid_Pickling")!=null)
+                    {
+                        bmec.Instance["CERI_Acid_Pickling"].StringValue = sxValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Pipeline_Skim")!=null)
+                    {
+                        bmec.Instance["CERI_Pipeline_Skim"].StringValue = gdtzValue;
+                    }
+                    if(bmec.Instance.GetPropertyValue("CERI_Oil_Cleaning")!=null)
+                    {
+                        bmec.Instance["CERI_Oil_Cleaning"].StringValue = yqxValue;
+                    }
+                    bmec.Create();
+                }
+                MessageBox.Show("修改成功！");
+            }
+        }
+
+        private void tsbltextBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (tsbltextBox1.Text == "")
+            {
+                return;
+            }
+            double tsblValue;
+            bool b = double.TryParse(yldjtextBox1.Text, out tsblValue);
+            if (!b)
+            {
+                MessageBox.Show("探伤比例属性请输入有效的数字");
+                tsbltextBox1.Text = "";
+                return;
+            }
+        }
+    }
+}

@@ -1,0 +1,149 @@
+﻿using Bentley.DgnPlatformNET;
+using Bentley.DgnPlatformNET.Elements;
+using Bentley.MstnPlatformNET;
+using System;
+using Bentley.Building.Mechanical.Api;
+using System.Collections.Generic;
+using BIM = Bentley.Interop.MicroStationDGN;
+using BG = Bentley.GeometryNET;
+using Bentley.MstnPlatformNET.InteropServices;
+using Bentley.ECObjects.Instance;
+using System.Windows.Forms;
+using Bentley.Plant.StandardPreferences;
+using Bentley.OpenPlantModeler.SDK.Components;
+using Bentley.ECObjects;
+
+namespace JYX_ZYJC_Jianmo_Youhua_CS
+{
+    class select_zhenggen_pipe : DgnElementSetTool
+    {
+        static BIM.Application app = Utilities.ComApp;
+        public override StatusInt OnElementModify(Element element)
+        {
+            return StatusInt.Error;
+        }
+        public static void InstallNewTool()
+        {
+            select_zhenggen_pipe select_zhenggen_pipe = new select_zhenggen_pipe();
+            select_zhenggen_pipe.InstallTool();
+        }
+        protected override void OnPostInstall()
+        {
+            
+            base.OnPostInstall();
+            app.ShowCommand("选择整根管道");
+            app.ShowPrompt("请选择管道");
+        }
+        protected override void OnCleanup()
+        {
+        }
+        protected override bool OnResetButton(DgnButtonEvent ev)
+        {
+
+            app.CommandState.StartDefaultCommand();
+
+            return true;
+        }
+        protected override void OnRestartTool()
+        {
+            InstallNewTool();
+        }
+        protected override bool NeedAcceptPoint()
+        {
+            return false;
+        }
+
+        protected override bool OnDataButton(DgnButtonEvent ev)
+        {
+            HitPath hit_path = DoLocate(ev, true, 1);
+            if (hit_path == null)
+            {
+                return true;
+            }
+            Element elem = hit_path.GetHeadElement();
+            
+            BMECObject bmec_object = JYX_ZYJC_CLR.PublicMethod.get_bmecobject_by_id(elem.ElementId);
+            if (bmec_object == null)
+            {
+                System.Windows.Forms.MessageBox.Show("选择的组件不是圆管，请重新选择！");
+                return true;
+            }
+            else if (bmec_object.ClassName != "PIPE")
+            {
+                System.Windows.Forms.MessageBox.Show("选择的组件不是圆管，请重新选择！");
+                return true;
+            }
+            else
+            {
+
+                List<BMECObject> result = new List<BMECObject>();
+                List<BMECObject> connected_bmecobject_list =bmec_object.ConnectedComponents;
+                string pipe_line = bmec_object.Instance["LINENUMBER"].StringValue;
+                result.Add(bmec_object);
+                
+                IECInstance joint_instance =BMECApi.Instance.GetJointInstance(bmec_object.Ports[0]);
+                if (joint_instance != null)
+                {
+                    List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                    result.AddRange(joint_bmecobject_list);
+                   
+
+                }
+                joint_instance = BMECApi.Instance.GetJointInstance(bmec_object.Ports[1]);
+                if (joint_instance != null)
+                {
+                    List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                    result.AddRange(joint_bmecobject_list);
+                }
+                foreach (BMECObject connected_bmecobject in connected_bmecobject_list)
+                {
+                    get_all_extend_connectedComponents(connected_bmecobject, result, pipe_line);
+                    
+                }
+                foreach(BMECObject connected_bmecobject in result)
+                {
+                    BMECApi.Instance.SelectComponent(connected_bmecobject.Instance,true);
+                }
+                BMECApi.Instance.StartDefaultCommand();
+            }
+            
+            return true;
+        }
+
+        public void get_all_extend_connectedComponents(BMECObject bmec_object, List<BMECObject> result_bmec_object_list,string pipe_line)
+        {
+            result_bmec_object_list.Add(bmec_object);
+            List<BMECObject> connected_bmec_object_list = bmec_object.ConnectedComponents;
+            foreach (BMECObject bmec_object_temp in connected_bmec_object_list)
+            {
+                BMECObject exit_object =result_bmec_object_list.Find(delegate (BMECObject exit_object_temp)
+                {
+                    return (exit_object_temp.Instance.InstanceId.Equals(bmec_object_temp.Instance.InstanceId));
+                });
+                if(exit_object==null)
+                {
+                    IECInstance joint_instance = BMECApi.Instance.GetJointInstance(bmec_object.Ports[0]);
+                    if (joint_instance != null)
+                    {
+                        List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                        result_bmec_object_list.AddRange(joint_bmecobject_list);
+                    }
+                    joint_instance = BMECApi.Instance.GetJointInstance(bmec_object.Ports[1]);
+                    if (joint_instance != null)
+                    {
+                        //Bentley.Building.Mechanical.ComponentLibrary.Common.DrawGeometry.BMEndPrep
+                        List<BMECObject> joint_bmecobject_list = BMECApi.Instance.GetJointObjects(joint_instance);
+                        result_bmec_object_list.AddRange(joint_bmecobject_list);
+                    }
+
+                    if (bmec_object_temp.Instance["LINENUMBER"].StringValue.Equals(pipe_line))
+                    {
+                        get_all_extend_connectedComponents(bmec_object_temp, result_bmec_object_list, pipe_line);
+                    }
+                    
+                }
+                
+            }
+        }
+    }
+}
