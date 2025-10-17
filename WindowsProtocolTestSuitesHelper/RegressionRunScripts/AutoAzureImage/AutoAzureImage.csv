@@ -1,0 +1,2 @@
+﻿VMName,SourceType,SourcePath,OSType,ISOEdition,ResourceGroupName,VHDUploadUrl,AzureImageLocation,BaseVHDName,OverwriteVHD,AzureImageName,OverwriteImage,ProductKey
+AutoVHD22538Server2025Demo,ISO,\\Pet-vmh-53\iso\2025\Server\26100.1742.240906-0331.ge_release_svc_refresh_SERVER_VOL_x64FRE_en-us.iso,Server,2,TestsuiteOnAzure,https://testsuitesshare.blob.core.windows.net/vhdshare/,West US 2,26100.1742.240906-0331.ge_release_svc_refresh_SERVER_VOL_x64FRE_en-us.vhd,TRUE,26100.1742.240906-0331.ge_release_svc_refresh_SERVER_VOL_x64FRE_en-us,TRUE,RPH2N-GF4C2-MVRRG-KKF6W-DGTDD

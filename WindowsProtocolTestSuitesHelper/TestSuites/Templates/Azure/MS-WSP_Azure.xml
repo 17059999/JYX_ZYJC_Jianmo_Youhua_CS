@@ -1,0 +1,62 @@
+<lab>
+  <core>
+    <username>IOLab</username>
+    <password>Password01!</password>
+    <TestSuiteName>MS-WSP_DotNetCore</TestSuiteName>
+    <regressiontype>Azure</regressiontype>
+    <timeoutinminutes>270</timeoutinminutes>
+  </core>
+  <vmsetting>
+    <location>West US 2</location>
+    <networkId>Vnet</networkId>
+    <subnetName>default</subnetName>
+    <resourceGroup>TestSuiteOnAzure</resourceGroup>
+    <diskType>Premium_LRS</diskType>
+    <vmSize>Standard_F4s</vmSize>
+    <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+    <genevaAccountRegion>westus2</genevaAccountRegion>
+  </vmsetting>
+  <Parameters>
+    <!--Parameters for automation run-->
+  </Parameters>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <role>Server</role>
+      <imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2019-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>WSP-Server</name>
+      <domain>Workgroup</domain>
+      <ip>10.55.0.2</ip>
+      <installscript>InstallMSIAndTools.ps1;Write-InstallScriptDoneSignal.ps1</installscript>
+      <postscript>Disable_Firewall.ps1;Config-Server.ps1;Write-InstallPostScriptDoneSignal.ps1</postscript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+        <TestsuiteZip ZipName="MS-WSP-TestSuite-ServerEP.zip" targetFolder="C:\MS-WSP-TestSuite-ServerEP" />
+      </tools>
+    </vm>
+    <vm>
+      <installorder>2</installorder>
+      <role>DriverComputer</role>
+      <imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2019-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>WSP-Client</name>
+      <domain>Workgroup</domain>
+      <ip>10.55.0.3</ip>
+      <installscript>InstallMSIAndTools.ps1;Write-InstallScriptDoneSignal.ps1</installscript>
+      <postscript>Disable_Firewall.ps1;Enable-WinRM.ps1;Write-InstallPostScriptDoneSignal.ps1</postscript>
+      <tools>
+        <tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="Latest" CPUArchitecture="x64" ArgumentList="/quiet" />
+        <TestsuiteZip ZipName="MS-WSP-TestSuite-ServerEP.zip" targetFolder="C:\MS-WSP-TestSuite-ServerEP" />
+      </tools>
+    </vm>
+  </servers>
+</lab>

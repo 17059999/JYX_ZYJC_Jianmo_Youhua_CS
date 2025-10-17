@@ -1,0 +1,51 @@
+<lab>
+    <core>
+        <username>IOLab</username>
+        <password>Password01!</password>
+        <TestSuiteName>FileServer_DotNetCore_Standard</TestSuiteName>
+        <regressiontype>Azure</regressiontype>
+        <timeoutinminutes>450</timeoutinminutes>
+    </core>
+    <vmsetting>
+        <location>westus2</location>
+        <networkId>TestSuiteOnAzure-vnet</networkId>
+        <subnetName>default</subnetName>
+        <resourceGroup>TestSuiteOnAzure</resourceGroup>
+        <diskType>Premium_LRS</diskType>
+        <vmSize>Standard_D2s_v3</vmSize>
+        <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+        <genevaAccountRegion>westus2</genevaAccountRegion>
+    </vmsetting>
+   <Parameters>
+     <Parameter Name="TestCaseScript" Value="Execute-TestCaseByContext.ps1" Comment="Which test case to run." />
+     <Parameter Name="TestCaseTimeout" Value="28800" Comment="Test case time out in seconds." />
+     <Parameter Name="ContextName" Value="Win2016_Domain_NonCluster_SMB311" Comment="" />
+     <Parameter Name="TestDirInVM" Value="~/Test" Comment="" />
+   </Parameters>
+    <servers>
+        <vm>
+            <role>DC</role>
+            <vmSize>Standard_D2s_v3</vmSize>
+            <isdc>true</isdc>
+            <imageReference>
+              <publisher>MicrosoftWindowsServer</publisher>
+              <offer>WindowsServer</offer>
+              <sku>2016-Datacenter</sku>
+              <version>latest</version>
+            </imageReference>
+            <name>FS-DC</name>
+            <domain>contoso.com</domain>
+            <ip>10.0.1.71</ip>
+            <installscript>InstallScript_DC.ps1</installscript>
+            <installfeaturescript>Install_RemoteAccess_Feature.ps1;InstallMSIAndTools.ps1;Write-InstallFeatureScirptDone.ps1;RestartComputer.PS1</installfeaturescript>
+            <postscript>Config-AuthorizedKeys.ps1;PostConfig-DC.ps1</postscript>
+            <skipwaitingforpostscript>false</skipwaitingforpostscript>
+            <tools>
+              <tool name="WMF" EXEName="Win8.1AndW2K12R2-KB3191564-x64.msu" version="5.1" CPUArchitecture="x64" ArgumentList="/quiet /norestart" InstallWaitSeconds="200" SupportedOSBuilds="9600"/>
+              <tool name="PowerShellCore" MSIName="PowerShell-7.4.1-win-x64.msi" version="7.4.1" CPUArchitecture="x64" />
+              <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+              <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+            </tools>
+        </vm>
+    </servers>
+</lab>

@@ -1,0 +1,198 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+Fileserver,FileServer_Standard_Azure_DC_01,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_DC_Azure.xml,IOLab/Password01!,DC1,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,DC1,SNIA-NA-2025.org ,DC,,,,SDCIOLabNetwork,,192.168.120.251,default,,
+,FileServer_Standard_Azure_Domain_linux_01,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_FedDriver_Azure.xml,IOLab/Password01!,SDC-FedFS01-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-FedFS01-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.50,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.51,default,,192.168.120.251
+,,,,,,,,SDC-FedFS01-C,gallery;CustomImages;TestSuiteComputeGallery2;Fedora-Cloud-42-20250605-x64;1.0.0,SDC-FedFS01-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.52,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.53,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_02,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_FedDriver_Azure.xml,IOLab/Password01!,SDC-FedFS02-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-FedFS02-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.54,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.55,default,,192.168.120.251
+,,,,,,,,SDC-FedFS02-C,gallery;CustomImages;TestSuiteComputeGallery2;Fedora-Cloud-42-20250605-x64;1.0.0,SDC-FedFS02-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.56,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.57,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_03,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_FedDriver_Azure.xml,IOLab/Password01!,SDC-FedFS03-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-FedFS03-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.58,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.59,default,,192.168.120.251
+,,,,,,,,SDC-FedFS03-C,gallery;CustomImages;TestSuiteComputeGallery2;Fedora-Cloud-42-20250605-x64;1.0.0,SDC-FedFS03-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.60,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.61,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_04,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_SUSEDriver_Azure.xml,IOLab/Password01!,SDC-SUSEFS01-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-SUSEFS01-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.62,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.63,default,,192.168.120.251
+,,,,,,,,SDC-SUSEFS01-C,SUSE;opensuse-leap-15-6;gen2;latest,SDC-SUSEFS01-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.64,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.65,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_05,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_SUSEDriver_Azure.xml,IOLab/Password01!,SDC-SUSEFS02-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-SUSEFS02-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.66,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.67,default,,192.168.120.251
+,,,,,,,,SDC-SUSEFS02-C,SUSE;opensuse-leap-15-6;gen2;latest,SDC-SUSEFS02-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.68,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.69,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_06,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_SUSEDriver_Azure.xml,IOLab/Password01!,SDC-SUSEFS03-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-SUSEFS03-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.70,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.71,default,,192.168.120.251
+,,,,,,,,SDC-SUSEFS03-C,SUSE;opensuse-leap-15-6;gen2;latest,SDC-SUSEFS03-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.72,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.73,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_07,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_LinuxDriver_Azure_2024.xml,IOLab/Password01!,SDC-UbFS01-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-UbFS01-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.74,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.75,default,,192.168.120.251
+,,,,,,,,SDC-UbFS01-C,Canonical;0001-com-ubuntu-server-jammy;22_04-lts-gen2;22.04.202507150,SDC-UbFS01-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.76,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.77,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_08,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_LinuxDriver_Azure_2024.xml,IOLab/Password01!,SDC-UbFS02-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-UbFS02-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.78,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.79,default,,192.168.120.251
+,,,,,,,,SDC-UbFS02-C,Canonical;0001-com-ubuntu-server-jammy;22_04-lts-gen2;latest,SDC-UbFS02-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.80,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.81,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_09,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_LinuxDriver_Azure_2024.xml,IOLab/Password01!,SDC-UbFS03-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-UbFS03-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.82,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.83,default,,192.168.120.251
+,,,,,,,,SDC-UbFS03-C,Canonical;0001-com-ubuntu-server-jammy;22_04-lts-gen2;latest,SDC-UbFS03-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.84,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.85,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_linux_10,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_LinuxDriver_Azure_2024.xml,IOLab/Password01!,SDC-UbFS04-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-UbFS04-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.86,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.87,default,,192.168.120.251
+,,,,,,,,SDC-UbFS04-C,Canonical;0001-com-ubuntu-server-jammy;22_04-lts-gen2;latest,SDC-UbFS04-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.88,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.89,default,,192.168.120.251
+,,,,,,,,,,,,,,,,,,,,,
+,FileServer_Standard_Azure_Domain_2025_01,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS01-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS01-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.98,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.99,default,,192.168.120.251
+,,,,,,,,SDC-2025FS01-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS01-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.100,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.101,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_02,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS02-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS02-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.102,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.103,default,,192.168.120.251
+,,,,,,,,SDC-2025FS02-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS02-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.104,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.105,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_03,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS03-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS03-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.106,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.107,default,,192.168.120.251
+,,,,,,,,SDC-2025FS03-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS03-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.108,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.109,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_04,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS04-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS04-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.110,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.111,default,,192.168.120.251
+,,,,,,,,SDC-2025FS04-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS04-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.112,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.113,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_05,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS05-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS05-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.114,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.115,default,,192.168.120.251
+,,,,,,,,SDC-2025FS05-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS05-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.116,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.117,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_06,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS06-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS06-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.118,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.119,default,,192.168.120.251
+,,,,,,,,SDC-2025FS06-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS06-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.120,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.121,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_07,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS07-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS07-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.122,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.123,default,,192.168.120.251
+,,,,,,,,SDC-2025FS07-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS07-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.124,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.125,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_08,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS08-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS08-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.126,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.127,default,,192.168.120.251
+,,,,,,,,SDC-2025FS08-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS08-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.128,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.129,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_09,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS09-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS09-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.130,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.131,default,,192.168.120.251
+,,,,,,,,SDC-2025FS09-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS09-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.132,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.133,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_10,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS10-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS10-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.134,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.135,default,,192.168.120.251
+,,,,,,,,SDC-2025FS10-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS10-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.136,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.137,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_11,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS11-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS11-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.138,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.139,default,,192.168.120.251
+,,,,,,,,SDC-2025FS11-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS11-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.140,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.141,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_12,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS12-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS12-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.142,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.143,default,,192.168.120.251
+,,,,,,,,SDC-2025FS12-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS12-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.144,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.145,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_13,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS13-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS13-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.146,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.147,default,,192.168.120.251
+,,,,,,,,SDC-2025FS13-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS13-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.148,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.149,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2025_14,Azure,Win2025_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2025FS14-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-2025FS14-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.150,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.151,default,,192.168.120.251
+,,,,,,,,SDC-2025FS14-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2025FS14-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.152,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.153,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2022_01,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2022FS01-S,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,SDC-2022FS01-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.154,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.155,default,,192.168.120.251
+,,,,,,,,SDC-2022FS01-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2022FS01-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.156,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.157,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2022_02,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2022FS02-S,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,SDC-2022FS02-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.158,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.159,default,,192.168.120.251
+,,,,,,,,SDC-2022FS02-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2022FS02-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.160,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.161,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2022_03,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2022FS03-S,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,SDC-2022FS03-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.162,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.163,default,,192.168.120.251
+,,,,,,,,SDC-2022FS03-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2022FS03-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.164,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.165,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2022_04,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2022FS04-S,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,SDC-2022FS04-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.166,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.167,default,,192.168.120.251
+,,,,,,,,SDC-2022FS04-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2022FS04-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.168,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.169,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2022_05,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2022FS05-S,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,SDC-2022FS05-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.170,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.171,default,,192.168.120.251
+,,,,,,,,SDC-2022FS05-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2022FS05-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.172,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.173,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2022_06,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2022FS06-S,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,SDC-2022FS06-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.174,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.175,default,,192.168.120.251
+,,,,,,,,SDC-2022FS06-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2022FS06-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.176,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.177,default,,192.168.120.251
+,FileServer_Standard_Azure_Domain_2022_07,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,SDCIOLAB2025,West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,SDC-2022FS07-S,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,SDC-2022FS07-S,SNIA-NA-2025.org ,NODE01,,,,SDCIOLabNetwork,,192.168.120.178,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.179,default,,192.168.120.251
+,,,,,,,,SDC-2022FS07-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-2022FS07-C,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.180,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.181,default,,192.168.120.251
+,,,,,,,,,,,,,,,,,,,,,
+,FileServer_Cluster_Azure_2025_01,Azure,Win2025_Domain_Cluster_SMB311,SDCIOLAB2025,West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,SDC-25CLS11-SG1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS11-SG1,Workgroup,IscsiStorage,,,,SDCIOLabNetwork,,192.168.120.193,default,,
+,,,,,,,,N/A,,CLUSTER11,0,Cluster,,,,SDCIOLabNetwork,,192.168.120.194,default,,
+,,,,,,,,N/A,,GENERALFS11,0,GeneralFS,,,,SDCIOLabNetwork,,192.168.120.195,default,,
+,,,,,,,,N/A,,SCALEOUTFS11,,ScaleoutFS,,,,SDCIOLabNetwork,,,default,,
+,,,,,,,,SDC-25CLS11-N1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS11-N1,SNIA-NA-2025.org ,ClusterNode01,,,,SDCIOLabNetwork,,192.168.120.197,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.198,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.199,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.200,default,,192.168.120.251
+,,,,,,,,SDC-25CLS11-N2,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS11-N2,SNIA-NA-2025.org ,ClusterNode02,,,,SDCIOLabNetwork,,192.168.120.201,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.202,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.203,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.204,default,,192.168.120.251
+,,,,,,,,SDC-25CLS11-C1,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-25CLS11-C1,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.205,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.206,default,,192.168.120.251
+,FileServer_Cluster_Azure_2025_02,Azure,Win2025_Domain_Cluster_SMB311,SDCIOLAB2025,West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,SDC-25CLS12-SG1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS12-SG1,Workgroup,IscsiStorage,,,,SDCIOLabNetwork,,192.168.120.207,default,,
+,,,,,,,,N/A,,CLUSTER12,0,Cluster,,,,SDCIOLabNetwork,,192.168.120.208,default,,
+,,,,,,,,N/A,,GENERALFS12,0,GeneralFS,,,,SDCIOLabNetwork,,192.168.120.209,default,,
+,,,,,,,,N/A,,SCALEOUTFS12,,ScaleoutFS,,,,SDCIOLabNetwork,,,default,,
+,,,,,,,,SDC-25CLS12-N1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS12-N1,SNIA-NA-2025.org ,ClusterNode01,,,,SDCIOLabNetwork,,192.168.120.211,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.212,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.213,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.214,default,,192.168.120.251
+,,,,,,,,SDC-25CLS12-N2,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS12-N2,SNIA-NA-2025.org ,ClusterNode02,,,,SDCIOLabNetwork,,192.168.120.215,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.216,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.217,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.218,default,,192.168.120.251
+,,,,,,,,SDC-25CLS12-C1,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-25CLS12-C1,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.219,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.220,default,,192.168.120.251
+,FileServer_Cluster_Azure_2025_03,Azure,Win2025_Domain_Cluster_SMB311,SDCIOLAB2025,West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,SDC-25CLS13-SG1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS13-SG1,Workgroup,IscsiStorage,,,,SDCIOLabNetwork,,192.168.120.221,default,,
+,,,,,,,,N/A,,CLUSTER13,0,Cluster,,,,SDCIOLabNetwork,,192.168.120.222,default,,
+,,,,,,,,N/A,,GENERALFS13,0,GeneralFS,,,,SDCIOLabNetwork,,192.168.120.223,default,,
+,,,,,,,,N/A,,SCALEOUTFS13,,ScaleoutFS,,,,SDCIOLabNetwork,,,default,,
+,,,,,,,,SDC-25CLS13-N1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS13-N1,SNIA-NA-2025.org ,ClusterNode01,,,,SDCIOLabNetwork,,192.168.120.225,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.226,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.227,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.228,default,,192.168.120.251
+,,,,,,,,SDC-25CLS13-N2,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS13-N2,SNIA-NA-2025.org ,ClusterNode02,,,,SDCIOLabNetwork,,192.168.120.229,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.230,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.231,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.232,default,,192.168.120.251
+,,,,,,,,SDC-25CLS13-C1,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-25CLS13-C1,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.233,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.234,default,,192.168.120.251
+,FileServer_Cluster_Azure_2025_04,Azure,Win2025_Domain_Cluster_SMB311,SDCIOLAB2025,West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,SDC-25CLS04-SG1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS04-SG1,Workgroup,IscsiStorage,,,,SDCIOLabNetwork,,192.168.120.235,default,,
+,,,,,,,,N/A,,CLUSTER04,0,Cluster,,,,SDCIOLabNetwork,,192.168.120.236,default,,
+,,,,,,,,N/A,,GENERALFS04,0,GeneralFS,,,,SDCIOLabNetwork,,192.168.120.237,default,,
+,,,,,,,,N/A,,SCALEOUTFS04,,ScaleoutFS,,,,SDCIOLabNetwork,,,default,,
+,,,,,,,,SDC-25CLS04-N1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS04-N1,SNIA-NA-2025.org ,ClusterNode01,,,,SDCIOLabNetwork,,192.168.120.239,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.240,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.241,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.242,default,,192.168.120.251
+,,,,,,,,SDC-25CLS04-N2,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS04-N2,SNIA-NA-2025.org ,ClusterNode02,,,,SDCIOLabNetwork,,192.168.120.243,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.244,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.245,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.246,default,,192.168.120.251
+,,,,,,,,SDC-25CLS04-C1,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-25CLS04-C1,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.247,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.248,default,,192.168.120.251
+,FileServer_Cluster_Azure_2025_05,Azure,Win2025_Domain_Cluster_SMB311,SDCIOLAB2025,West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,SDC-25CLS14-SG1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS14-SG1,Workgroup,IscsiStorage,,,,SDCIOLabNetwork,,192.168.120.20,default,,
+,,,,,,,,N/A,,CLUSTER14,0,Cluster,,,,SDCIOLabNetwork,,192.168.120.21,default,,
+,,,,,,,,N/A,,GENERALFS14,0,GeneralFS,,,,SDCIOLabNetwork,,192.168.120.22,default,,
+,,,,,,,,N/A,,SCALEOUTFS14,,ScaleoutFS,,,,SDCIOLabNetwork,,,default,,
+,,,,,,,,SDC-25CLS14-N1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS14-N1,SNIA-NA-2025.org ,ClusterNode01,,,,SDCIOLabNetwork,,192.168.120.23,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.24,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.25,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.26,default,,192.168.120.251
+,,,,,,,,SDC-25CLS14-N2,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,SDC-25CLS14-N2,SNIA-NA-2025.org ,ClusterNode02,,,,SDCIOLabNetwork,,192.168.120.27,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.28,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.29,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.30,default,,192.168.120.251
+,,,,,,,,SDC-25CLS14-C1,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,SDC-25CLS14-C1,SNIA-NA-2025.org ,DriverComputer,,,,SDCIOLabNetwork,,192.168.120.31,default,,192.168.120.251
+,,,,,,,,,,,,,,,,SDCIOLabNetwork,,192.168.120.32,default,,192.168.120.251

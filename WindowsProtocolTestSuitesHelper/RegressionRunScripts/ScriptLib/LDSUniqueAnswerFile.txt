@@ -1,0 +1,22 @@
+[ADAMInstall]
+
+; The following line specifies to install a unique ADAM instance.
+InstallType=Unique
+
+; The following line specifies the name to be assigned to the new instance.
+InstanceName=%INSTName%
+
+; The following line specifies the communications port to use for LDAP.
+LocalLDAPPortToListenOn=%INSTPort%
+
+; The following line specifies the SSL communications port to use for LDAP.
+LocalSSLPortToListenOn=%INSTSSLPort%
+
+; The following line specifies the directory to use for ADAM data files.
+DataFilesPath=C:\Program Files\Microsoft ADAM\%INSTName%\data
+
+; The following line specifies the directory to use for ADAM log files.
+LogFilesPath=C:\Program Files\Microsoft ADAM\%INSTName%\data
+
+; The following line specifies the .ldf files to import into the ADAM schema.
+ImportLDIFFiles="ms-inetorgperson.ldf" "ms-user.ldf" "ms-azman.ldf" "ms-userproxy.ldf" "ms-userproxyfull.ldf" "ms-adamsyncmetadata.ldf" "MS-ADLDS-DisplaySpecifiers.LDF"

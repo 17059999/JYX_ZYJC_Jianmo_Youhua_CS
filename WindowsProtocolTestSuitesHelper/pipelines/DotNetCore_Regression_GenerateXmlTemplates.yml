@@ -1,0 +1,46 @@
+parameters:
+  build.templatesPath: ""
+  build.csvPath: ""
+
+steps:
+  - task: AzurePowerShell@5
+    displayName: "Download ConfigureGenerator tool"
+    inputs:
+        azureSubscription: "Protocol Test Env - TME01 MI"
+        ScriptType: InlineScript
+        azurePowerShellVersion: 'LatestVersion'
+        Inline: |
+            Write-Host 'Create the ConfigureGenerator folder.'
+            New-Item -ItemType Directory "ConfigureGenerator"
+            Set-Location -Path "ConfigureGenerator"
+            Write-Host 'Create storage account context.'
+            $ctx = New-AzStorageContext -StorageAccountName $(azure.storageAccount) -EnableFileBackupRequestIntent
+            Write-Host 'Start ConfigureGenerator tool.'
+            Get-AzStorageFileContent -ShareName "protocoltestsuiteshare" -Path "ToolShare/ConfigureGenerator/DocumentFormat.OpenXml.dll" -Context $ctx
+            Get-AzStorageFileContent -ShareName "protocoltestsuiteshare" -Path "ToolShare/ConfigureGenerator/ConfigureGenerator.exe" -Context $ctx
+            Get-AzStorageFileContent -ShareName "protocoltestsuiteshare" -Path "ToolShare/ConfigureGenerator/ConfigureGenerator.exe.config" -Context $ctx
+            Get-AzStorageFileContent -ShareName "protocoltestsuiteshare" -Path "ToolShare/ConfigureGenerator/ConfigureGenerator.pdb" -Context $ctx
+            Write-Host 'Finish download ConfigureGenerator tool.'
+
+      # This is commented out due to an 'az storage' bug on az cli 2.54.0 that fails with a 'disallow_trailing_dot' error. ETA for resolution is 05-Dec-2023 (https://github.com/Azure/azure-cli/issues/27845). 
+      # inlineScript: |
+      #   New-Item -ItemType Directory ConfigureGenerator
+      #   az storage file download-batch --connection-string '$(azure.storageConnectString)' --destination ConfigureGenerator --source protocoltestsuiteshare/ToolShare/ConfigureGenerator
+
+  - task: CopyFiles@2
+    displayName: "Copy templates files"
+    inputs:
+      SourceFolder: "${{parameters['build.templatesPath']}}"
+      TargetFolder: 'ConfigureGenerator\XmlTemplates'
+
+  - task: PowerShell@2
+    displayName: "Generate XML template files with filter"
+    inputs:
+      targetType: inline
+      script: |
+        $filters = "$(targetRepo.filter)".Split(";")
+        foreach ($filter in $filters) {
+            ConfigureGenerator\ConfigureGenerator.exe ${{parameters['build.csvPath']}} /filter:$filter /output:$(Build.BinariesDirectory)\RegressionEnvironments
+        }
+
+        Get-ChildItem $(Build.BinariesDirectory)\RegressionEnvironments -Recurse

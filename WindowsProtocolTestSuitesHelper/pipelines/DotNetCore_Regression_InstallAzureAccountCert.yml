@@ -1,0 +1,16 @@
+parameters:
+  build.ModuleName: "AzureRM"
+
+steps:
+  - task: DownloadSecureFile@1
+    displayName: "Download Azure account certificate"
+    name: azureAccountCert
+    inputs:
+      secureFile: "AzureAccountCert.pfx"
+
+  - task: PowerShell@2
+    displayName: "Install Azure account certificate"
+    inputs:
+      targetType: "inline"
+      script: |
+        Import-PfxCertificate -FilePath $(azureAccountCert.secureFilePath) -Password (ConvertTo-SecureString -String $(azure.certPassword) -AsPlainText -Force) -CertStoreLocation Cert:\LocalMachine\My

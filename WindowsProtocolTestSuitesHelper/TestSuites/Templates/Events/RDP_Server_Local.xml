@@ -1,0 +1,71 @@
+<lab>
+  <core>
+    <username>administrator</username>
+    <password>Password01!</password>
+    <legacyclient>true</legacyclient>
+    <basecpu>1</basecpu>
+    <Description>Server x 1 and DC x 1</Description>
+    <regressiontype>local</regressiontype>
+  </core>
+  <network>
+    <vnet>
+      <hostisgateway>true</hostisgateway>
+      <name>RDP-Plugfest</name>
+      <networktype>Internal</networktype>
+      <iscleanup>false</iscleanup>
+      <ip>10.20.0.100</ip>
+      <subnet>255.255.255.0</subnet>
+    </vnet>
+  </network>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <hypervname>RDPServer_SUT01</hypervname>
+      <name>Server_SUT01</name>
+      <role>SUT</role>
+      <imageReference>
+        <diskName>MicrosoftWindowsServer</diskName>
+        <answerFile>WindowsServer</answerFile>
+      </imageReference>
+      <domain>Workgroup</domain>
+      <vnet>RDP-Plugfest</vnet>
+      <ip>10.20.0.51</ip>
+      <gateway>10.20.0.100</gateway>
+      <subnet>255.255.255.0</subnet>
+      <dns>10.20.0.100</dns>
+      <cpu>1</cpu>
+      <memory>2048</memory>
+      <minimumram>1024</minimumram>
+      <maximumram>2048</maximumram>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;PostConfig-SUT.ps1</postscript>
+    </vm>
+    <vm>
+      <installorder>2</installorder>
+      <hypervname>RDPServer_Driver01</hypervname>
+      <name>Server_Driver01</name>
+      <role>DriverComputer</role>
+      <imageReference>
+        <diskName>MicrosoftWindowsServer</diskName>
+        <answerFile>WindowsServer</answerFile>
+      </imageReference>
+      <domain>Workgroup</domain>
+      <vnet>RDP-Plugfest</vnet>
+      <ip>10.20.0.50</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.20.0.100</gateway>
+      <dns>10.20.0.100</dns>
+      <cpu>2</cpu>
+      <memory>2048</memory>
+      <minimumram>2048</minimumram>
+      <maximumram>4096</maximumram>
+      <postiso>VS2012.iso</postiso>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;InstallMSIAndTools.ps1;Enable-WinRM.ps1;PostConfig-Driver.ps1</postscript>
+      <tools>
+        <tool name="SE" MSIName="SpecExplorer.msi" version="3.5.3146.0" CPUArchitecture="x86" />
+        <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+        <TestsuiteMSI MSIName="RDP-TestSuite-ServerEP.msi" targetEndpoint="TESTSUITE" />
+        <tool name="PTM" MSIName="ProtocolTestManager.msi" version="3.18.6.0" />
+      </tools>
+    </vm>
+  </servers>
+</lab>

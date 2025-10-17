@@ -1,0 +1,1 @@
+cmd /c msiexec -i c:\temp\deploy\ProtocolTestFramework.msi -q

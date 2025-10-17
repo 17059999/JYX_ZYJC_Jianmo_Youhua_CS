@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{TESTSUITE_NAME}} Check Virtual Machines Summary</title>
+    <style>
+        .highlight {
+            background-color: #0275d8;
+            line-height: 20px;
+            color: #fff;
+            font-size: 16px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .normal {
+            background-color: #e3ebf1;
+            line-height: 20px;
+            color: #121111;
+            font-size: 16px;
+            vertical-align: middle;
+        }
+
+        body, table {
+            width: 100%;
+        }
+
+        .font-green {
+			color:green
+		}
+		
+		.font-orange {
+			color:orange
+		}
+		
+		.font-red {
+			color:red
+		}
+    </style>
+</head>
+<body>
+    <h3>Check Virtual Machines</h3>
+    <table>
+        <thead>
+            <tr class="highlight">
+                <th style="width:8%">Machine</th>
+                <th style="width:5%">IpInfo</th>
+                <th style="width:5%">DiskUsage</th>
+                <th style="width:10%">QuicEnabled</th>
+                <th style="width:10%">TestSuiteExisted</th>
+                <th style="width:4%">PTMExisted</th>
+            </tr>
+        </thead>
+        <tbody>
+                {{CHECK_BODY}}
+        </tbody>
+    </table>
+</body>
+</html>

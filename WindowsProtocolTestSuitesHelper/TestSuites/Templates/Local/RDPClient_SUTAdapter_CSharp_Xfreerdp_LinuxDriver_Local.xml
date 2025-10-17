@@ -1,0 +1,86 @@
+<lab>
+	<core>
+		<username>administrator</username>
+		<password>Password01!</password>
+		<legacyclient>true</legacyclient>
+		<basecpu>4</basecpu>
+    <TestSuiteName>RDPClient_DotNetCore_SUTControlAgent</TestSuiteName>
+		<Description>Server x 1 and Client x 1</Description>
+    <regressiontype>local</regressiontype>
+    <timeoutinminutes>600</timeoutinminutes>
+	</core>
+	<network>
+		<vnet>
+			<hostisgateway>true</hostisgateway>
+			<name>RDPClient_Internal</name>
+      <networktype>Internal</networktype>
+			<ip>192.168.173.250</ip>
+			<subnet>255.255.255.0</subnet>
+		</vnet>
+	</network>
+  <Parameters>
+    <!--Parameters for automation run-->
+    <Parameter Name="BatchToRun" Value="RunTestCasesByFilter.ps1" Comment="Which batch file to run test case." />
+    <Parameter Name="FilterToRun" Value="TestCategory=RDPBCGR" Comment="Case Filter" />
+    <Parameter Name="SelectedAdapter" Value="CSharp" Comment="Select test suite family members to run." />
+    <Parameter Name="SupportRDPFile" Value="No" Comment="Whether the xfreerdp run in RDP file mode or command mode" />
+  </Parameters>
+	<servers>
+    <vm>
+      <role>DriverComputer</role>
+      <os>Linux</os>
+      <vnetExternal>NATSwitch</vnetExternal>
+      <imageReference>
+        <diskName>Ubuntu 18.04.3 LTS_Original.vhdx</diskName>
+      </imageReference>
+      <installorder>1</installorder>
+      <hypervname>RDPServer</hypervname>
+      <name>RDPServer</name>
+	    <LMSName>Server:1</LMSName>
+      <domain>WorkGROUP.com</domain>
+      <vnet>RDPClient_Internal</vnet>
+      <ip>192.168.173.1</ip>
+      <subnet>255.255.255.0</subnet>
+	    <gateway>192.168.173.250</gateway>
+      <dns></dns>
+      <memory>4096</memory>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <installscript>Install-TestSuiteToLinuxDriver.ps1;Install-ScriptToLinuxDriver.ps1</installscript>
+      <tools>
+        <tool name="certs" ZipName="id_rsa.zip" targetFolder="/root/.ssh" installScript="chmod 0600 -R /root/.ssh" />
+        <TestsuiteZip ZipName="RDP-TestSuite-ClientEP.zip" targetFolder="/RDP-TestSuite-ClientEP"/>
+      </tools>
+    </vm>
+    <vm>
+      <role>SUT</role>
+      <imageReference>
+        <diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+        <answerFile>17763_ServerDataCenter.xml</answerFile>
+      </imageReference>
+      <installorder>2</installorder>
+      <hypervname>RDPClient</hypervname>
+      <name>RDPClient</name>
+	    <LMSName>Client:1</LMSName>
+      <domain>WorkGROUP.com</domain>
+      <vnet>RDPClient_Internal</vnet>
+      <ip>192.168.173.101</ip>
+      <gateway>192.168.173.250</gateway>
+      <dns>Empty</dns>
+      <memory>2048</memory>
+      <sku>client</sku>
+      <agentPort>4490</agentPort>
+      <agentRemoteClient>xfreerdp</agentRemoteClient>
+	    <installfeaturescript>Enable-TestSignning.ps1;Enable-USBRedirection.ps1</installfeaturescript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Enable-WinRM.ps1;InstallMSIAndTools.ps1;InstallSUTControllerAdapter.ps1;Set-StartCommand.ps1;Start-Desktop.ps1;Set-Display.ps1;Setup-VHID.ps1;Create-TouchTask.ps1;Write-InstallDoneSignal.ps1;Config-AuthorizedKeys.ps1</postscript>
+      <tools>
+        <tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="Latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+        <tool name="JRE" EXEName="jre-8u251-windows-x64.exe" version="8u251" CPUArchitecture="x64" ArgumentList="/s /L C:\jre-8u251-windows-x64.log" />
+        <tool name="PowerShellCore" MSIName="PowerShell-7.4.1-win-x64.msi" version="7.4.1" CPUArchitecture="x64" />
+        <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+        <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+        <TestsuiteZip ZipName="RDP-TestSuite-ClientEP.zip" targetFolder="c:\RDP-TestSuite-ClientEP"/>
+      </tools>
+    </vm>
+	</servers>
+</lab>

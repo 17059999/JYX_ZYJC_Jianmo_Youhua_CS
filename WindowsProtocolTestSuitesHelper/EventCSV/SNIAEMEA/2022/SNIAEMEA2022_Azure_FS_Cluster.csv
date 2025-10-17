@@ -1,0 +1,15 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+FileServer,FileServer_Cluster_Azure_Event,Azure,Win2022_Domain_Cluster_SMB311,SNIA-EMEA2022,West Europe,FS_Cluster_NoDC_Azure.xml,IOLab/Password01!!,CLS01-SG01 ,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,CLS01-SG01 ,workgroup,IscsiStorage,,,,SNIA-EMEA2022-vnet,,192.168.142.120,VMSubnet,,
+,,,,,,,,N/A,,CLS01-CLUSTER ,0,Cluster,,,,SNIA-EMEA2022-vnet,,192.168.142.121,VMSubnet,,
+,,,,,,,,N/A,,CLS01-GENERALFS ,0,GeneralFS,,,,SNIA-EMEA2022-vnet,,192.168.142.122,VMSubnet,,
+,,,,,,,,N/A,,CLS01-SCALEOUTFS01 ,,ScaleoutFS,,,,SNIA-EMEA2022-vnet,,,VMSubnet,,
+,,,,,,,,CLS01-NODE01 ,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,CLS01-NODE01 ,SNIA2022-EMEA.org ,ClusterNode01,,,,SNIA-EMEA2022-vnet,,192.168.142.124,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.125,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.126,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.127,VMSubnet,,192.168.142.251
+,,,,,,,,CLS01-NODE02 ,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,CLS01-NODE02 ,SNIA2022-EMEA.org ,ClusterNode02,,,,SNIA-EMEA2022-vnet,,192.168.142.128,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.129,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.130,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.131,VMSubnet,,192.168.142.251
+,,,,,,,,CLS01-CLI01 ,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,CLS01-CLI01 ,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.132,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.133,VMSubnet,,192.168.142.251

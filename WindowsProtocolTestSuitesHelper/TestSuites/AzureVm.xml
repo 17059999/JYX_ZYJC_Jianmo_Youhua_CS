@@ -1,0 +1,33 @@
+<lab>
+  <core>
+    <username>IOLab</username>
+    <password>Password01!!</password>
+    <TestSuiteName>AzureVm</TestSuiteName>
+    <regressiontype>Azure</regressiontype>
+    <timeoutinminutes>720</timeoutinminutes>
+  </core>
+  <vmsetting>
+    <location>westus2</location>
+    <networkId>TestSuiteOnAzure-vnet</networkId>
+    <subnetName>default</subnetName>
+    <resourceGroup>TestSuiteOnAzure</resourceGroup>
+    <diskType>Premium_LRS</diskType>
+    <vmSize>Standard_D2ds_v4</vmSize>
+  </vmsetting>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <role>Server</role>
+      <os>Windows</os>
+      <imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2022-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>TestDeployWin</name>
+      <domain>workgroup</domain>
+      <ip>10.0.1.111</ip>
+    </vm>
+  </servers>
+</lab>

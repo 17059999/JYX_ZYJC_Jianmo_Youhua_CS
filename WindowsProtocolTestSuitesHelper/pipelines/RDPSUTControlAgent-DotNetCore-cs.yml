@@ -1,0 +1,355 @@
+trigger: none
+
+variables:
+  - group: Build Variables
+  - group: External Repo Variables
+  - group: ESRP Variables
+  - name: build.buildPipelineName
+    value: RDPClient_DotNetCore_Build
+
+stages:
+  - stage: Build_And_Get_Agents
+    pool:
+      vmImage: windows-2022
+    jobs:
+      - job:
+        displayName: Build RDPClient
+        workspace:
+          clean: true
+        timeoutInMinutes: 0
+        steps:
+          - checkout: self
+
+          - task: PowerShell@2
+            displayName: "Queue RDPClient Build"
+            inputs:
+              targetType: filePath
+              filePath: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/Queue-SinglePipelineWithParameters.ps1"
+              arguments: '-AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -PipelineName "$(build.buildPipelineName)" -TargetRepoBranch "$(build.testSuitesBranch)" -BuildIdVariableName "build.rdpClientBuildId"'
+              workingDirectory: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Wait RDPClient Build Completion"
+            inputs:
+              targetType: filePath
+              filePath: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/Wait-SinglePipelineCompletionByBuildId.ps1"
+              arguments: '-AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -BuildId "$(build.rdpClientBuildId)"'
+              workingDirectory: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Get RDP SUT Control Agent Artifacts"
+            inputs:
+              targetType: filePath
+              filePath: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/Get-DotNetCoreArtifactByBuildId.ps1"
+              arguments: '-AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -BuildId "$(build.rdpClientBuildId)" -ArtifactName "RDPSUTControlAgent" -GetAllFiles $true -ArtifactLocalPath "$(Build.ArtifactStagingDirectory)/RDPSUTControlAgent"'
+              workingDirectory: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+            condition: succeeded()
+
+          - task: ArchiveFiles@2
+            displayName: "Archive CSharp Agent"
+            inputs:
+              rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/RDPSUTControlAgent/CSharp"
+              includeRootFolder: false
+              archiveFile: "$(Build.ArtifactStagingDirectory)/CSharp/RDPSUTControlAgent-CSharp.zip"
+            condition: succeeded()
+
+          - task: ExtractFiles@1
+            displayName: "Extract Java Agent Files"
+            inputs:
+              archiveFilePatterns: "$(System.ArtifactsDirectory)/RDPSUTControlAgent/Java/distributions/RDPSUTControlAgent.zip"
+              destinationFolder: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent/Java"
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Move freerdp.config to Target Folder"
+            inputs:
+              targetType: inline
+              script: |
+                Move-Item "$(Build.ArtifactStagingDirectory)/RDPSUTControlAgent/Java/freerdp.config" "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent/Java/RDPSUTControlAgent/bin" -Force
+            condition: succeeded()
+
+          - task: ArchiveFiles@2
+            displayName: "Archive Java Agent"
+            inputs:
+              rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent/Java/RDPSUTControlAgent"
+              includeRootFolder: false
+              archiveFile: "$(Build.ArtifactStagingDirectory)/Java/RDPSUTControlAgent-Java.zip"
+            condition: succeeded()
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish CSharp RDP SUT Control Agent Artifact"
+            inputs:
+              PathtoPublish: "$(Build.ArtifactStagingDirectory)/CSharp"
+              ArtifactName: RDPSUTControlAgent
+            condition: succeeded()
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Java RDP SUT Control Agent Artifact"
+            inputs:
+              PathtoPublish: "$(Build.ArtifactStagingDirectory)/Java"
+              ArtifactName: RDPSUTControlAgent
+            condition: succeeded()
+
+  - stage: Sign_Agents
+    pool:
+      vmImage: windows-2022
+    dependsOn: Build_And_Get_Agents
+    condition: succeeded()
+    jobs:
+      - job:
+        displayName: Sign CSharp Agent
+        workspace:
+          clean: true
+        timeoutInMinutes: 0
+        steps:
+          - checkout: self
+
+          - task: DownloadBuildArtifacts@0
+            displayName: "Download RDPSUTControlAgent-CSharp.zip"
+            inputs:
+              artifactName: RDPSUTControlAgent
+              itemPattern: "**/RDPSUTControlAgent-CSharp.zip"
+            condition: succeeded()
+
+          - task: ExtractFiles@1
+            displayName: "Extract CSharp Agent Files"
+            inputs:
+              archiveFilePatterns: "$(System.ArtifactsDirectory)/RDPSUTControlAgent/RDPSUTControlAgent-CSharp.zip"
+              destinationFolder: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-CSharp"
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Get Files to be Signed"
+            inputs:
+              targetType: filePath
+              filePath: "$(Build.Repository.LocalPath)/CodeSign/Get-CodeSigningFiles.ps1"
+              arguments: '-ExpandedArchivePath "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-CSharp" -ProductName "$(codeSign.productName)" -CodeSigningFilesPath "./CodeSigningFiles.json"'
+              workingDirectory: "$(Build.Repository.LocalPath)/CodeSign"
+            condition: succeeded()
+
+          - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
+            displayName: "ESRP CodeSigning"
+            inputs:
+              ConnectedServiceName: '$(ConnectedServiceName)'
+              UseMSIAuthentication: true
+              AppRegistrationClientId: '$(AppRegistrationClientId)' 
+              AppRegistrationTenantId: '$(AppRegistrationTenantId)' 
+              EsrpClientId: "$(EsrpClientId)"
+              AuthAKVName: '$(AuthAKVName)' 
+              AuthSignCertName: '$(AuthSignCertName)'
+              FolderPath: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-CSharp"
+              Pattern: "$(codeSign.codeSigningFiles)"
+              SessionTimeout: 90 
+              ServiceEndpointUrl: '$(ServiceEndpointUrl)' 
+              MaxConcurrency: 25
+              signConfigType: inlineSignParams
+              inlineOperation: |
+                [
+                  {
+                    "KeyCode": "CP-230012",
+                    "OperationCode": "SigntoolSign",
+                    "Parameters":
+                      {
+                        "OpusName": "Microsoft",
+                        "OpusInfo": "http://www.microsoft.com",
+                        "FileDigest": '/fd "SHA256"',
+                        "PageHash": "/NPH",
+                        "TimeStamp": '/tr "http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer" /td sha256'
+                      },
+                    "ToolName": "sign",
+                    "ToolVersion": "1.0"
+                  },
+                  {
+                    "KeyCode": "CP-230012",
+                    "OperationCode": "SigntoolVerify",
+                    "Parameters": {},
+                    "ToolName": "sign",
+                    "ToolVersion": "1.0"
+                  }
+                ]
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "ESRP CodeSigning Verification"
+            inputs:
+              targetType: filePath
+              filePath: "$(Build.Repository.LocalPath)/CodeSign/Verify-ExpandedDotNetCoreArchive.ps1"
+              arguments: '-ArchiveName "RDPSUTControlAgent-CSharp" -ExpandedArchivePath "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-CSharp" -CodeSigningFilesPath "./CodeSigningFiles.json" -SignerSubject "$(codeSign.signerSubject)" -ReportRootPath "$(Build.ArtifactStagingDirectory)/drop"'
+              workingDirectory: "$(Build.Repository.LocalPath)/CodeSign"
+            condition: succeeded()
+
+          - task: ArchiveFiles@2
+            displayName: "Archive as Zip for: $(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-CSharp"
+            inputs:
+              rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-CSharp"
+              includeRootFolder: false
+              archiveFile: "$(Build.ArtifactStagingDirectory)/drop/RDPSUTControlAgent-CSharp.zip"
+            condition: succeeded()
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Artifacts"
+            inputs:
+              PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop"
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Verify Report Status"
+            inputs:
+              targetType: inline
+              script: |
+                Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)/drop" -Filter "*.CodeSignVerification.html" | Foreach-Object { ./Check-HtmlReport.ps1 -ReportPath $_.FullName }
+              workingDirectory: "$(Build.Repository.LocalPath)/CodeSign"
+            condition: succeeded()
+
+      - job:
+        displayName: Sign Java Agent
+        workspace:
+          clean: true
+        timeoutInMinutes: 0
+        steps:
+          - checkout: none
+
+          - task: JavaToolInstaller@0
+            displayName: "Install Java Tools"
+            inputs:
+              versionSpec: "8"
+              jdkArchitectureOption: "x64"
+              jdkSourceOption: "PreInstalled"
+
+          - task: DownloadBuildArtifacts@0
+            displayName: "Download RDPSUTControlAgent-Java.zip"
+            inputs:
+              artifactName: RDPSUTControlAgent
+              itemPattern: "**/RDPSUTControlAgent-Java.zip"
+            condition: succeeded()
+
+          - task: ExtractFiles@1
+            displayName: "Extract Java Agent Files"
+            inputs:
+              archiveFilePatterns: "$(System.ArtifactsDirectory)/RDPSUTControlAgent/RDPSUTControlAgent-Java.zip"
+              destinationFolder: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-Java"
+            condition: succeeded()
+
+          - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
+            displayName: "ESRP CodeSigning"
+            inputs:
+              ConnectedServiceName: '$(ConnectedServiceName)'
+              UseMSIAuthentication: true
+              AppRegistrationClientId: '$(AppRegistrationClientId)' 
+              AppRegistrationTenantId: '$(AppRegistrationTenantId)' 
+              EsrpClientId: "$(EsrpClientId)"
+              AuthAKVName: '$(AuthAKVName)' 
+              AuthSignCertName: '$(AuthSignCertName)'
+              FolderPath: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-Java"
+              Pattern: "RDPSUTControlAgent.jar"
+              SessionTimeout: 90 
+              ServiceEndpointUrl: '$(ServiceEndpointUrl)' 
+              MaxConcurrency: 25
+              signConfigType: inlineSignParams
+              inlineOperation: |
+                [
+                  {
+                    "KeyCode" : "CP-447347-Java",
+                    "OperationCode" : "JavaSign",
+                    "Parameters" : 
+                      {
+                        "SigAlg" : "SHA256withRSA",
+                        "Timestamp" : "-tsa http://sha256timestamp.ws.digicert.com/sha256/timestamp"
+                      },
+                    "ToolName" : "sign",
+                    "ToolVersion" : "1.0"
+                  },
+                  {
+                    "KeyCode" : "CP-447347-Java",
+                    "OperationCode" : "JavaVerify",
+                    "Parameters" : {},
+                    "ToolName" : "sign",
+                    "ToolVersion" : "1.0"
+                  }
+                ]
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Remove CodeSign Summary"
+            inputs:
+              targetType: inline
+              script: |
+                Get-ChildItem "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-Java" | Where-Object { $_.Name -match "CodeSignSummary" } | ForEach-Object { Remove-Item $_.FullName -Force }
+            condition: succeeded()
+
+          - task: ArchiveFiles@2
+            displayName: "Archive as Zip for: $(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-Java"
+            inputs:
+              rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-Java"
+              includeRootFolder: false
+              archiveFile: "$(Build.ArtifactStagingDirectory)/drop/RDPSUTControlAgent-Java.zip"
+            condition: succeeded()
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Artifacts"
+            inputs:
+              PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop"
+            condition: succeeded()
+
+          - task: CopyFiles@2
+            displayName: "Copy Signed Jar Files"
+            inputs:
+              SourceFolder: "$(Build.ArtifactStagingDirectory)/staging/RDPSUTControlAgent-Java/lib"
+              Contents: RDPSUTControlAgent.jar
+              TargetFolder: "$(Build.ArtifactStagingDirectory)/verify"
+              OverWrite: true
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Print Verification Info"
+            inputs:
+              targetType: inline
+              script: |
+                Get-ChildItem "$(Build.ArtifactStagingDirectory)/verify/*.jar" | ForEach-Object { Write-Host "Verification Info for $($_.FullName):"; jarsigner -certs -verbose:all -verify $_.FullName }
+            condition: succeeded()
+
+          - task: PowerShell@2
+            displayName: "Verify CodeSign Status"
+            inputs:
+              targetType: inline
+              script: |
+                $validOutput = "jar verified."
+                $allValid = $true
+                Get-ChildItem "$(Build.ArtifactStagingDirectory)/verify/*.jar" | ForEach-Object { [array]$output = jarsigner -verify $_.FullName; if ($output[1] -ne $validOutput) { $allValid = $false } }
+                if ($allValid) {
+                  Write-Host "All Jar signatures are valid."
+                }
+                else {
+                  throw "Invalid Jar signatures found!"
+                }
+            condition: succeeded()
+
+  - stage: Archive_Tar_Archives_For_Linux
+    pool:
+      vmImage: ubuntu-22.04
+    dependsOn: Sign_Agents
+    condition: succeeded()
+    jobs:
+      - job:
+        displayName: Archive CSharp RDPSUTControlAgent as Tar
+        workspace:
+          clean: true
+        timeoutInMinutes: 0
+        condition: succeeded()
+        steps:
+          - template: TestSuite-DotNetCore-TarArchive-cs.yml
+            parameters:
+              build.archiveName: "RDPSUTControlAgent-CSharp"
+
+      - job:
+        displayName: Archive Java RDPSUTControlAgent as Tar
+        workspace:
+          clean: true
+        timeoutInMinutes: 0
+        condition: succeeded()
+        steps:
+          - template: TestSuite-DotNetCore-TarArchive-cs.yml
+            parameters:
+              build.archiveName: "RDPSUTControlAgent-Java"

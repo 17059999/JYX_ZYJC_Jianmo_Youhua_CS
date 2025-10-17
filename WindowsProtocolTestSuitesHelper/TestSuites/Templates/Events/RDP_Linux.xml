@@ -1,0 +1,70 @@
+<lab>
+  <core>
+    <username>administrator</username>
+    <password>Password01!</password>
+    <legacyclient>true</legacyclient>
+    <basecpu>1</basecpu>
+    <Description>RDP Client Environment for Linux</Description>
+  </core>
+
+  <network>
+    <vnet>
+      <hostisgateway>false</hostisgateway>
+      <networktype>External</networktype>
+      <name>External</name>
+    </vnet>
+    <vnet>
+      <hostisgateway>true</hostisgateway>
+      <networktype>Internal</networktype>
+      <name>RDPServerLinux_Internal</name>
+      <ip>192.168.171.250</ip>
+      <subnet>255.255.255.0</subnet>
+    </vnet>
+    <vnet>
+      <hostisgateway>true</hostisgateway>
+      <networktype>Internal</networktype>
+      <name>Internal-Base</name>
+      <ip>192.168.254.254</ip>
+      <subnet>255.255.255.0</subnet>
+    </vnet>
+  </network>
+
+  <servers>
+    <vm>
+      <installorder>2</installorder>
+      <role>DriverComputer</role>
+      <vmtype>Windows</vmtype>
+      <hypervname>RDPServerLinux_Server</hypervname>
+      <name>RDPServer</name>
+      <domain>WorkGROUP.com</domain>
+      <memory>2048</memory>
+      <vnet>RDPServerLinux_Internal</vnet>
+      <ip>192.168.171.1</ip>
+      <gateway>Empty</gateway>
+      <dns>Empty</dns>
+      <parentanswerfile>unattend_Win8_ServerStandard.xml</parentanswerfile>
+      <skipwaitingforpostscript>true</skipwaitingforpostscript>
+      <postiso>VS2010.iso</postiso>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Install_vs2010.ps1;InstallMSIAndTools.ps1;Config-DriverComputerForLinuxSut.ps1;Write-InstallDoneSignal.ps1</postscript>
+      <tools>
+        <tool name="SE" MSIName="SpecExplorer.msi" version="3.5.3146.0" CPUArchitecture="x86" />
+        <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+        <TestsuiteMSI MSIName="RDP-TestSuite-ClientEP.msi" targetEndpoint="TESTSUITE" />
+      </tools>
+    </vm>
+
+    <vm>
+      <role>SUT</role>
+      <installorder>1</installorder>
+      <vmtype>Linux</vmtype>
+      <hypervname>RDPClientLinux_Client</hypervname>
+      <name>RDPClient</name>
+      <domain>WorkGROUP.com</domain>
+      <memory>1024</memory>
+      <vnet>RDPServerLinux_Internal</vnet>
+      <ip>192.168.171.101</ip>
+      <dns>Empty</dns>
+      <postscript>Deploy-SUT.sh;Change-ComputerName.sh;Assign-IP.sh</postscript>
+    </vm>
+  </servers>
+</lab>

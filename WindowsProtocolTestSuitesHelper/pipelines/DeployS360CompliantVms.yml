@@ -1,0 +1,42 @@
+trigger: none
+
+variables:
+  - group: Azure Account
+  - group: Build Variables
+
+jobs:
+  - job:
+    displayName: Azure Regression
+    pool:
+      name: TestSuiteAzureESPool2024
+    workspace:
+      clean: all
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: self
+
+      - template: DotNetCore_Regression_InstallAzureAccountCert.yml
+
+      - template: DotNetCore_Regression_ConfigureSshClient.yml
+
+      - task: AzurePowerShell@5
+        displayName: "Deploy specific VM"
+        inputs:
+          azureSubscription: "Protocol Test Environment - Prod service connection"
+          ScriptType: filePath
+          azurePowerShellVersion: 'LatestVersion'
+          scriptPath: "RegressionRunScripts/AzureRegression/Deploy-AzureS360CompliantVms.ps1"
+          scriptArguments: '-csvFile "TestSuites/$(csvFile)" -subscriptionId "$(azure.subscriptionId)" -ApplicationId "$(azure.applicationId)" -ThumbPrint "$(azure.ThumbPrint)" -TenantId "$(azure.tenantId)" -storageAccount "$(azure.storageAccount)" -storageShareName "$(azure.storageShareName)" -fileShareResourceGroup "$(azure.fileShareResourceGroup)"'
+          workingDirectory: "RegressionRunScripts/AzureRegression"
+
+      - task: AzurePowerShell@5
+        displayName: "Apply S360 settings to the target VM"
+        inputs:
+          azureSubscription: "Protocol Test Environment - Prod service connection"
+          ScriptType: filePath
+          azurePowerShellVersion: 'LatestVersion'
+          scriptPath: "RegressionRunScripts/AzureRegression/Configure-AzureS360CompliantVms.ps1"
+          #scriptArguments: "-usePipelineParams $false -containerName $(containerName) -storageAccount $(storageAccount) -storageAccountKey $(storageAccountKey) -filepath $(azureAccountCert.secureFilePath) -vaultName $(vaultName) -ApplicationId $(azure.applicationId) -ThumbPrint $(azure.ThumbPrint) -TenantId $(azure.tenantId) -certPassword $(azure.certPassword)"
+          scriptArguments: "-usePipelineParams $false -containerName $(containerName) -storageAccount $(storageAccount) -storageAccountKey $(storageAccountKey) -filepath $(azureAccountCert.secureFilePath) -vaultName TestS360keyvault -ApplicationId $(azure.applicationId) -ThumbPrint $(azure.ThumbPrint) -TenantId $(azure.tenantId) -certPassword $(azure.certPassword)"
+          workingDirectory: "RegressionRunScripts/AzureRegression"

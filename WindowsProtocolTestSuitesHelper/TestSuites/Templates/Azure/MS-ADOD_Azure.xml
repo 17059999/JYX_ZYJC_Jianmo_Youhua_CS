@@ -1,0 +1,64 @@
+<lab>
+    <core>
+        <username>IOLab</username>
+        <password>Password01!</password>
+        <TestSuiteName>MS-ADOD</TestSuiteName>
+        <regressiontype>Azure</regressiontype>
+        <timeoutinminutes>210</timeoutinminutes>
+    </core>
+    <vmsetting>
+        <location>westus2</location>
+        <networkId>TestSuiteOnAzure-vnet</networkId>
+        <subnetName>default</subnetName>
+        <resourceGroup>TestSuiteOnAzure</resourceGroup>
+        <diskType>Premium_LRS</diskType>
+        <vmSize>Standard_DS1_v2</vmSize>
+        <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+        <genevaAccountRegion>westus2</genevaAccountRegion>
+    </vmsetting>
+    <Parameters>
+        <!--Parameters for automation run-->
+    </Parameters>
+    <servers>
+        <vm>
+            <role>Client</role>
+            <imageReference>
+                <imageRefId>Win101803_VS2017</imageRefId>
+            </imageReference>
+            <name>ADOD01-CLIENT</name>
+            <domain>Workgroup</domain>
+            <ip>10.0.1.32</ip>
+            <dns>10.0.1.31</dns>
+            <configscript>Config-ClientComputer.ps1</configscript>
+            <restartinpostscript>true</restartinpostscript>
+            <skipwaitingforpostscript>false</skipwaitingforpostscript>
+            <postscript>Disable_Firewall.ps1;InstallMSIAndTools.ps1;Write-InstallDoneSignal.ps1;PostScript-Client.ps1</postscript>
+            <installorder>1</installorder>
+            <tools>
+                <TestsuiteMSI MSIName="MS-ADOD-TestSuite-ODEP.msi" targetEndpoint="SUT" />
+                <tool name="MMA" MSIName="MessageAnalyzer64.msi" version="1.20.0107.01" CPUArchitecture="x64" />
+            </tools>
+        </vm>
+        <vm>
+            <role>DriverComputer</role>
+            <installorder>2</installorder>
+            <imageReference>
+                <imageRefId>Server2016_1803_VS2017</imageRefId>
+            </imageReference>
+            <name>ADOD01-PDC</name>
+            <domain>ADOD01Local.COM</domain>
+            <ip>10.0.1.31</ip>
+            <isdc>true</isdc>
+            <configscript>Config-DriverComputer.ps1</configscript>
+            <restartinpostscript>true</restartinpostscript>
+            <skipwaitingforpostscript>false</skipwaitingforpostscript>
+            <postscript>Disable_Firewall.ps1;InstallMSIAndTools.ps1;Write-InstallDoneSignal.ps1;PostScript-PDC.ps1</postscript>
+            <tools>
+                <tool name="SE" MSIName="SpecExplorer.msi" version="3.5.3146.0" CPUArchitecture="x86" />
+                <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+                <tool name="MMA" MSIName="MessageAnalyzer64.msi" version="1.20.0107.01" CPUArchitecture="x64" />        
+                <TestsuiteMSI MSIName="MS-ADOD-TestSuite-ODEP.msi" targetEndpoint="TESTSUITE" />
+            </tools>
+        </vm>
+    </servers>
+</lab>

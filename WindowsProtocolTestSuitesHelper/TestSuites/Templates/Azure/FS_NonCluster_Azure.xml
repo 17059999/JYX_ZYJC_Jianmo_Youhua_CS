@@ -1,0 +1,98 @@
+<lab>
+  <core>
+    <username>IOLab</username>
+    <password>Password01!</password>
+    <TestSuiteName>FileServer_DotNetCore_Standard</TestSuiteName>
+    <regressiontype>Azure</regressiontype>
+    <timeoutinminutes>390</timeoutinminutes>
+  </core>
+  <vmsetting>
+    <location>westus2</location>
+    <networkId>TestSuiteOnAzure-vnet</networkId>
+    <subnetName>default</subnetName>
+    <resourceGroup>TestSuiteOnAzure</resourceGroup>
+    <diskType>Premium_LRS</diskType>
+    <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+    <genevaAccountRegion>westus2</genevaAccountRegion>
+  </vmsetting>
+  <Parameters>
+    <Parameter Name="TestCaseScript" Value="Execute-TestCaseByContext.ps1" Comment="Which test case to run." />
+    <Parameter Name="TestCaseTimeout" Value="28800" Comment="Test case time out in seconds." />
+    <Parameter Name="ContextName" Value="Win2016_Domain_NonCluster_SMB311" Comment="" />
+    <Parameter Name="TestDirInVM" Value="C:\Test" Comment="" />
+  </Parameters>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <role>DC</role>
+      <vmSize>Standard_D2s_v3</vmSize>
+      <isdc>true</isdc>
+      <imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2016-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>FS-DC</name>
+      <domain>contoso.com</domain>
+      <ip>10.0.1.71</ip>
+      <installscript>InstallScript_DC.ps1</installscript>
+      <installfeaturescript>Install_RemoteAccess_Feature.ps1;InstallMSIAndTools.ps1;Write-InstallFeatureScirptDone.ps1;RestartComputer.PS1</installfeaturescript>
+      <postscript>Config-AuthorizedKeys.ps1;PostConfig-DC.ps1</postscript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+        <tool name="WMF" EXEName="Win8.1AndW2K12R2-KB3191564-x64.msu" version="5.1" CPUArchitecture="x64" ArgumentList="/quiet /norestart" InstallWaitSeconds="200" SupportedOSBuilds="9600"/>
+        <tool name="PowerShellCore" MSIName="PowerShellCore.msi" version="7.4.6" CPUArchitecture="x64" />
+        <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+        <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+    </tools>
+    </vm>
+    <vm>
+      <installorder>2</installorder>
+      <role>NODE01</role>
+      <vmSize>Standard_D2s_v3</vmSize>
+      <imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2016-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>FS-SRV</name>
+      <domain>contoso.com</domain>
+      <ip>10.0.1.72</ip>
+      <ip>10.0.1.73</ip>
+      <dns>10.0.1.71</dns>
+      <installfeaturescript>UpdateRouteForMultiNics.ps1;InstallMSIAndTools.ps1;Install-WindowsFeature.ps1;Write-InstallFeatureScirptDone.ps1;RestartComputer.PS1</installfeaturescript>
+      <postscript>Config-AuthorizedKeys.ps1;PostConfig-Node01.ps1</postscript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+          <tool name="PowerShellCore" MSIName="PowerShellCore.msi" version="7.4.6" CPUArchitecture="x64" />
+          <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+          <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+      </tools>
+    </vm>
+    <vm>
+      <installorder>3</installorder>
+      <role>DriverComputer</role>
+      <vmSize>Standard_D2s_v3</vmSize>
+      <imageReference>
+        <imageRefId>Win101803_VS2017</imageRefId>
+      </imageReference>
+      <name>FS-CLI</name>
+      <domain>contoso.com</domain>
+      <ip>10.0.1.74</ip>
+      <ip>10.0.1.75</ip>
+      <dns>10.0.1.71</dns>
+      <installscript>UpdateRouteForMultiNics.ps1;InstallMSIAndTools.ps1;Write-InstallScriptDoneSignal.ps1;RestartComputer.PS1</installscript>
+      <postscript>PostConfig-Driver.ps1;Config-RSAKeys.ps1;</postscript>
+      <tools>
+        <tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+        <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+        <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+        <tool name="PowerShellCore" MSIName="PowerShellCore.msi" version="7.4.6" CPUArchitecture="x64" />
+        <tool name="certs" ZipName="id_rsa.zip" targetFolder="C:\id_rsa\.ssh" />
+        <TestsuiteZip ZipName="FileServer-TestSuite-ServerEP.zip" targetFolder="c:\FileServer-TestSuite-ServerEP"/>
+    </tools>
+    </vm>
+  </servers>
+</lab>

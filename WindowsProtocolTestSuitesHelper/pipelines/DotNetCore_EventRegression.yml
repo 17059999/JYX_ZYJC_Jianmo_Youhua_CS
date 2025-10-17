@@ -1,0 +1,203 @@
+trigger: none 
+
+variables:
+  - group: Azure Account V2
+  - group: Build Variables
+  - group: External Repo Variables
+
+jobs:
+  - job:
+    displayName: Deploy Azure Env
+    pool:
+      name: 'TestSuiteBuildESPoolTME-CentralUS'
+      vmImage: 'windows-latest'
+    workspace:
+      clean: all
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: self
+
+      - task: PowerShell@2
+        displayName: Download PTMCli Artifacts
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Download-BuildArtifacts.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName drop -downloadPath $(Build.BinariesDirectory)'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(ptmcli.buildId)
+        condition: succeeded()
+
+      - task: PowerShell@2
+        displayName: Download PTMService Artifacts
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Download-BuildArtifacts.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName PTMService -downloadPath $(Build.BinariesDirectory)'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(ptmservice.buildId)
+        condition: succeeded()
+
+      - task: PowerShell@2
+        displayName: Download Build Artifacts
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Download-BuildArtifacts.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName drop -downloadPath $(Build.BinariesDirectory)'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+        condition: succeeded()
+      
+      - task: ExtractFiles@1
+        inputs:
+          archiveFilePatterns: '$(Build.BinariesDirectory)/drop/*.zip' 
+          destinationFolder: '$(Build.BinariesDirectory)/Extracted'
+          cleanDestinationFolder: true 
+          overwriteExistingFiles: true
+      
+      - task: PowerShell@2
+        displayName: Download CommonScripts Artifacts
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Download-BuildArtifacts.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName CommonScripts -downloadPath $(Build.BinariesDirectory)'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+      
+      - task: CopyFiles@2
+        displayName: 'Copy CommonScripts files To $(test.testSuiteName)/Scripts'
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/CommonScripts'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)/Scripts'
+          OverWrite: true
+      
+      - task: CopyFiles@2
+        displayName: 'Copy CommonScripts to ScriptLib folder'
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/CommonScripts'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ScriptLib'
+          OverWrite: true
+
+      - template: DotNetCore_Regression_GenerateXmlTemplates.yml
+        parameters: 
+          build.templatesPath: 'TestSuites\Templates\Azure'
+          build.csvPath: $(Agent.BuildDirectory)\s\TestSuites\$(targetRepo.csvFile)
+
+      - task: CopyFiles@2
+        displayName: Copy ScriptLib to ScriptLib folder
+        inputs:
+          SourceFolder: 'RegressionRunScripts/ScriptLib'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ScriptLib'
+          OverWrite: true
+
+      - task: CopyFiles@2
+        displayName: Copy VSTORMLITE Files
+        inputs:
+          SourceFolder: 'RegressionRunScripts/VSTORMLITE'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/VSTORMLITE'
+          OverWrite: true
+
+      - task: CopyFiles@2
+        displayName: Copy AzureScripts Files
+        inputs:
+          SourceFolder: 'RegressionRunScripts/AzureRegression'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/AzureRegression'
+          OverWrite: true     
+
+      - task: CopyFiles@2
+        displayName: Copy CommonScript Files
+        inputs:
+          SourceFolder: 'RegressionRunScripts/Common'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/RegressionRunScripts/Common'
+          OverWrite: true 
+
+      # Prepare ProtocolTestSuite folder
+      - task: CopyFiles@2
+        displayName: Copy zip to deploy folder
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/drop'
+          Contents: '?(*.zip|*.msi)'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)/deploy'
+
+      - task: CopyFiles@2
+        displayName: Copy Scripts for $(test.testSuiteName)
+        inputs:
+          SourceFolder: 'TestSuites/$(test.testSuiteName)/Setup'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)'
+        condition: and(succeeded(), not(eq(variables['test.testSuiteName'], 'RDPServer')), not(eq(variables['test.testSuiteName'], 'RDPClient')))
+
+      # Build and Artifact RDPClient
+      - task: CopyFiles@2
+        displayName: Copy Scripts for RDPClient
+        inputs:
+          SourceFolder: 'TestSuites/RDP/Client/Setup'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ProtocolTestSuite/RDPClient'
+        condition: and(succeeded(), eq(variables['test.testSuiteName'], 'RDPClient'))
+      
+      - task: PowerShell@2
+        displayName: Download RDP SUT Control Agent Artifacts
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Download-BuildArtifacts.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName RDPSUTControlAgent -DownloadPath $(Build.ArtifactStagingDirectory)/ProtocolTestSuite/RDPClient/Tools'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+        condition: and(succeeded(), or(eq(variables['test.testSuiteName'], 'RDPClient'),eq(variables['test.testSuiteName'], 'RDPServer')))
+
+      # Build and Artifact RDPServer
+      - task: CopyFiles@2
+        displayName: Copy Scripts for RDPServer
+        inputs:
+          SourceFolder: 'TestSuites/RDP/Server/Setup'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ProtocolTestSuite/RDPServer'
+        condition: and(succeeded(), eq(variables['test.testSuiteName'], 'RDPServer'))
+
+      - task: CopyFiles@2
+        displayName: Copy Scripts from $(test.testSuiteName)
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/Extracted'
+          Contents: |
+            **\Scripts\*
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)'
+
+      - task: CopyFiles@2
+        displayName: Copy xml for $(test.testSuiteName)
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/RegressionEnvironments/$(test.testSuiteName)'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)/VSTORMLITEFiles/XML'
+          OverWrite: true
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Build Artifact'
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: 'drop'
+        condition: succeeded()
+
+      - task: PowerShell@2
+        displayName: Queue Jobs
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Queue-Regression.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -BuildDefinitionName $(test.downstreamPipelineName) -ConfigFileFolder $(Build.BinariesDirectory)\RegressionEnvironments -Waiting false -RunTests $(test.runTests) -enableRestorePoint $(enableRestorePoint)'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+        condition: succeeded()

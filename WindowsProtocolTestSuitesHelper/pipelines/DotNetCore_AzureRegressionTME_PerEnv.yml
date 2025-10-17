@@ -1,0 +1,106 @@
+trigger: none 
+
+variables:
+  - group: Azure Account V3
+  - group: Build Variables
+  - group: External Repo Variables
+jobs:
+  - job:
+    displayName: Azure Regression
+    pool: 
+      name: 'TestSuiteAzureESPoolTME-CentralUS'
+    workspace:
+      clean: all
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: none
+
+      - template: DotNetCore_Regression_InstallAzureAccountCert.yml
+
+      - template: DotNetCore_Regression_ConfigureSshClient.yml
+
+      - task: PowerShell@2
+        displayName: 'Record Start Time'
+        inputs:
+          targetType: 'inline'
+          script: |
+            [System.dateTime]::UtcNow.ToString("MM/dd/yyyy HH:mm:ss") | Out-File '$(Common.TestResultsDirectory)\StartTime.txt' -Encoding utf8 -Force
+
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download Build Artifacts'
+        inputs:
+          buildType: specific
+          project: 'b67fd756-1c65-48ef-9824-eeb3cb9b2728'
+          pipeline: $(test.pipelineId)
+          buildVersionToDownload: specific
+          buildId: $(test.buildId)
+          artifactName: drop
+          downloadPath: '$(Build.BinariesDirectory)'
+      
+      - task: CopyFiles@2
+        displayName: 'Copy Build to work folder'
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/drop'
+          TargetFolder: 'RunRegression'
+          OverWrite: true
+
+      - task: AzurePowerShell@4
+        displayName: 'Run regression'
+        inputs:
+          azureSubscription: "Protocol Test Env - TME01 MI"
+          ScriptType: filePath
+          azurePowerShellVersion: 'LatestVersion'
+          scriptPath: 'RunRegression/AzureRegression/Run-TestSuiteRegression.ps1'          
+          scriptArguments: '-TestSuiteName "$(test.testSuiteName)" -EnvironmentName "$(test.environmentName)" -SubscriptionId "$(azure.subscriptionId)" -vaultName "$(vaultName)" -ApplicationId "$(azure.applicationId)" -ThumbPrint "$(azure.ThumbPrint)" -TenantId "$(azure.tenantId)" -FileShareResourceGroup "$(azure.fileShareResourceGroup)" -StorageAccount "$(azure.storageAccount)" -resultStorageAccount "$(azure.resultStorageAccount)" -StorageShareName "$(azure.storageShareName)" -StopVMsAfterRegression $false -linuxPublickey "$(linuxPublickey)"'
+          errorActionPreference: continue
+        timeoutInMinutes: 0
+
+     
+      - task: CopyFiles@2
+        displayName: 'Copy Test Results to: Common Test Results Directory'
+        inputs:
+          SourceFolder: 'RunRegression/TestResults'
+          TargetFolder: '$(Common.TestResultsDirectory)'
+
+      - task: PowerShell@2
+        displayName: 'Publish report to Result Analyzer'
+        inputs:
+          filePath: 'RunRegression/Common/PushDataToAnalyzer.ps1'
+          arguments: '-TestSuiteName $env:TestSuiteName -Branch $env:Branch -WorkingFolder $env:WorkingFolder -DefinitionName $env:DefinitionName -BuildNumber $env:BuildNumber -TriggeredBy $env:TriggeredBy -RequestUrl: $env:RequestUrl -token: $env:RequestToken -resultStorageAccount "$(azure.resultStorageAccount)"'
+          errorActionPreference: continue
+        env:
+          TestSuiteName: $(test.testSuiteName)
+          Branch: $(test.sourceBranch)
+          WorkingFolder: $(Common.TestResultsDirectory)
+          DefinitionName: $(Build.DefinitionName)
+          BuildNumber: $(Build.BuildNumber)
+          TriggeredBy: $(Build.RequestedFor)
+          RequestUrl: $(azure.ResultAnalyzerUrl)
+          RequestToken: $(azure.ResultAnalyzerToken)
+        timeoutInMinutes: 0
+
+      - task: PublishTestResults@2
+        displayName: 'Publish trx files'
+        inputs:
+          testResultsFormat: VSTest
+          testResultsFiles: 'RunRegression/TestResults/*.trx'
+        timeoutInMinutes: 0
+        condition: always()
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish report'
+        inputs:
+          PathtoPublish: 'RunRegression/TestResults'
+        timeoutInMinutes: 0
+        condition: always()
+        
+      - task: PowerShell@2
+        displayName: 'Shut Down VMs'
+        inputs:
+          targetType: filePath
+          filePath: 'RunRegression/AzureRegression/Run-Shutdown-VM.ps1'
+          arguments: '-TestSuiteName "$(test.testSuiteName)" -EnvironmentName "$(test.environmentName)" -SubscriptionId "$(azure.subscriptionId)" -ApplicationId "$(azure.applicationId)" -ThumbPrint "$(azure.ThumbPrint)" -TenantId "$(azure.tenantId)" '
+          errorActionPreference: continue
+        timeoutInMinutes: 0
+        condition: always()

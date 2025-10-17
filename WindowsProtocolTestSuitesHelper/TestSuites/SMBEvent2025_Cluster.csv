@@ -1,0 +1,15 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+Fileserver,FileServer_Cluster_Azure_2025,Azure,Win2022_Domain_Cluster_SMB311,VulnerabilityTest-Will, West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,CLS-2025-SG1,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,CLS-2025-SG1,Workgroup,IscsiStorage,,,,TestVnet-Will,,192.168.200.39,default,,
+,,,,,,,,N/A,,CLUSTER03,0,Cluster,,,,TestVnet-Will,,192.168.200.40,default,,
+,,,,,,,,N/A,,GENERALFS03,0,GeneralFS,,,,TestVnet-Will,,192.168.200.41,default,,
+,,,,,,,,N/A,,SCALEOUTFS03,,ScaleoutFS,,,,TestVnet-Will,,,default,,
+,,,,,,,,CLS-2025-N1,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,CLS-2025-N1,SNIA-EMEA-2025.org,ClusterNode01,,,,TestVnet-Will,,192.168.200.43,default,,192.168.200.10
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.44,default,,192.168.200.10
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.45,default,,192.168.200.10
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.46,default,,192.168.200.10
+,,,,,,,,CLS-2025-N2,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,CLS-2025-N2,SNIA-EMEA-2025.org,ClusterNode02,,,,TestVnet-Will,,192.168.200.47,default,,192.168.200.10
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.48,default,,192.168.200.10
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.49,default,,192.168.200.10
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.50,default,,192.168.200.10
+,,,,,,,,CLS-2025-D,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,CLS-2025-D,SNIA-EMEA-2025.org,DriverComputer,,,,TestVnet-Will,,192.168.200.51,default,,192.168.200.10
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.52,default,,192.168.200.10

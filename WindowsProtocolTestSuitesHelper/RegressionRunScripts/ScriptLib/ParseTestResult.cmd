@@ -1,0 +1,1 @@
+CMD /C "%~dp0\..\Tools\TrxParser\TRXParser.exe" %1 xml %WTTTaskGuid%.xml

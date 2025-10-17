@@ -1,0 +1,78 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+FileServer,FileServer_Standard_Azure_DC1,Azure,Win2022_Domain_NonCluster_SMB311,RDPIOLAB2025,North Europe,FS_DC_Azure.xml,IOLab/Password01!,DC1,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,DC1,SMB-2025.org,DC,,,,RDPIOLab2025VM-vnet,,10.2.0.6,default2,,
+FileServer,FileServer_Cluster_Azure_Event01,Azure,Win2022_Domain_Cluster_SMB311,RDPIOLAB2025,West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,CLS01-SG01 ,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,CLS01-SG01 ,workgroup,IscsiStorage,,,,SMB3IOLabNetwork,,192.168.120.11,default2,,
+,,,,,,,,N/A,,CLS01-CLUSTER ,0,Cluster,,,,SMB3IOLabNetwork,,192.168.120.12,default2,,
+,,,,,,,,N/A,,CLS01-GENERALFS ,0,GeneralFS,,,,SMB3IOLabNetwork,,192.168.120.13,default2,,
+,,,,,,,,N/A,,CLS01-SCALEOUTFS01 ,,ScaleoutFS,,,,SMB3IOLabNetwork,,,default2,,
+,,,,,,,,CLS01-NODE01 ,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,CLS01-NODE01 ,SNIA-NA-2024.org,ClusterNode01,,,,SMB3IOLabNetwork,,192.168.120.14,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.15,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.16,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.17,default2,,192.168.120.10
+,,,,,,,,CLS01-NODE02 ,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,CLS01-NODE02 ,SNIA-NA-2024.org,ClusterNode02,,,,SMB3IOLabNetwork,,192.168.120.18,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.19,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.20,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.21,default2,,192.168.120.10
+,,,,,,,,CLS01-CLI01 ,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,CLS01-CLI01 ,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.22,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.23,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient01,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025,North Europe,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS01-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS01-WINSRV,SMB-2025.org,NODE01,,,,RDPIOLab2025VM-vnet,,10.2.0.150,default2,,10.2.0.6
+,,,,,,,,,,,,,,,,RDPIOLab2025VM-vnet,,10.2.0.151,default2,,10.2.0.6
+,,,,,,,,FS01-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS01-WINCLI,SMB-2025.org,DriverComputer,,,,RDPIOLab2025VM-vnet,,10.2.0.152,default2,,10.2.0.6
+,,,,,,,,,,,,,,,,RDPIOLab2025VM-vnet,,10.2.0.153,default2,,10.2.0.6
+FileServer,FileServer_Standard_Azure_WinClient02,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS02-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS02-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.28,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.29,default2,,192.168.120.10
+,,,,,,,,FS02-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS02-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.30,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.31,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient03,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS03-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS03-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.32,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.33,default2,,192.168.120.10
+,,,,,,,,FS03-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS03-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.34,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.35,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_LinuxClient01,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_LinuxDriver_Azure_2024.xml,IOLab/Password01!,FS04-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS04-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.36,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.37,default2,,192.168.120.10
+,,,,,,,,FS04-LNXCLI,Canonical;0001-com-ubuntu-server-jammy;22_04-lts-gen2;latest,FS04-LNXCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.38,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.39,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_LinuxClient02,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_LinuxDriver_Azure_2024.xml,IOLab/Password01!,FS05-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS05-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.40,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.41,default2,,192.168.120.10
+,,,,,,,,FS05-LNXCLI,Canonical;0001-com-ubuntu-server-jammy;22_04-lts-gen2;latest,FS05-LNXCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.42,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.43,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_LinuxClient03,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_LinuxDriver_Azure_2024.xml,IOLab/Password01!,FS06-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS06-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.44,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.45,default2,,192.168.120.10
+,,,,,,,,FS06-LNXCLI,Canonical;0001-com-ubuntu-server-jammy;22_04-lts-gen2;latest,FS06-LNXCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.46,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.47,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient04,Azure,,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS07-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS07-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.48,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.49,default2,,192.168.120.10
+,,,,,,,,FS07-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS07-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.50,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.51,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient05,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS08-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS08-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.52,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.53,default2,,192.168.120.10
+,,,,,,,,FS08-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS08-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.54,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.55,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient06,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS09-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS09-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.56,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.57,default2,,192.168.120.10
+,,,,,,,,FS09-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS09-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.58,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.59,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient07,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS10-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS10-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.60,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.61,default2,,192.168.120.10
+,,,,,,,,FS10-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS10-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.62,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.63,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient08,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,FS11-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,FS11-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.64,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.65,default2,,192.168.120.10
+,,,,,,,,FS11-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,FS11-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.66,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.67,default2,,192.168.120.10
+FileServer,FileServer_Cluster_Azure_Event02,Azure,Win2022_Domain_Cluster_SMB311,RDPIOLAB2025, West US 2,FS_Cluster_NoDC_Azure_2024.xml,IOLab/Password01!,CLS02-SG01 ,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,CLS02-SG01 ,workgroup,IscsiStorage,,,,SMB3IOLabNetwork,,192.168.120.68,default2,,
+,,,,,,,,N/A,,CLS02-CLUSTER ,0,Cluster,,,,SMB3IOLabNetwork,,192.168.120.69,default2,,
+,,,,,,,,N/A,,CLS02-GENERALFS ,0,GeneralFS,,,,SMB3IOLabNetwork,,192.168.120.70,default2,,
+,,,,,,,,N/A,,CLS02-SCALEOUTFS01 ,,ScaleoutFS,,,,SMB3IOLabNetwork,,,default2,,
+,,,,,,,,CLS02-NODE01 ,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,CLS02-NODE01 ,SNIA-NA-2024.org,ClusterNode01,,,,SMB3IOLabNetwork,,192.168.120.71,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.72,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.73,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.74,default2,,192.168.120.10
+,,,,,,,,CLS02-NODE02 ,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,CLS02-NODE02 ,SNIA-NA-2024.org,ClusterNode02,,,,SMB3IOLabNetwork,,192.168.120.75,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.76,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.77,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.78,default2,,192.168.120.10
+,,,,,,,,CLS02-CLI01 ,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,CLS02-CLI01 ,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.79,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.80,default2,,192.168.120.10
+FileServer,FileServer_Standard_Azure_WinClient08_JamesTest,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,RDPIOLAB2025, West US 2,FS_NonCluster_Azure_win2024.xml,IOLab/Password01!,James-WINSRV,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,James-WINSRV,SNIA-NA-2024.org,NODE01,,,,SMB3IOLabNetwork,,192.168.120.81,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.82,default2,,192.168.120.10
+,,,,,,,,James-WINCLI,microsoftwindowsdesktop;windows-11;win11-23h2-ent;latest,James-WINCLI,SNIA-NA-2024.org,DriverComputer,,,,SMB3IOLabNetwork,,192.168.120.83,default2,,192.168.120.10
+,,,,,,,,,,,,,,,,SMB3IOLabNetwork,,192.168.120.84,default2,,192.168.120.10

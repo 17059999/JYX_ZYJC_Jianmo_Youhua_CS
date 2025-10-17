@@ -1,0 +1,80 @@
+<lab>
+  <core>
+    <username>administrator</username>
+    <password>Password01!</password>
+    <legacyclient>true</legacyclient>
+    <basecpu>1</basecpu>
+    <Description>Server x 1 and DC x 1</Description>
+    <regressiontype>local</regressiontype>
+  </core>
+  <network>
+    <vnet>
+      <hostisgateway>true</hostisgateway>
+      <name>RDP-PLUGFEST</name>
+      <networktype>Internal</networktype>
+      <iscleanup>false</iscleanup>
+      <ip>10.20.0.100</ip>
+      <subnet>255.255.255.0</subnet>
+    </vnet>
+  </network>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <hypervname>RDPClient_Driver01</hypervname>
+      <name>Client_Driver01</name>
+      <role>DriverComputer</role>
+      <imageReference>
+        <diskName>MicrosoftWindowsServer</diskName>
+        <answerFile>WindowsServer</answerFile>
+      </imageReference>
+      <domain>Workgroup</domain>
+      <vnet>RDP-PLUGFEST</vnet>
+      <ip>10.20.0.1</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.20.0.100</gateway>
+      <dns>10.20.0.100</dns>
+      <cpu>2</cpu>
+      <memory>2048</memory>
+      <minimumram>2048</minimumram>
+      <maximumram>4096</maximumram>
+      <sku>server</sku>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <postiso>VS2012.iso</postiso>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;InstallMSIAndTools.ps1;Write-InstallDoneSignal.ps1</postscript>
+      <tools>
+        <tool name="MMA" MSIName="MessageAnalyzer64.msi" version="1.20.0107.01" CPUArchitecture="x64" />
+        <tool name="SE" MSIName="SpecExplorer.msi" version="3.5.3146.0" CPUArchitecture="x86" />
+        <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+        <tool name="PTM" MSIName="ProtocolTestManager.msi" version="3.18.6.0" />
+        <TestsuiteMSI MSIName="RDP-TestSuite-ClientEP.msi" targetEndpoint="TESTSUITE" />
+      </tools>
+    </vm>
+    <vm>
+      <installorder>2</installorder>
+      <hypervname>RDPClient_SUT01</hypervname>
+      <name>Client_SUT01</name>
+      <role>SUT</role>
+      <imageReference>
+        <diskName>MicrosoftWindowsServer</diskName>
+        <answerFile>WindowsServer</answerFile>
+      </imageReference>
+      <domain>Workgroup</domain>
+      <vnet>RDP-PLUGFEST</vnet>
+      <ip>10.20.0.2</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.20.0.100</gateway>
+      <dns>10.20.0.100</dns>
+      <cpu>1</cpu>
+      <memory>2048</memory>
+      <minimumram>1024</minimumram>
+      <maximumram>2048</maximumram>
+      <sku>client</sku>
+      <installfeaturescript>Enable-TestSignning.ps1;Enable-USBRedirection.ps1</installfeaturescript>
+      <skipwaitingforpostscript>true</skipwaitingforpostscript>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Enable-WinRM.ps1;InstallMSIAndTools.ps1;Set-StartCommand.ps1;Start-Desktop.ps1;Set-Display.ps1;Setup-VHID.ps1;Create-TouchTask.ps1;Write-InstallDoneSignal.ps1</postscript>
+      <tools>
+        <TestsuiteMSI MSIName="RDP-TestSuite-ClientEP.msi" targetEndpoint="SUT" />
+      </tools>
+    </vm>
+  </servers>
+</lab>

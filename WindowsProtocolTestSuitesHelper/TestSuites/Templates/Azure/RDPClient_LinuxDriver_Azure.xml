@@ -1,0 +1,72 @@
+<lab>
+  <core>
+    <username>IOLab</username>
+    <password>Password01!</password>
+    <TestSuiteName>RDPClient_DotNetCore_CompressionDisable</TestSuiteName>
+    <regressiontype>Azure</regressiontype>
+    <timeoutinminutes>1000</timeoutinminutes>
+  </core>
+  <vmsetting>
+    <location>West US 2</location>
+    <networkId>vnet</networkId>
+    <subnetName>default</subnetName>
+    <resourceGroup>TestSuiteOnAzure</resourceGroup>
+    <vaultName>TestSuiteKeyVault</vaultName>
+    <diskType>Premium_LRS</diskType>
+    <vmSize>Standard_D2s_v3</vmSize>
+    <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+    <genevaAccountRegion>westus2</genevaAccountRegion>
+  </vmsetting>
+  <Parameters>
+    <!--Parameters for automation run-->
+    <Parameter Name="SupportRDPFile" Value="Yes" Comment="Whether the MSTSC run in RDP file mode or command mode" />
+  </Parameters>
+  <servers>
+    <vm>
+      <role>SUT</role>
+      <imageReference>
+        <publisher>MicrosoftWindowsDesktop</publisher>
+        <offer>Windows-10</offer>
+        <sku>RS5-Pro</sku>
+        <!-- always latest -->
+        <version>latest</version>
+      </imageReference>
+      <name>RDPC-Client01</name>
+	    <LMSName>Client:1</LMSName>
+      <domain>workgroup</domain>
+      <ip>10.2.0.12</ip>
+      <skipwaitingforpostscript>true</skipwaitingforpostscript>
+      <postscript>Enable-TestSignning.ps1;Enable-USBRedirection.ps1;Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;InstallMSIAndTools.ps1;Set-StartCommand.ps1;Start-Desktop.ps1;Set-Display.ps1;Setup-VHID.ps1;Create-TouchTask.ps1;Write-InstallDoneSignal.ps1;Write-InstallPostScriptDoneSignal.ps1;Config-AuthorizedKeys.ps1</postscript>
+      <installfeaturescript>CipherSuitesSettings.ps1;Write-InstallFeatureScirptDone.ps1;RestartComputer.PS1</installfeaturescript>
+      <installorder>2</installorder>
+      <tools>
+        <tool name="PowerShellCore" MSIName="PowerShell-7.4.1-win-x64.msi" version="7.4.1" CPUArchitecture="x64" />
+        <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+        <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+        <TestsuiteZip ZipName="RDP-TestSuite-ClientEP.zip" targetFolder="c:\RDP-TestSuite-ClientEP"/>
+      </tools>
+    </vm>
+    <vm>
+      <role>DriverComputer</role>
+      <os>Linux</os>
+      <imageReference>
+        <publisher>Canonical</publisher>
+        <offer>0001-com-ubuntu-server-jammy</offer>
+        <sku>22_04-lts</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>RDPC-Server01</name>
+      <LMSName>Server:1</LMSName>
+      <domain>workgroup</domain>
+      <ip>10.2.0.11</ip>
+      <postscript>InstallToolsOnLinux.ps1</postscript>
+      <installorder>1</installorder>
+      <tools>
+        <tool name="libc6-dev" installCommand="sudo apt install -y libc6-dev"/>
+        <tool name="libgdiplus" installCommand="sudo apt install -y libgdiplus"/>
+        <tool name="certs" ZipName="id_rsaAzure.zip" targetFolder="~/.ssh" installCommand="sudo chmod 0600 -R ~/.ssh/id_rsa;sudo chmod 0644 -R ~/.ssh/config;sudo chmod 0644 -R ~/.ssh/known_hosts" />
+        <TestsuiteZip ZipName="RDP-TestSuite-ClientEP.zip" targetFolder="~/RDP-TestSuite-ClientEP"/>
+      </tools>
+    </vm>
+  </servers>
+</lab>

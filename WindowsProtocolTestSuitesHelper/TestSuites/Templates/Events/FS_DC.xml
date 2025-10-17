@@ -1,0 +1,52 @@
+<lab>
+    <core>
+        <username>administrator</username>
+        <password>Password01!</password>
+        <legacyclient>true</legacyclient>
+        <basecpu>1</basecpu>
+        <Description>Common DC for all File Sharing (Cluster and NonCluster) test environments</Description>
+    </core>
+    <network>
+        <vnet>
+            <name>FileSharing_Windows_Domain_NonCluster_Internal</name>
+            <networktype>Internal</networktype>
+            <hostisgateway>true</hostisgateway> 
+            <ip>192.168.1.254</ip>
+            <subnet>255.255.255.0</subnet>
+        </vnet>
+    </network>
+    <servers>   
+        <vm>
+            <installorder>1</installorder>
+            <role>DC</role>
+            <imageReference>
+              <diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+              <answerFile>17763_ServerDataCenter.xml</answerFile>
+            </imageReference>
+            <hypervname>FileSharing_Windows_Domain_NonCluster_DC01</hypervname>
+            <name>DC01</name>
+            <sku>server</sku>
+            <isdc>true</isdc>
+            <domain>contoso.com</domain>
+            <username>Administrator</username>
+            <password>Password01!</password>
+            <vnet>FileSharing_Windows_Domain_NonCluster_Internal</vnet>
+            <ip>192.168.1.1</ip>
+            <subnet>255.255.255.0</subnet>
+            <gateway>Empty</gateway>      
+            <dns>127.0.0.1</dns>
+            <cpu>1</cpu>
+            <memory>1024</memory>
+            <minimumram>800</minimumram>
+            <maximumram>1024</maximumram>
+            <installscript>InstallMSIAndTools.ps1;createdc.ps1</installscript> 
+            <installfeaturescript>Install-WindowsFeatureForFileServer.ps1;Install_RemoteAccess_Feature.ps1</installfeaturescript>           
+            <postscript>Disable_Firewall.ps1;Create-TestAccount.ps1;SetPasswordNeverExpires.ps1;Create-CbacObjectsInDC.ps1;Import-GPOForClaims.ps1;Check-DCStatus.ps1</postscript>
+            <skipwaitingforpostscript>false</skipwaitingforpostscript>
+            <tools>
+                <tool name="NetworkMonitor" MSIName="Netmonpt3.msi" version="3.4.2350.0" CPUArchitecture="x64"/>
+                <tool name="NetworkMontiorParsers" MSIName="NetworkMonitor_Parsers.msi" version="3.4.2964.0001"  CPUArchitecture="x64"/>
+            </tools>
+        </vm>
+    </servers>  
+</lab>

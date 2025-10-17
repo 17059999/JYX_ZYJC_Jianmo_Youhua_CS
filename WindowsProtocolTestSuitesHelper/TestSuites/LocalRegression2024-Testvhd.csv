@@ -1,0 +1,2 @@
+TestSuiteName,Environment,Regression Type,SupportCompression,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+RDPClient,RDPClient_CompressionDisable_Local_win11,Local,No,,,,RDPClient_CompressionDisable_Local.xml,administrator/Password01!!,RDPClient_Server,windows2022vhdx.vhd;19041_ServerDataCenter.xml,RDPServer,workgroup,DriverComputer,4,4096,4096,RDPClient_Internal,Internal,192.168.173.1,255.255.255.0,192.168.173.250,

@@ -1,0 +1,451 @@
+trigger: none
+
+variables:
+  - group: Build Variables
+  - group: External Repo Variables
+  - group: ESRP Variables
+
+resources:
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool:
+      name: Azure-Pipelines-1ESPT-ExDShared
+      image: windows-2022
+      os: windows
+    sdl: 
+      sourceRepositoriesToScan:
+        exclude:
+        - repository: git://$(testSuiteRepo.url)@$(build.testSuitesBranch)      
+    customBuildTags:
+    - ES365AIMigrationTooling
+
+    stages:
+      - stage: Build_And_Sign_Test_Suites
+        jobs:
+          - job:
+            displayName: Sign FileServer
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'FileServer')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-SingleTestSuite-cs.yml@self
+                parameters:
+                  build.buildPipelineParameters: ""
+                  build.buildPipelineName: "FileServer_DotNetCore_Build"
+                  build.targetRepoBranch: $(build.testSuitesBranch)
+                  build.upstreamBuildIdVariableName: "build.fsBuildId"
+                  build.archiveName: "FileServer-TestSuite-ServerEP"
+                  codeSign.productName: $(codeSign.productName)
+
+          - job:
+            displayName: Sign MS-SMBD
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-SMBD')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-SingleTestSuite-cs.yml@self
+                parameters:
+                  build.buildPipelineParameters: ""
+                  build.buildPipelineName: "MS-SMBD_DotNetCore_Build"
+                  build.targetRepoBranch: $(build.testSuitesBranch)
+                  build.upstreamBuildIdVariableName: "build.smbdBuildId"
+                  build.archiveName: "MS-SMBD-TestSuite-ServerEP"
+                  codeSign.productName: $(codeSign.productName)
+
+          - job:
+            displayName: Sign RDPServer
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPServer')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-SingleTestSuite-cs.yml@self
+                parameters:
+                  build.buildPipelineParameters: ""
+                  build.buildPipelineName: "RDPServer_DotNetCore_Build"
+                  build.targetRepoBranch: $(build.testSuitesBranch)
+                  build.upstreamBuildIdVariableName: "build.rdpServerBuildId"
+                  build.archiveName: "RDP-TestSuite-ServerEP"
+                  codeSign.productName: $(codeSign.productName)
+
+          - job: Sign_RDPClient
+            displayName: Sign RDPClient
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPClient')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-SingleTestSuite-cs.yml@self
+                parameters:
+                  build.buildPipelineParameters: ""
+                  build.buildPipelineName: "RDPClient_DotNetCore_Build"
+                  build.targetRepoBranch: $(build.testSuitesBranch)
+                  build.upstreamBuildIdVariableName: "build.rdpClientBuildId"
+                  build.archiveName: "RDP-TestSuite-ClientEP"
+                  codeSign.productName: $(codeSign.productName)
+
+          - job:
+            displayName: Sign MS-WSP
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-WSP')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-SingleTestSuite-cs.yml@self
+                parameters:
+                  build.buildPipelineParameters: ""
+                  build.buildPipelineName: "MS-WSP_DotNetCore_Build"
+                  build.targetRepoBranch: $(build.testSuitesBranch)
+                  build.upstreamBuildIdVariableName: "build.msWspBuildId"
+                  build.archiveName: "MS-WSP-TestSuite-ServerEP"
+                  codeSign.productName: $(codeSign.productName)
+
+      - stage: Archive_Tar_Archives_For_Linux
+        pool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: ubuntu-2204
+          os: linux
+        dependsOn: Build_And_Sign_Test_Suites
+        condition: succeeded()
+        jobs:
+          - job:
+            displayName: Archive FileServer as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'FileServer')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-TarArchive-cs.yml@self
+                parameters:
+                  build.archiveName: "FileServer-TestSuite-ServerEP"
+                  test.testSuiteRootFolder: "drop_FileServer-TestSuite-ServerEP"
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download FileServer-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_FileServer-TestSuite-ServerEP"
+                  itemPattern: "**/FileServer-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish FileServer-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/FileServer-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Archive MS-SMBD as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-SMBD')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-TarArchive-cs.yml@self
+                parameters:
+                  build.archiveName: "MS-SMBD-TestSuite-ServerEP"
+                  test.testSuiteRootFolder: "drop_MS-SMBD-TestSuite-ServerEP"
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download MS-SMBD-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_MS-SMBD-TestSuite-ServerEP"
+                  itemPattern: "**/MS-SMBD-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish MS-SMBD-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/MS-SMBD-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Archive RDPServer as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPServer')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-TarArchive-cs.yml@self
+                parameters:
+                  build.archiveName: "RDP-TestSuite-ServerEP"
+                  test.testSuiteRootFolder: "drop_RDP-TestSuite-ServerEP"
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download RDP-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_RDP-TestSuite-ServerEP"
+                  itemPattern: "**/RDP-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish RDP-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/RDP-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Archive RDPClient as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPClient')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-TarArchive-cs.yml@self
+                parameters:
+                  build.archiveName: "RDP-TestSuite-ClientEP"
+                  test.testSuiteRootFolder: "drop_RDP-TestSuite-ClientEP"
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download RDP-TestSuite-ClientEP.zip"
+                inputs:
+                  artifactName: "drop_RDP-TestSuite-ClientEP"
+                  itemPattern: "**/RDP-TestSuite-ClientEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish RDP-TestSuite-ClientEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/RDP-TestSuite-ClientEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Archive MS-WSP as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-WSP')))
+            steps:
+              - template: /pipelines/1es/TestSuite-DotNetCore-TarArchive-cs.yml@self
+                parameters:
+                  build.archiveName: "MS-WSP-TestSuite-ServerEP"
+                  test.testSuiteRootFolder: "drop_MS-WSP-TestSuite-ServerEP"
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download MS-WSP-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_MS-WSP-TestSuite-ServerEP"
+                  itemPattern: "**/MS-WSP-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish MS-WSP-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/MS-WSP-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+      - stage: Publish_Test_Suite_Artifacts
+        jobs:
+          - job:
+            displayName: Publish FileServer as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'FileServer')))
+            steps:
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download FileServer-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_FileServer-TestSuite-ServerEP"
+                  itemPattern: "**/FileServer-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish FileServer-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/FileServer-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Publish MS-SMBD as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-SMBD')))
+            steps:
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download MS-SMBD-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_MS-SMBD-TestSuite-ServerEP"
+                  itemPattern: "**/MS-SMBD-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish MS-SMBD-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/MS-SMBD-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Publish RDPServer as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPServer')))
+            steps:
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download RDP-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_RDP-TestSuite-ServerEP"
+                  itemPattern: "**/RDP-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish RDP-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/RDP-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Publish RDPClient as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPClient')))
+            steps:
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download RDP-TestSuite-ClientEP.zip"
+                inputs:
+                  artifactName: "drop_RDP-TestSuite-ClientEP"
+                  itemPattern: "**/RDP-TestSuite-ClientEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish RDP-TestSuite-ClientEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/RDP-TestSuite-ClientEP.zip"
+                condition: succeeded()
+
+          - job:
+            displayName: Archive MS-WSP as Tar
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-WSP')))
+            steps:
+              - task: DownloadBuildArtifacts@1
+                displayName: "Download MS-WSP-TestSuite-ServerEP.zip"
+                inputs:
+                  artifactName: "drop_MS-WSP-TestSuite-ServerEP"
+                  itemPattern: "**/MS-WSP-TestSuite-ServerEP.zip"
+                  downloadPath: '$(System.ArtifactsDirectory)'
+                condition: succeeded()    
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish MS-WSP-TestSuite-ServerEP.zip to drop"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/MS-WSP-TestSuite-ServerEP.zip"
+                condition: succeeded()
+
+      - stage: Publish_Extra_Artifacts
+        pool:
+          name: Azure-Pipelines-1ESPT-ExDShared
+          image: windows-2022
+          os: windows
+        dependsOn: Build_And_Sign_Test_Suites
+        condition: succeeded()
+        variables:
+          build.rdpClientBuildId: $[stageDependencies.Build_And_Sign_Test_Suites.Sign_RDPClient.outputs['Queue_Test_Suite_Build.build.rdpClientBuildId']]
+        jobs:
+          - job:
+            displayName: Publish Extra Artifacts
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            steps:
+              - checkout: self
+                path: "s"
+
+              - checkout: git://$(testSuiteRepo.url)@$(build.testSuitesBranch)
+                path: "s/ts"
+
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish CommonScripts"
+                inputs:
+                  PathtoPublish: "$(Build.Repository.LocalPath)/ts/CommonScripts"
+                  ArtifactName: CommonScripts
+                condition: succeeded()
+
+              - task: PowerShell@2
+                displayName: "Get RDP SUT Control Agent Artifacts"
+                inputs:
+                  targetType: filePath
+                  filePath: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/Get-DotNetCoreArtifactByBuildId.ps1"
+                  arguments: '-AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -BuildId "$(build.rdpClientBuildId)" -ArtifactName "RDPSUTControlAgent" -GetAllFiles $true -ArtifactLocalPath "$(Build.ArtifactStagingDirectory)/RDPSUTControlAgent"'
+                  workingDirectory: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+                condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPClient')))
+
+              - task: 1ES.PublishBuildArtifacts@1
+                displayName: "Publish RDP SUT Control Agent Artifacts"
+                inputs:
+                  PathtoPublish: "$(Build.ArtifactStagingDirectory)/RDPSUTControlAgent"
+                  ArtifactName: RDPSUTControlAgent
+                condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPClient')))
+
+      - stage: Queue_Regressions_For_Signed_Test_Suites
+        pool:
+          vmImage: windows-2022
+        dependsOn: Publish_Extra_Artifacts
+        condition: and(succeeded(), eq(variables['test.runRegression'], true))
+        jobs:
+          - job:
+            displayName: Queue Regressions for FileServer
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'FileServer')))
+            steps:
+              - template: /pipelines/TestSuite-DotNetCore-SingleTestSuiteRegressions-cs.yml@self
+                parameters:
+                  build.archiveName: "FileServer-TestSuite-ServerEP"
+                  test.regressionPipelineNames: "FileServer_Cluster_DotNetCore_Local_Regression;FileServer_Standard_DotNetCore_Local_Regression;FileServer_Cluster_DotNetCore_Azure_Regression;FileServer_Standard_DotNetCore_Azure_Regression;FileServer_LinuxSUT_DotNetCore_Azure_Regression"
+
+          - job:
+            displayName: Queue Regressions for MS-SMBD
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-SMBD')))
+            steps:
+              - template: /pipelines/TestSuite-DotNetCore-SingleTestSuiteRegressions-cs.yml@self
+                parameters:
+                  build.archiveName: "MS-SMBD-TestSuite-ServerEP"
+                  test.regressionPipelineNames: "MS-SMBD_DotNetCore_Local_Regression"
+
+          - job:
+            displayName: Queue Regressions for RDPServer
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPServer')))
+            steps:
+              - template: /pipelines/TestSuite-DotNetCore-SingleTestSuiteRegressions-cs.yml@self
+                parameters:
+                  build.archiveName: "RDP-TestSuite-ServerEP"
+                  test.regressionPipelineNames: "RDPServer_DotNetCore_Local_Regression;RDPServer_DotNetCore_Azure_Regression"
+
+          - job:
+            displayName: Queue Regressions for RDPClient
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'RDPClient')))
+            steps:
+              - template: /pipelines/TestSuite-DotNetCore-SingleTestSuiteRegressions-cs.yml@self
+                parameters:
+                  build.archiveName: "RDP-TestSuite-ClientEP"
+                  test.regressionPipelineNames: "RDPClient_CompressionDisable_DotNetCore_Local_Regression;RDPClient_CompressionEnable_DotNetCore_Local_Regression;RDPClient_SUTAdapter_DotNetCore_Local_Regression;RDPClient_DotNetCore_Azure_Regression"
+
+          - job:
+            displayName: Queue Regressions for MS-WSP
+            workspace:
+              clean: true
+            timeoutInMinutes: 0
+            condition: and(succeeded(), or(eq(variables['build.testSuiteName'], 'All'), eq(variables['build.testSuiteName'], 'MS-WSP')))
+            steps:
+              - template: /pipelines/TestSuite-DotNetCore-SingleTestSuiteRegressions-cs.yml@self
+                parameters:
+                  build.archiveName: "MS-WSP-TestSuite-ServerEP"
+                  test.regressionPipelineNames: "MS-WSP_DotNetCore_Local_Regression;MS-WSP_DotNetCore_Azure_Regression"

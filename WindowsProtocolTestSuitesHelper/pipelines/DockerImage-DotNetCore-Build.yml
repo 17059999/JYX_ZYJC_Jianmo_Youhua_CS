@@ -1,0 +1,111 @@
+trigger: none
+
+variables:
+  - group: Build Variables
+  - name: build.tsPipelineName
+    value: TestSuitesDotNetCoreCodeSign
+  - name: build.tsPipelineParameters
+    value: '`"build.testSuitesBranch`": `"$(build.tsBranch)`", `"build.testSuiteName`": `"$(build.tsName)`"'
+  - name: build.ptmCliPipelineName
+    value: PTMCliDotNetCoreCodeSign
+  - name: build.ptmCliPipelineParameters
+    value: '`"build.testSuitesBranch`": `"$(build.tsBranch)`"'
+  - name: build.ptmServicePipelineName
+    value: PTMServiceDotNetCoreCodeSign
+  - name: build.ptmServicePipelineParameters
+    value: '`"build.testSuitesBranch`": `"$(build.tsBranch)`"'
+
+jobs:
+  - job:
+    displayName: Build Docker Image
+    pool:
+      vmImage: ubuntu-22.04
+    workspace:
+      clean: true
+    timeoutInMinutes: 0
+    steps:
+      - checkout: self
+
+      - task: CopyFiles@2
+        displayName: "Copy Common Files to Target Folder"
+        inputs:
+          SourceFolder: "$(Build.Repository.LocalPath)/DockerFiles/Common"
+          TargetFolder: "$(docker.dockerFileRoot)"
+          OverWrite: true
+
+      - task: PowerShell@2
+        displayName: "Queue CodeSign Builds for $(build.tsName)"
+        inputs:
+          targetType: "inline"
+          script: |
+            Set-Location "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+
+            @(
+                @{
+                    Name                = "$(build.tsPipelineName)"
+                    Parameters          = "$(build.tsPipelineParameters)"
+                    BuildIdVariableName = "build.tsBuildId"
+                }, 
+                @{
+                    Name                = "$(build.ptmCliPipelineName)"
+                    Parameters          = "$(build.ptmCliPipelineParameters)"
+                    BuildIdVariableName = "build.ptmCliBuildId"
+                }, 
+                @{
+                    Name                = "$(build.ptmServicePipelineName)"
+                    Parameters          = "$(build.ptmServicePipelineParameters)"
+                    BuildIdVariableName = "build.ptmServiceBuildId"
+                }
+            ) | ForEach-Object {
+                ./Queue-SinglePipelineWithParameters.ps1 -AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -PipelineName $_.Name -PipelineParameters $_.Parameters -BuildIdVariableName $_.BuildIdVariableName
+            }
+        condition: and(succeeded(), eq(variables['build.runTsBuild'], true))
+
+      - task: PowerShell@2
+        displayName: "Wait CodeSign Builds for $(build.tsName)"
+        inputs:
+          targetType: "inline"
+          script: |
+            Set-Location "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+
+            @($(build.tsBuildId), $(build.ptmCliBuildId), $(build.ptmServiceBuildId)) | ForEach-Object {
+                ./Wait-SinglePipelineCompletionByBuildId.ps1 -AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -BuildId "$_"
+            }
+        condition: and(succeeded(), eq(variables['build.runTsBuild'], true))
+
+      - task: PowerShell@2
+        displayName: "Get Signed Archives from CodeSign Builds"
+        inputs:
+          targetType: inline
+          script: |
+            Set-Location "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+
+            @($(build.tsBuildId), $(build.ptmCliBuildId), $(build.ptmServiceBuildId)) | ForEach-Object {
+                $fileName = if ("$_" -eq "$(build.tsBuildId)") {
+                    "$(build.archiveName)"
+                }
+                else {
+                    ""
+                }
+                
+                ./Get-DotNetCoreArtifactByBuildId.ps1 -AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -BuildId "$_" -FileName $fileName -FileExtension ".tar.gz" -ArtifactLocalPath "$(Build.ArtifactStagingDirectory)/staging"
+            }
+        condition: succeeded()
+
+      - task: PowerShell@2
+        displayName: "Move All Archives to Target Folder"
+        inputs:
+          targetType: inline
+          script: |
+            Move-Item "$(Build.ArtifactStagingDirectory)/staging/*.tar.gz" "$(docker.dockerFileRoot)" -Force
+        condition: succeeded()
+
+      - task: Docker@2
+        displayName: Build and Push Docker Image
+        inputs:
+          command: buildAndPush
+          containerRegistry: $(docker.registryServiceConnection)
+          Dockerfile: $(docker.dockerFileRoot)/$(docker.dockerFileName)
+          repository: $(image.repository)
+          tags: $(image.tag)
+        condition: succeeded()

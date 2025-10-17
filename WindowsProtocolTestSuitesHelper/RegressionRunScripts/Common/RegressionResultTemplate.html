@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{TESTSUITE_NAME}} Test Suite Run Result Summary</title>
+    <style>
+        .highlight {
+            background-color: #0275d8;
+            line-height: 20px;
+            color: #fff;
+            font-size: 16px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .normal {
+            background-color: #e3ebf1;
+            line-height: 20px;
+            color: #121111;
+            font-size: 16px;
+            vertical-align: middle;
+        }
+
+        body, table {
+            width: 100%;
+        }
+
+        .font-green {
+			color:green
+		}
+		
+		.font-orange {
+			color:orange
+		}
+		
+		.font-red {
+			color:red
+		}
+    </style>
+</head>
+<body>
+    <h3>Run Summary</h3>
+    <table>
+        <tbody>
+            <tr>
+                <td class="highlight"><b>Start Time</b></td>
+                <td class="normal">{{START_TIME}}</td>
+            </tr>
+            <tr>
+                <td class="highlight"><b>End Time</b></td>
+                <td class="normal">{{END_TIME}}</td>
+            </tr>
+            <tr>
+                <td class="highlight" style="width:25%"><b>Build Url</b></td>
+                <td class="normal" style="width:75%">{{BUILD_URL}}</td>
+            </tr>
+            <tr>
+                <td class="highlight"><b>Triggered By</b></td>
+                <td class="normal">{{TRIGGERED_BY}}</td>
+            </tr>
+            <tr>
+                <td class="highlight"><b>TestSuite Branch</b></td>
+                <td class="normal">{{TESTSUITE_BRANCH}}</td>
+            </tr>
+            <tr>
+                <td class="highlight"><b>Helper Branch</b></td>
+                <td class="normal">{{HELPER_BRANCH}}</td>
+            </tr>
+            <tr>
+                <td class="highlight"><b>Pull Request</b></td>
+                <td class="normal">{{PULL_REQUEST}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+            <tr class="highlight">
+                <th style="width:8%">TestSuite</th>
+                <th style="width:5%">EnvType</th>
+                <th style="width:5%">Platform</th>
+                <th style="width:10%">StartTime</th>
+                <th style="width:10%">EndTime</th>
+                <th style="width:4%">Total</th>
+                <th style="width:4%">Passed</th>
+                <th style="width:4%">Failed</th>
+                <th style="width:4%">Inconclusive</th>
+                <th style="width:5%">Status</th>
+                <th style="width:8%">Machine</th>
+                <th style="width:8%">ResultLog</th>
+                <th style="width:10%">AzurePipelineLink</th>
+                <th style="width:15%">ErrorMessage</th>
+            </tr>
+        </thead>
+        <tbody>
+                {{REPORT_BODY}}
+        </tbody>
+    </table>
+</body>
+</html>

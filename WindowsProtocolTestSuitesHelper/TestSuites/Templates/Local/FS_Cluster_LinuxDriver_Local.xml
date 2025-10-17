@@ -1,0 +1,222 @@
+<lab>
+  <core>
+    <username>Administrator</username>
+    <password>Password01!</password>
+    <legacyclient>true</legacyclient>
+    <basecpu>4</basecpu>
+    <TestSuiteName>FileServer_DotNetCore_Cluster</TestSuiteName>
+    <Description>Domain cluster ENV: DC01, Node01, Node02, Storage01</Description>
+    <regressiontype>local</regressiontype>
+    <timeoutinminutes>840</timeoutinminutes>
+  </core>
+  <network>
+    <vnet>
+      <name>FS-Cluster-Internal</name>
+      <networktype>Internal</networktype>
+      <hostisgateway>true</hostisgateway>
+      <ip>10.13.2.1</ip>
+      <subnet>255.255.255.0</subnet>
+    </vnet>
+  </network>
+  <Parameters>
+  <!--Parameters for automation run-->
+      <Parameter Name="TestCaseScript" Value="Execute-TestCaseByContext.ps1" Comment="Which test case to run." />
+      <Parameter Name="TestCaseTimeout" Value="28800" Comment="Test case time out in seconds." />
+      <Parameter Name="ContextName" Value="Win2012R2_Domain_Cluster_SMB302" Comment="" />
+      <Parameter Name="TestDirInVM" Value="C:\Test" Comment="" />
+  </Parameters>
+  <!--for cluster setup-->
+  <ha>
+    <cluster>
+      <name>CLUSTER01</name>
+      <ip>10.13.2.88</ip>
+    </cluster>
+    <generalfs>
+      <name>GENERALFS01</name>
+      <ip>10.13.2.89</ip>
+    </generalfs>
+    <scaleoutfs>
+      <name>SCALEOUTFS01</name>
+    </scaleoutfs>
+    <infrastructurefs>
+      <name>InfraFS01</name>
+    </infrastructurefs>
+  </ha>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <role>IscsiStorage</role>
+      <imageReference>
+        <diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+        <answerFile>17763_ServerDataCenter.xml</answerFile>
+      </imageReference>
+      <hypervname>CLS-STORAGE01</hypervname>
+      <name>CLS-STORAGE01</name>
+      <domain>Workgroup</domain>
+      <vnet>FS-Cluster-Internal</vnet>
+      <ip>10.13.2.3</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.1</gateway>
+      <dns>Empty</dns>
+      <cpu>1</cpu>
+      <memory>512</memory>
+      <minimumram>512</minimumram>
+      <maximumram>2048</maximumram>
+      <installfeaturescript>Install-WindowsFeature.ps1</installfeaturescript>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Create-IscsiTarget.ps1;Check-StorageStatus.ps1</postscript>
+      <isiscsitarget>true</isiscsitarget>
+      <iscsitargetname>ClusterTarget</iscsitargetname>
+    </vm>
+    <vm>
+      <installorder>2</installorder>
+      <role>DC</role>
+      <imageReference>
+        <diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+        <answerFile>17763_ServerDataCenter.xml</answerFile>
+      </imageReference>
+      <hypervname>CLS-DC01</hypervname>
+      <name>CLS-DC01</name>
+      <isdc>true</isdc>
+      <domain>contoso.com</domain>
+      <username>Administrator</username>
+      <password>Password01!</password>
+      <vnet>FS-Cluster-Internal</vnet>
+      <ip>10.13.2.253</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>Empty</gateway>
+      <dns>127.0.0.1</dns>
+      <cpu>1</cpu>
+      <memory>1024</memory>
+      <minimunram>800</minimunram>
+      <maximunram>1024</maximunram>
+      <installscript>createdc.ps1</installscript>
+      <installfeaturescript>Install_RemoteAccess_Feature.ps1;InstallMSIAndTools.ps1;RestartComputer.PS1</installfeaturescript>
+      <postscript>Disable_Firewall.ps1;Create-TestAccount.ps1;SetPasswordNeverExpires.ps1;Create-CbacObjectsInDC.ps1;Import-GPOForClaims.ps1;Create-DNSRecords.ps1;Check-DCStatus.ps1;Config-AuthorizedKeys.ps1</postscript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+        <tool name="WMF" EXEName="Win8.1AndW2K12R2-KB3191564-x64.msu" version="5.1" CPUArchitecture="x64" ArgumentList="/quiet /norestart" InstallWaitSeconds="200" SupportedOSBuilds="9600"/>
+        <tool name="PowerShellCore" MSIName="PowerShellCore.msi" version="7.3.4" CPUArchitecture="x64" />
+        <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+        <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+      </tools>
+    </vm>
+
+    <vm>
+      <installorder>3</installorder>
+      <role>ClusterNode02</role>
+      <imageReference>
+        <diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+        <answerFile>17763_ServerDataCenter.xml</answerFile>
+      </imageReference>
+      <hypervname>CLS-NODE02</hypervname>
+      <name>CLS-NODE02</name>
+      <domain>contoso.com</domain>
+      <vnet>FS-Cluster-Internal</vnet>
+      <ip>10.13.2.85</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <ip>10.13.2.86</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <ip>10.13.2.87</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <ip>10.13.2.4</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.1</gateway>
+      <dns>Empty</dns>
+      <cpu>1</cpu>
+      <memory>768</memory>
+      <minimumram>768</minimumram>
+      <maximumram>2048</maximumram>
+      <isclusternode>true</isclusternode>
+      <installscript>InstallMSIAndTools.ps1;domainjoin.ps1</installscript>
+      <installfeaturescript>Install-WindowsFeature.ps1</installfeaturescript>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Connect-IscsiTarget.ps1;Config-ClusterNode2.ps1;Config-AsymmetryMode.ps1;Set-RequireSigning.ps1;Check-ClusterNodeStatus.ps1;Config-AuthorizedKeys.ps1;</postscript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+        <tool name="PowerShellCore" MSIName="PowerShellCore.msi" version="7.3.4" CPUArchitecture="x64" />
+        <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+        <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+      </tools>
+    </vm>
+    <vm>
+      <installorder>4</installorder>
+      <role>ClusterNode01</role>
+      <imageReference>
+        <diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+        <answerFile>17763_ServerDataCenter.xml</answerFile>
+      </imageReference>
+      <hypervname>CLS-NODE01</hypervname>
+      <name>CLS-NODE01</name>
+      <domain>contoso.com</domain>
+      <vnet>FS-Cluster-Internal</vnet>
+      <ip>10.13.2.82</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <ip>10.13.2.83</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <ip>10.13.2.84</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <ip>10.13.2.5</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.1</gateway>
+      <dns>Empty</dns>
+      <cpu>1</cpu>
+      <memory>768</memory>
+      <minimumram>768</minimumram>
+      <maximumram>2048</maximumram>
+      <isclusternode>true</isclusternode>
+      <installscript>InstallMSIAndTools.ps1;domainjoin.ps1</installscript>
+      <installfeaturescript>Install-WindowsFeature.ps1</installfeaturescript>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Connect-IscsiTarget.ps1;Create-ServerFailoverEnv.ps1;Create-SMB2Env.ps1;Create-DFSCEnv.ps1;Create-FSAEnv.ps1;Create-AuthEnv.ps1;Config-AsymmetryMode.ps1;Set-RequireSigning.ps1;Copy-Vhdx.ps1;Set-ComputerPassword.ps1;Check-ClusterNodeStatus.ps1;Config-ForceLevel2.ps1;Config-AuthorizedKeys.ps1;</postscript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+        <tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="Latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+        <tool name="PowerShellCore" MSIName="PowerShellCore.msi" version="7.3.4" CPUArchitecture="x64" />
+        <tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+        <tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+        <TestsuiteZip ZipName="FileServer-TestSuite-ServerEP.zip" targetFolder="c:\FileServer-TestSuite-ServerEP"/>
+      </tools>
+    </vm>
+    <vm>
+      <installorder>5</installorder>
+      <role>DriverComputer</role>
+      <os>Linux</os>
+      <vnetExternal>NATSwitch</vnetExternal>
+      <imageReference>
+        <diskName>Ubuntu 18.04.3 LTS_Original.vhdx</diskName>
+      </imageReference>
+      <hypervname>CLS-CLI01</hypervname>
+      <name>CLS-CLI01</name>
+      <domain>contoso.com</domain>
+      <vnet>FS-Cluster-Internal</vnet>
+      <ip>10.13.2.100</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <ip>10.13.2.101</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.13.2.253</gateway>
+      <dns>10.13.2.253</dns>
+      <cpu>2</cpu>
+      <memory>2048</memory>
+      <minimumram>2048</minimumram>
+      <maximumram>4096</maximumram>
+      <installscript>Install-TestSuiteToLinuxDriver.ps1;Install-ScriptToLinuxDriver.ps1</installscript>
+      <postscript></postscript>
+      <tools>
+        <tool name="certs" ZipName="id_rsa.zip" targetFolder="/root/.ssh" installScript="chmod 0600 -R /root/.ssh" />
+        <TestsuiteZip ZipName="FileServer-TestSuite-ServerEP.zip" targetFolder="/FileServer-TestSuite-ServerEP"/>
+      </tools>
+    </vm>
+  </servers>
+</lab>

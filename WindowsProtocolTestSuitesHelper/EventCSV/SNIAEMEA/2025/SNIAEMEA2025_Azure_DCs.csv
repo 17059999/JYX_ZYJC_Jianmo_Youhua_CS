@@ -1,0 +1,3 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+FileServer,FileServer_Standard_Azure_DC1,Azure,Win2022_Domain_Cluster_SMB311,VulnerabilityTest-Will,West US 2,FS_DC_Azure.xml,IOLab/Password01!!,DC1,MicrosoftWindowsServer;WindowsServer;2022-Datacenter;latest ,DC1,SNIA-EMEA-2025.org,DC,,,,TestVnet-Will,,192.168.200.10,default,,
+FileServer,FileServer_Standard_Azure_DC2,Azure,Win2022_Domain_Cluster_SMB311,VulnerabilityTest-Will,West US 2,FS_DC_Azure.xml,IOLab/Password01!!,DC2,MicrosoftWindowsServer;WindowsServer;2022-Datacenter;latest ,DC2,SNIA-EMEA-2025.org,DC,,,,TestVnet-Will,,192.168.200.11,default,,

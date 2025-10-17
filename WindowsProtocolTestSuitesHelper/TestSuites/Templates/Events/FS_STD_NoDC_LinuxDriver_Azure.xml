@@ -1,0 +1,50 @@
+<lab>
+  <core>
+    <username>IOLab</username>
+    <password>Password01!</password>
+    <TestSuiteName>FileServer_DotNetCore_Standard</TestSuiteName>
+    <regressiontype>Azure</regressiontype>
+    <timeoutinminutes>390</timeoutinminutes>
+  </core>
+  <vmsetting>
+    <location>westus2</location>
+    <networkId>TestSuiteOnAzure-vnet</networkId>
+    <subnetName>default</subnetName>
+    <resourceGroup>TestSuiteOnAzure</resourceGroup>
+    <diskType>Premium_LRS</diskType>
+    <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+    <genevaAccountRegion>westus2</genevaAccountRegion>
+  </vmsetting>
+  <Parameters>
+    <Parameter Name="TestCaseScript" Value="Execute-TestCaseByContext.ps1" Comment="Which test case to run." />
+    <Parameter Name="TestCaseTimeout" Value="28800" Comment="Test case time out in seconds." />
+    <Parameter Name="ContextName" Value="Win2016_Domain_NonCluster_SMB311" Comment="" />
+    <Parameter Name="TestDirInVM" Value="~/Test" Comment="" />
+  </Parameters>
+  <servers>
+    <vm>
+      <installorder>2</installorder>
+      <role>DriverComputer</role>
+      <vmSize>Standard_DS2_v2</vmSize>
+      <os>Linux</os>
+      <imageReference>
+        <publisher>Canonical</publisher>
+        <offer>0001-com-ubuntu-server-jammy</offer>
+        <sku>22_04-lts</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>FS-CLI</name>
+      <domain>contoso.com</domain>
+      <ip>10.0.1.74</ip>
+      <ip>10.0.1.75</ip>
+      <dns>10.0.1.71</dns>
+      <installscript>InstallToolsOnLinux.ps1</installscript>
+      <postscript>RestartComputer.PS1</postscript>
+      <tools>
+        <tool name="DotNetCore" installCommand="sudo apt-get install -y dotnet-sdk-8.0"/>
+        <tool name="PTMCli" ZipName="PTMCli.zip" targetFolder="~\PTMCli"/>
+        <TestsuiteZip ZipName="FileServer-TestSuite-ServerEP.zip" targetFolder="~/FileServer-TestSuite-ServerEP"/>
+      </tools>
+    </vm>
+  </servers>
+</lab>

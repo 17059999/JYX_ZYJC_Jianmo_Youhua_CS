@@ -1,0 +1,81 @@
+parameters:
+  build.archiveName: ""
+
+steps:
+  - checkout: none
+
+  - task: DownloadBuildArtifacts@0
+    displayName: "Download ${{parameters['build.archiveName']}}.zip"
+    inputs:
+      artifactName: drop
+      itemPattern: "**/${{parameters['build.archiveName']}}.zip"
+    condition: succeeded()
+
+  - task: ExtractFiles@1
+    displayName: "Extract files"
+    inputs:
+      archiveFilePatterns: "$(System.ArtifactsDirectory)/drop/${{parameters['build.archiveName']}}.zip"
+      destinationFolder: "$(Build.ArtifactStagingDirectory)/staging/${{parameters['build.archiveName']}}"
+    condition: succeeded()
+
+  - task: PowerShell@2
+    displayName: "Set Bash Scripts as Executable"
+    inputs:
+      targetType: inline
+      script: |
+        $files = Get-ChildItem . -Recurse -Filter "*.sh"
+        if ($files.Length -gt 0) {
+            foreach ($file in $files) {
+                Write-Host "Set it as executable for: $($file.FullName)"
+                chmod +x $file.FullName
+            }
+        }
+        else {
+            Write-Host "No files to be set."
+        }
+      workingDirectory: "$(Build.ArtifactStagingDirectory)/staging/${{parameters['build.archiveName']}}"
+    condition: succeeded()
+
+  - task: ArchiveFiles@2
+    displayName: "Archive as Tar for: $(Build.ArtifactStagingDirectory)/staging/${{parameters['build.archiveName']}}"
+    inputs:
+      rootFolderOrFile: "$(Build.ArtifactStagingDirectory)/staging/${{parameters['build.archiveName']}}"
+      includeRootFolder: false
+      archiveType: tar
+      archiveFile: "$(Build.ArtifactStagingDirectory)/drop/${{parameters['build.archiveName']}}.tar.gz"
+    condition: succeeded()
+
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifacts"
+    inputs:
+      PathtoPublish: "$(Build.ArtifactStagingDirectory)/drop/${{parameters['build.archiveName']}}.tar.gz"
+    condition: succeeded()
+
+  - task: PowerShell@2
+    displayName: "Verify Bash Scripts Permissions in Tar Archive"
+    inputs:
+      targetType: inline
+      script: |
+        $archive = Get-Item "./${{parameters['build.archiveName']}}.tar.gz"
+        $scriptsInArchive = bash -c "tar -tvf $($archive.FullName) --wildcards '*.sh' 2>/dev/null"
+
+        if ($scriptsInArchive.Length -gt 0) {
+            Write-Host "Scripts to be verified:"
+            $scriptsInArchive | ForEach-Object {
+                Write-Host "    $_"
+            }
+
+            foreach ($script in $scriptsInArchive) {
+                if (-not ($script -match "\-rwxr[w\-]xr[w\-]x")) {
+                    throw "`"$script`" in the archive does not have executable permission."
+                }
+            }
+        }
+        else {
+            Write-Host "No scripts to be verified."
+        }
+
+        Write-Host "Verification completed."
+      workingDirectory: "$(Build.ArtifactStagingDirectory)/drop"
+      ignoreLASTEXITCODE: true
+    condition: succeeded()

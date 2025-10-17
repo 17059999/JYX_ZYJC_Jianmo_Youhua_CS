@@ -1,0 +1,57 @@
+<lab>
+  <core>
+    <username>IOLab</username>
+    <password>Password01!</password>
+    <TestSuiteName>RDPServer_DotNetCore</TestSuiteName>
+    <regressiontype>Azure</regressiontype>
+    <timeoutinminutes>150</timeoutinminutes>
+  </core>
+  <vmsetting>
+    <location>West US 2</location>
+    <networkId>Vnet</networkId>
+    <subnetName>default</subnetName>
+    <resourceGroup>TestSuiteOnAzure</resourceGroup>
+    <vaultName>TestSuiteBackupKeyVault</vaultName>
+    <diskType>Premium_LRS</diskType>
+    <vmSize>Standard_F4s</vmSize>
+    <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+    <genevaAccountRegion>westus2</genevaAccountRegion>
+  </vmsetting>
+  <Parameters>
+    <!--Parameters for automation run-->
+  </Parameters>
+  <servers>
+    <vm>
+      <role>SUT</role>
+      <imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2019-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+      <name>RDPS-Server01</name>
+      <domain>workgroup</domain>
+      <ip>10.2.0.111</ip>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;PostConfig-SUT.ps1</postscript>
+      <installorder>1</installorder>
+    </vm>
+    <vm>
+      <role>DriverComputer</role>
+      <imageReference>
+        <imageRefId>Win101803_VS2017</imageRefId>
+      </imageReference>
+      <name>RDPS-Client01</name>
+      <domain>workgroup</domain>
+      <ip>10.2.0.112</ip>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;InstallMSIAndTools.ps1;PostConfig-Driver.ps1</postscript>
+      <installorder>2</installorder>
+      <tools>
+        <tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="Latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+        <TestsuiteZip ZipName="RDP-TestSuite-ServerEP.zip" targetFolder="c:\RDP-TestSuite-ServerEP"/>
+        <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+        <tool name="PTM" MSIName="ProtocolTestManager.msi" version="4.21.1.0" />
+        <tool name="PTMCLI" ZipName="PTMCli.zip" targetFolder="C:\PTMCli" />
+      </tools>
+    </vm>
+  </servers>
+</lab>

@@ -1,0 +1,68 @@
+trigger: none
+
+variables:
+  - name: build.project
+    value: WindowsProtocolTestSuites
+  - name: build.msbuildPath
+    value: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe
+  - name: LGTM.UploadSnapshot
+    value: true
+
+jobs:
+  - job:
+    displayName: Run CodeQL
+    pool:
+      vmImage: windows-2022
+    workspace:
+      clean: true
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: git://$(build.project)/$(build.repo)@$(build.branch)
+        path: s
+
+      - checkout: self
+        path: s/_Helper
+        condition: and(succeeded(), eq(variables['build.solutionName'], 'MS-SMBD_Server.sln'))
+
+      - task: CopyFiles@2
+        displayName: "Copy Files to: ProtoSDK/RDMA"
+        inputs:
+          SourceFolder: "$(Pipeline.Workspace)/s/_Helper/ProtoSDK/RDMA"
+          TargetFolder: "$(Pipeline.Workspace)/s/ProtoSDK/RDMA"
+        condition: and(succeeded(), eq(variables['build.solutionName'], 'MS-SMBD_Server.sln'))
+
+      - task: UseDotNet@2
+        displayName: "Use .NET Core SDK 7.x"
+        inputs:
+          version: 7.x
+          performMultiLevelLookup: true
+
+      - task: DotNetCoreCLI@2
+        displayName: "DotNet Restore"
+        inputs:
+          command: restore
+          projects: "$(Pipeline.Workspace)/s/$(build.solutionFolder)/**/*.csproj"
+        condition: and(succeeded(), eq(variables['build.useDotNetCli'], true))
+
+      - task: 333b11bd-d341-40d9-afcf-b32d5ce6f23b@2
+        displayName: "NuGet Restore"
+        inputs:
+          restoreSolution: "$(Pipeline.Workspace)/s/$(build.solutionFolder)/$(build.solutionName)"
+        condition: and(succeeded(), eq(variables['build.useDotNetCli'], false))
+
+      - task: Semmle@1
+        displayName: "Run Semmle"
+        inputs:
+          sourceCodeDirectory: "$(Pipeline.Workspace)/s/$(build.solutionFolder)"
+          language: "csharp"
+          buildCommandsString: '\"$(build.msbuildPath)\" \"$(Pipeline.Workspace)/s/$(build.solutionFolder)/$(build.solutionName)\" /t:Rebuild'
+          querySuite: "Recommended"
+          timeout: "3600"
+          ram: "65536"
+          addProjectDirToScanningExclusionList: true
+        env:
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+      - task: PublishSecurityAnalysisLogs@3
+        displayName: "Publish Security Analysis Logs"

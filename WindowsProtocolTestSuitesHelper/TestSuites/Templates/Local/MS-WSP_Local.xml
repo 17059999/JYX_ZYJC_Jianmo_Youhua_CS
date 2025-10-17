@@ -1,0 +1,71 @@
+<lab>
+  <core>
+    <username>Administrator</username>
+    <password>Password01!</password>
+    <legacyclient>true</legacyclient>
+    <basecpu>1</basecpu>
+    <TestSuiteName>MS-WSP_DotNetCore</TestSuiteName>
+    <Description>MS-WSP ENV: Server, Client</Description>
+    <regressiontype>Local</regressiontype>
+    <timeoutinminutes>270</timeoutinminutes>
+  </core>
+  <network>
+    <vnet>
+      <name>WSP-Internal</name>
+      <networktype>Internal</networktype>
+      <hostisgateway>true</hostisgateway>
+      <ip>10.55.0.1</ip>
+      <subnet>255.255.255.0</subnet>
+    </vnet>
+  </network>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <role>Server</role>
+      <imageReference>
+        <diskName>19041.1.amd64fre.vb.20h1_release.191206-1406_server_serverdatacenter_en-us_vl_VS2017.vhd;19041_ServerDataCenter.xml</diskName>
+        <answerFile>19041_ServerDataCenter.xml</answerFile>
+      </imageReference>
+      <hypervname>WSP-Server</hypervname>
+      <name>WSP-Server</name>
+      <domain>Workgroup</domain>
+      <vnet>WSP-Internal</vnet>
+      <ip>10.55.0.2</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.55.0.1</gateway>
+      <dns>Empty</dns>
+      <cpu>1</cpu>
+      <memory>4096</memory>
+      <installscript>InstallMSIAndTools.ps1</installscript>
+      <postscript>Disable_Firewall.ps1;Config-Server.ps1</postscript>
+      <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+        <TestsuiteZip ZipName="MS-WSP-TestSuite-ServerEP.zip" targetFolder="C:\MS-WSP-TestSuite-ServerEP" />
+      </tools>
+    </vm>
+    <vm>
+      <installorder>2</installorder>
+      <role>DriverComputer</role>
+      <imageReference>
+        <diskName>19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2017.vhd</diskName>
+        <answerFile>19041_Enterprise.xml</answerFile>
+      </imageReference>
+      <hypervname>WSP-Client</hypervname>
+      <name>WSP-Client</name>
+      <domain>Workgroup</domain>
+      <vnet>WSP-Internal</vnet>
+      <ip>10.55.0.3</ip>
+      <subnet>255.255.255.0</subnet>
+      <gateway>10.55.0.1</gateway>
+      <dns>Empty</dns>
+      <cpu>1</cpu>
+      <memory>4096</memory>
+      <installscript>InstallMSIAndTools.ps1</installscript>
+      <postscript>Disable_Firewall.ps1;Enable-WinRM.ps1</postscript>
+      <tools>
+        <tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="Latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+        <TestsuiteZip ZipName="MS-WSP-TestSuite-ServerEP.zip" targetFolder="C:\MS-WSP-TestSuite-ServerEP" />
+      </tools>
+    </vm>
+  </servers>
+</lab>

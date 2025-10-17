@@ -1,0 +1,130 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+RDPServer,RDPServer_Azure_12R2,Azure,,TestSuiteOnAzure, West US 2,RDPServer_Azure.xml,IOLab/Password01!,12R2RDPS-S,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2RDPS-S,workgroup,SUT,,,,TestSuiteOnAzure-vnet,,10.0.1.11,default,,
+,,,,,,,,12R2RDPS-C,9600.17053.amd64fre.winblue_refresh_client_enterprise_VS2019,12R2RDPS-C,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.12,default,,
+,RDPServer_Azure_2022,Azure,,TestSuiteOnAzure, West US 2,RDPServer_Azure.xml,IOLab/Password01!,2022RDPS-S,adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us,2022RDPS-S,workgroup,SUT,,,,TestSuiteOnAzure-vnet,,10.0.1.32,default,,
+,,,,,,,,2022RDPS-C,adc_21H1_210517-1932_client_enterprise_en-us_vl,2022RDPS-C,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.33,default,,
+,RDPServer_Azure_LinuxDriver,Azure,,TestSuiteOnAzure, West US 2,RDPServer_LinuxDriver_Azure.xml,IOLab/Password01!,LnxRDPS-S,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,LnxRDPS-S,workgroup,SUT,,,,TestSuiteOnAzure-vnet,,10.0.1.80,default,,
+,,,,,,,,LnxRDPS-C,Canonical;0001-com-ubuntu-server-jammy;22_04-lts;latest,LnxRDPS-C,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.81,default,,
+RDPClient,RDPClient_Azure_12R2,Azure,,TestSuiteOnAzure, West US 3,RDPClient_Azure.xml,IOLab/Password01!,12R2RDPC-S,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019;1.0.0,12R2RDPC-S,workgroup,DriverComputer,,,,WestUS3-RegressionZone0,,10.1.1.17,default,,
+,,,,,,,,12R2RDPC-C,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;9600.17053.amd64fre.winblue_refresh_client_enterprise_VS2019;1.0.0,12R2RDPC-C,workgroup,SUT,,,,WestUS3-RegressionZone0,,10.1.1.18,default,,
+,RDPClient_Azure_21H1,Azure,,TestSuiteOnAzure, West US 3,RDPClient_Azure.xml,IOLab/Password01!,21H1RDPC-S,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,21H1RDPC-S,workgroup,DriverComputer,,,,WestUS3-RegressionZone0,,10.1.1.36,default,,
+,,,,,,,,21H1RDPC-C,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_21H1_210517-1932_client_enterprise_en-us_vl;1.0.0,21H1RDPC-C,workgroup,SUT,,,,WestUS3-RegressionZone0,,10.1.1.37,default,,
+,RDPClient_Azure_LinuxDriver,Azure,,TestSuiteOnAzure, West US 3,RDPClient_LinuxDriver_Azure.xml,IOLab/Password01!,LnxRDPC-S,Canonical;0001-com-ubuntu-server-jammy;22_04-lts;latest,LnxRDPC-S,workgroup,DriverComputer,,,,WestUS3-RegressionZone0,,10.1.1.82,default,,
+,,,,,,,,LnxRDPC-C,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2017;1.0.0,LnxRDPC-C,workgroup,SUT,,,,WestUS3-RegressionZone0,,10.1.1.83,default,,
+MS-ADOD,MS-ADOD_Azure_12R2,Azure,,TestSuiteOnAzure, West US 3,MS-ADOD_Azure.xml,IOLab/Password01!,12R2ADOD-P,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2ADOD-P,ADOD01Local.COM,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.23,default,,
+,,,,,,,,12R2ADOD-C,9600.17053.amd64fre.winblue_refresh_client_enterprise_VS2019,12R2ADOD-C,workgroup,Client,,,,TestSuiteOnAzure-vnet,,10.0.1.24,default,,10.0.1.23
+,MS-ADOD_Azure_20H1,Azure,,TestSuiteOnAzure, West US 2,MS-ADOD_Azure.xml,IOLab/Password01!,20H1ADOD-P,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1ADOD-P,ADOD03Local.COM,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.27,default,,
+,,,,,,,,20H1ADOD-C,19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2019,20H1ADOD-C,workgroup,Client,,,,TestSuiteOnAzure-vnet,,10.0.1.28,default,,10.0.1.27
+Kerberos,Kerberos_Azure_12R2,Azure,,TestSuiteOnAzure, West US 2,Kerberos_Azure.xml,IOLab/Password01!,12R2KB-DC1,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2KB-DC1,contoso.com,PDC01,,,,RegressionZone6,,10.0.7.5,default,,127.0.0.1;10.0.7.6
+,,,,,,,,12R2KB-DC2,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2KB-DC2,kerb.com,TDC01,,,,RegressionZone6,,10.0.7.6,default,,127.0.0.1;10.0.7.5
+,,,,,,,,12R2KB-AP1,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2KB-AP1,contoso.com,AP01,,,,RegressionZone6,,10.0.7.7,default,,10.0.7.5
+,,,,,,,,12R2KB-AP2,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2KB-AP2,kerb.com,AP02,,,,RegressionZone6,,10.0.7.8,default,,10.0.7.6
+,,,,,,,,12R2KB-PY1,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2KB-PY1,contoso.com,PROXY01,,,,RegressionZone6,,10.0.7.9,default,,10.0.7.5;10.0.7.6
+,,,,,,,,12R2KB-EP1,9600.17053.amd64fre.winblue_refresh_client_enterprise_VS2019,12R2KB-EP1,contoso.com,DriverComputer,,,,RegressionZone6,,10.0.7.10,default,,10.0.7.5;10.0.7.6
+,Kerberos_Azure_20H1,Azure,,TestSuiteOnAzure, West US 2,Kerberos_Azure.xml,IOLab/Password01!,20H1KB-DC1,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1KB-DC1,contoso.com,PDC01,,,,RegressionZone8,,10.0.9.5,default,,10.0.9.6;127.0.0.1
+,,,,,,,,20H1KB-DC2,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1KB-DC2,kerb.com,TDC01,,,,RegressionZone8,,10.0.9.6,default,,10.0.9.5;127.0.0.1
+,,,,,,,,20H1KB-AP1,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1KB-AP1,contoso.com,AP01,,,,RegressionZone8,,10.0.9.7,default,,10.0.9.5
+,,,,,,,,20H1KB-AP2,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1KB-AP2,kerb.com,AP02,,,,RegressionZone8,,10.0.9.8,default,,10.0.9.6
+,,,,,,,,20H1KB-PY1,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1KB-PY1,contoso.com,PROXY01,,,,RegressionZone8,,10.0.9.9,default,,10.0.9.5;10.0.9.6
+,,,,,,,,20H1KB-EP1,19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2019,20H1KB-EP1,contoso.com,DriverComputer,,,,RegressionZone8,,10.0.9.10,default,,10.0.9.5;10.0.9.6
+FileServer,FileServer_Cluster_Azure_VNext,Azure,Win2025_Domain_Cluster_SMB311,TestSuiteOnAzure, West US 2,FS_Cluster_Azure.xml,IOLab/Password01!,VNxtCLS-SG1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,VNxtCLS-SG1,Workgroup,IscsiStorage,,,,RegressionZone11,,10.0.12.4,default,,
+,,,,,,,,N/A,,CLUSTER03,0,Cluster,,,,RegressionZone11,,10.0.12.5,default,,
+,,,,,,,,N/A,,GENERALFS03,0,GeneralFS,,,,RegressionZone11,,10.0.12.6,default,,
+,,,,,,,,N/A,,SCALEOUTFS03,,ScaleoutFS,,,,RegressionZone11,,,default,,
+,,,,,,,,VNxtCLS-DC1,microsoftwindowsserver;windowsserver;2022-datacenter-azure-edition;latest,VNxtCLS-DC1,contoso.com,DC,,,,RegressionZone11,,10.0.12.7,default,,
+,,,,,,,,VNxtCLS-N1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,VNxtCLS-N1,contoso.com,ClusterNode01,,,,RegressionZone11,,10.0.12.8,default,,10.0.12.7
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.9,default,,10.0.12.7
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.10,default,,10.0.12.7
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.11,default,,10.0.12.7
+,,,,,,,,VNxtCLS-N2,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,VNxtCLS-N2,contoso.com,ClusterNode02,,,,RegressionZone11,,10.0.12.12,default,,10.0.12.7
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.13,default,,10.0.12.7
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.14,default,,10.0.12.7
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.15,default,,10.0.12.7
+,,,,,,,,VNxtCLS-C1,microsoftwindowsdesktop;windows-11;win11-21h2-ent;latest,VNxtCLS-C1,contoso.com,DriverComputer,,,,RegressionZone11,,10.0.12.16,default,,10.0.12.7
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.17,default,,10.0.12.7
+,FileServer_Cluster_Azure_2022,Azure,Win2022_Domain_Cluster_SMB311,TestSuiteOnAzure, West US 2,FS_Cluster_Azure.xml,IOLab/Password01!,2022CLS-SG1,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,2022CLS-SG1,Workgroup,IscsiStorage,,,,RegressionZone11,,10.0.12.35,default,,
+,,,,,,,,N/A,,CLUSTER03,0,Cluster,,,,RegressionZone11,,10.0.12.37,default,,
+,,,,,,,,N/A,,GENERALFS03,0,GeneralFS,,,,RegressionZone11,,10.0.12.38,default,,
+,,,,,,,,N/A,,SCALEOUTFS03,,ScaleoutFS,,,,RegressionZone11,,,default,,
+,,,,,,,,2022CLS-DC1,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,2022CLS-DC1,contoso.com,DC,,,,RegressionZone11,,10.0.12.39,default,,
+,,,,,,,,2022CLS-N1,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,2022CLS-N1,contoso.com,ClusterNode01,,,,RegressionZone11,,10.0.12.40,default,,10.0.12.39
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.41,default,,10.0.12.39
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.42,default,,10.0.12.39
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.43,default,,10.0.12.39
+,,,,,,,,2022CLS-N2,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,2022CLS-N2,contoso.com,ClusterNode02,,,,RegressionZone11,,10.0.12.44,default,,10.0.12.39
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.45,default,,10.0.12.39
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.46,default,,10.0.12.39
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.47,default,,10.0.12.39
+,,,,,,,,2022CLS-C1,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_21H1_210517-1932_client_enterprise_en-us_vl;1.0.0,2022CLS-C1,contoso.com,DriverComputer,,,,RegressionZone11,,10.0.12.48,default,,10.0.12.39
+,,,,,,,,,,,,,,,,RegressionZone11,,10.0.12.49,default,,10.0.12.39
+,FileServer_Cluster_Azure_LinuxDriver,Azure,WinV22H2_Domain_Cluster_SMB311,TestSuiteOnAzure, West US 2,FS_Cluster_LinuxDriver_Azure.xml,IOLab/Password01!,LnxCLS-SG1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,LnxCLS-SG1,Workgroup,IscsiStorage,,,,RegressionZone15,,10.0.17.4,default,,
+,,,,,,,,N/A,,CLUSTER04,0,Cluster,,,,RegressionZone15,,10.0.17.5,default,,
+,,,,,,,,N/A,,GENERALFS04,0,GeneralFS,,,,RegressionZone15,,10.0.17.6,default,,
+,,,,,,,,N/A,,SCALEOUTFS04,,ScaleoutFS,,,,RegressionZone15,,,default,,
+,,,,,,,,LnxCLS-DC1,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,LnxCLS-DC1,contoso.com,DC,,,,RegressionZone15,,10.0.17.7,default,,
+,,,,,,,,LnxCLS-N1,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,LnxCLS-N1,contoso.com,ClusterNode01,,,,RegressionZone15,,10.0.17.8,default,,10.0.17.7
+,,,,,,,,,,,,,,,,RegressionZone15,,10.0.17.9,default,,10.0.17.7
+,,,,,,,,,,,,,,,,RegressionZone15,,10.0.17.10,default,,10.0.17.7
+,,,,,,,,,,,,,,,,RegressionZone15,,10.0.17.11,default,,10.0.17.7
+,,,,,,,,LnxCLS-N2,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,LnxCLS-N2,contoso.com,ClusterNode02,,,,RegressionZone15,,10.0.17.12,default,,10.0.17.7
+,,,,,,,,,,,,,,,,RegressionZone15,,10.0.17.13,default,,10.0.17.7
+,,,,,,,,,,,,,,,,RegressionZone15,,10.0.17.14,default,,10.0.17.7
+,,,,,,,,,,,,,,,,RegressionZone15,,10.0.17.15,default,,10.0.17.7
+,,,,,,,,LnxCLS-C1,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,LnxCLS-C1,contoso.com,DriverComputer,,,,RegressionZone15,,10.0.17.16,default,,10.0.17.7
+,,,,,,,,,,,,,,,,RegressionZone15,,10.0.17.17,default,,10.0.17.7
+,FileServer_Standard_Azure_2025_WorkGroup,Azure,Win2025_Workgroup_NonCluster_SMB311,TestSuiteOnAzure, West US 3,FS_STD_NoDC_WinSUT_WinDriver_Azure_w3.xml,IOLab/Password01!,OON-2025WFS-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,OON-2025WFS-S,workgroup,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.33,default,,
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.34,default,,
+,,,,,,,,OON-2025WFS-C,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,OON-2025WFS-C,workgroup,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.35,default,,
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.36,default,,
+,FileServer_Standard_Azure_2025,Azure,Win2025_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 3,FS_NonCluster_Azure_w3.xml,IOLab/Password01!,OON-2025H2FS-DC,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,OON-2025H2FS-DC,contoso.com,DC,,,,WestUS3-RegressionZone2,,10.1.3.37,default,,
+,,,,,,,,OON-2025H2FS-S,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,OON-2025H2FS-S,contoso.com,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.38,default,,10.1.3.37
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.39,default,,10.1.3.37
+,,,,,,,,OON-2025H2FS-C,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_21H1_210517-1932_client_enterprise_en-us_vl;1.0.0,OON-2025H2FS-C,contoso.com,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.40,default,,10.1.3.37
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.41,default,,10.1.3.37
+,FileServer_Standard_Azure_2022,Azure,WinV22H2_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 3,FS_NonCluster_Azure_w3.xml,IOLab/Password01!,GOL-2022FS-DC,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,GOL-2022FS-DC,contoso.com,DC,,,,WestUS3-RegressionZone2,,10.1.3.14,default,,
+,,,,,,,,GOL-2022FS-S,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,GOL-2022FS-S,contoso.com,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.15,default,,10.1.3.14
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.16,default,,10.1.3.14
+,,,,,,,,GOL-2022FS-C,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_21H1_210517-1932_client_enterprise_en-us_vl;1.0.0,GOL-2022FS-C,contoso.com,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.17,default,,10.1.3.14
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.18,default,,10.1.3.14
+,FileServer_Standard_Azure_QUIC,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,TestSuiteOnAzure, West US 3,FS_NonCluster_Azure_w3.xml,IOLab/Password01!,GOL-2022QUIC-DC,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,GOL-2022QUIC-DC,contoso.com,DC,,,,WestUS3-RegressionZone2,,10.1.3.100,default,,
+,,,,,,,,GOL-2022QUIC-S,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,GOL-2022QUIC-S,contoso.com,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.101,default,,10.1.3.100
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.102,default,,10.1.3.100
+,,,,,,,,GOL-2022QUIC-C,microsoftwindowsdesktop;windows-11;win11-21h2-ent;latest,GOL-2022QUIC-C,contoso.com,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.103,default,,10.1.3.100
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.104,default,,10.1.3.100
+,FileServer_Standard_Azure_QUICLinuxDriver,Azure,Win2022_Domain_NonCluster_SMB311_EnableQUIC,TestSuiteOnAzure, West US 3,FS_NonCluster_LinuxDriver_Azure_w3.xml,IOLab/Password01!,LnxQUIC-DC,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us;1.0.0,LnxQUIC-DC,contoso.com,DC,,,,WestUS3-RegressionZone2,,10.1.3.200,default,,
+,,,,,,,,LnxQUIC-S,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,LnxQUIC-S,contoso.com,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.201,default,,10.1.3.200
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.202,default,,10.1.3.200
+,,,,,,,,LnxQUIC-C,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,LnxQUIC-C,contoso.com,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.203,default,,10.1.3.200
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.204,default,,10.1.3.200
+,FileServer_Standard_Azure_LinuxDriver,Azure,WinV2004_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 3,FS_NonCluster_LinuxDriver_Azure_w3.xml,IOLab/Password01!,LnxFS-DC,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,LnxFS-DC,contoso.com,DC,,,,WestUS3-RegressionZone2,,10.1.3.19,default,,
+,,,,,,,,LnxFS-S,MicrosoftWindowsServer;WindowsServer;2022-datacenter-azure-edition;latest,LnxFS-S,contoso.com,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.20,default,,10.1.3.18
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.21,default,,10.1.3.18
+,,,,,,,,LnxFS-C,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,LnxFS-C,contoso.com,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.22,default,,10.1.3.18
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.23,default,,10.1.3.18
+,FileServer_Standard_LinuxSUT_Azure,Azure,Samba_Domain_SMB30,TestSuiteOnAzure, West US 3,FS_NonCluster_LinuxSUT_Azure_w3.xml,IOLab/Password01!,RSFSLnx-DCD,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019;1.0.0,RSFSLnx-DCD,contoso.com,DC,,,,WestUS3-RegressionZone2,,10.1.3.24,default,,
+,,,,,,,,RSFSLnx-DCS,Canonical;0001-com-ubuntu-server-jammy;22_04-lts;latest,RSFSLnx-DCS,contoso.com,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.25,default,,10.1.3.23
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.26,default,,10.1.3.23
+,,,,,,,,RSFSLnx-DCC,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2019;1.0.1,RSFSLnx-DCC,contoso.com,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.27,default,,10.1.3.23
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.28,default,,10.1.3.23
+,FileServer_Standard_Workgroup_LinuxSUT_Azure,Azure,Samba_Workgroup_SMB30,TestSuiteOnAzure, West US 3,FS_NonCluster_Workgroup_LinuxSUT_Azure_w3.xml,IOLab/Password01!,RSFSLnx-S,Canonical;0001-com-ubuntu-server-jammy;22_04-lts;latest,RSFSLnx-S,workgroup,NODE01,,,,WestUS3-RegressionZone2,,10.1.3.29,default,,
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.30,default,,
+,,,,,,,,RSFSLnxC,gallery;TestSuiteOnAzure;TestSuiteComputeGallery;19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2019;1.0.1,RSFSLnxC,workgroup,DriverComputer,,,,WestUS3-RegressionZone2,,10.1.3.31,default,,
+,,,,,,,,,,,,,,,,WestUS3-RegressionZone2,,10.1.3.32,default,,
+ADFamily,ADFamily_Azure_12R2,Azure,,TestSuiteOnAzure, West US 3,ADFamily_Azure.xml,IOLab/Password01!,12R2AD-P,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2AD-P,contoso.com,PrimaryDomainController,,,,RegressionZone4,,10.0.5.5,default,,10.0.5.6;10.0.5.5;10.0.5.9
+,,,,,,,,12R2AD-SDC,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2AD-SDC,contoso.com,SecondaryDomainController,,,,RegressionZone4,,10.0.5.6,default,,10.0.5.5
+,,,,,,,,12R2AD-RODC,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2AD-RODC,contoso.com,ReadOnlyDomainController,,,,RegressionZone4,,10.0.5.7,default,,10.0.5.5
+,,,,,,,,12R2AD-CDC,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2AD-CDC,child.contoso.com,ChildDomainController,,,,RegressionZone4,,10.0.5.8,default,,10.0.5.5
+,,,,,,,,12R2AD-TDC,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2AD-TDC,trust.com,TrustedDomainController,,,,RegressionZone4,,10.0.5.9,default,,10.0.5.5
+,,,,,,,,12R2AD-DM,9600.17053.amd64fre.winblue_refresh_server_serverdatacenter_VS2019,12R2AD-DM,contoso.com,DomainMember,,,,RegressionZone4,,10.0.5.10,default,,10.0.5.5
+,,,,,,,,12R2AD-EP,9600.17053.amd64fre.winblue_refresh_client_enterprise_VS2019,12R2AD-EP,contoso.com,DriverComputer,,,,RegressionZone4,,10.0.5.11,default,,10.0.5.5
+,ADFamily_Azure_20H1,Azure,,TestSuiteOnAzure, West US 2,ADFamily_Azure.xml,IOLab/Password01!,20H1AD-P,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1AD-P,contoso.com,PrimaryDomainController,,,,RegressionZone5,,10.0.6.5,default,,10.0.6.6;10.0.6.5;10.0.6.9
+,,,,,,,,20H1AD-SDC,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1AD-SDC,contoso.com,SecondaryDomainController,,,,RegressionZone5,,10.0.6.6,default,,10.0.6.5
+,,,,,,,,20H1AD-RODC,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1AD-RODC,contoso.com,ReadOnlyDomainController,,,,RegressionZone5,,10.0.6.7,default,,10.0.6.5
+,,,,,,,,20H1AD-CDC,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1AD-CDC,child.contoso.com,ChildDomainController,,,,RegressionZone5,,10.0.6.8,default,,10.0.6.5
+,,,,,,,,20H1AD-TDC,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1AD-TDC,trust.com,TrustedDomainController,,,,RegressionZone5,,10.0.6.9,default,,10.0.6.5
+,,,,,,,,20H1AD-DM,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1AD-DM,contoso.com,DomainMember,,,,RegressionZone5,,10.0.6.10,default,,10.0.6.5
+,,,,,,,,20H1AD-EP,19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2019,20H1AD-EP,contoso.com,DriverComputer,,,,RegressionZone5,,10.0.6.11,default,,10.0.6.5
+MS-WSP,MS-WSP_Azure_20H1,Azure,,TestSuiteOnAzure, West US 2,MS-WSP_Azure.xml,IOLab/Password01!,20H1WSP-S,19041.1.amd64fre.20h1_release_server_serverdatacenter_en-us_vl_VS2019,20H1WSP-S,Workgroup,Server,,,,RegressionZone5,,10.0.6.15,default,,
+,,,,,,,,20H1WSP-C,19041.1.amd64fre.vb.20h1_release.191206-1406_client_enterprise_en-us_vl_VS2019,20H1WSP-C,Workgroup,DriverComputer,,,,RegressionZone5,,10.0.6.16,default,,
+XCA,XCA_Azure_2022,Azure,,TestSuiteOnAzure,West US 2,XCA_Azure.xml,IOLab/Password01!,2022XC-D,microsoftwindowsdesktop;windows-11;win11-21h2-ent;latest,2022XC-D,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.60,default,,
+,XCA_Azure_Linux,Azure,,TestSuiteOnAzure,West US 2,XCA_Azure_Linux.xml,IOLab/Password01!,XCLnx-D,Canonical;0001-com-ubuntu-server-jammy;22_04-lts;latest,XCLnx-D,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.61,default,,

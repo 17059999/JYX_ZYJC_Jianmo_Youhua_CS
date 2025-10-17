@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LabConfig>
+    <ISOPath>
+      \\wseatc-protocol\PETLabStore\ISO
+    </ISOPath>
+    <ScriptLibPath>
+      \\wseatc-protocol\PETLabStore\ScriptLib
+    </ScriptLibPath>
+    <TestSuitePath>
+      \\wseatc-protocol\PETLabStore\TestSuite
+    </TestSuitePath>
+    <ToolsPath>
+      \\wseatc-protocol\PETLabStore\Tools
+    </ToolsPath>
+    <VMBasePath>
+      \\wseatc-protocol\PETLabStore\VMLib
+    </VMBasePath>
+    <TestLogRepository>
+      \\wseatc-protocol\Win7WeeklyLog
+    </TestLogRepository>
+    <TestReportTo>
+      sixiao
+    </TestReportTo>
+    <TestReportCC>
+      sixiao
+    </TestReportCC>
+    <ConfigFileName>
+      External.config.xml
+    </ConfigFileName>
+</LabConfig>

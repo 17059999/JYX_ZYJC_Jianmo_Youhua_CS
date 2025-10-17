@@ -1,0 +1,34 @@
+trigger: none
+
+variables:
+  - group: Azure Account
+
+jobs:
+  - job:
+    displayName: Azure Regression
+    pool:
+      name: TestSuiteHostPool
+    workspace:
+      clean: all
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: self
+
+      - template: DotNetCore_Regression_InstallAzureAccountCert.yml
+        parameters:
+            build.ModuleName: "Az"
+
+      - template: DotNetCore_Regression_ConfigureSshClient.yml
+
+      - task: AzurePowerShell@5
+        displayName: "Apply S360 settings to the target VM"
+        inputs:
+          azureSubscription: "Protocol Test Environment - Prod service connection"
+          ScriptType: filePath
+          azurePowerShellVersion: 'LatestVersion'
+          scriptPath: "RegressionRunScripts/AzureRegression/Configure-AzureS360CompliantVms.ps1"
+          scriptArguments: "-vmName $(vmName) -vmAccount '$(vmAccount)' -vmPassword '$(vmPassword)' -resourceGroup $(resourceGroup) -containerName $(containerName) -storageAccount $(storageAccount) -storageAccountKey $(storageAccountKey) -filepath $(azureAccountCert.secureFilePath) -vaultName $(vaultName) -ApplicationId $(azure.applicationId) -ThumbPrint $(azure.ThumbPrint) -TenantId $(azure.tenantId) -certPassword $(azure.certPassword) -token $(token)"
+          #ScriptArguments:  "-vmName $(vmName) -vmAccount '$(vmAccount)' -vmPassword '$(vmPassword)' -resourceGroup $(resourceGroup) -containerName $(containerName) -storageAccount $(storageAccount) -storageAccountKey $(storageAccountKey)"
+          workingDirectory: "RegressionRunScripts/AzureRegression"
+          errorActionPreference: stop

@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Server>
+    <C6>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+    </C6>
+    <C7>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.2.1303" />
+      <tool name="NetworkMonitorParser" version="3.2.1303" />
+    </C7>
+    <C8>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.2.1303" />
+      <tool name="NetworkMonitorParser" version="3.2.1303" />
+    </C8>
+    <C9>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.2.1303" />	
+      <tool name="NetworkMonitorParser" version="3.3.1551" />	
+    </C9>
+    <C10>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.3.1641" />	
+      <tool name="NetworkMonitorParser" version="3.4.1761" />	
+    </C10>
+    <SEP2009>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.3.1641" />	
+      <tool name="NetworkMonitorParser" version="3.4.1883" />	
+    </SEP2009>
+    <C11>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.3.1641" />	
+      <tool name="NetworkMonitorParser" version="3.4.1761" />	
+    </C11>
+    <C12>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.3.1641" />	
+      <tool name="NetworkMonitorParser" version="3.4.2131" />	
+    </C12>
+    <SUM2010>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.3.1641" />	
+      <tool name="NetworkMonitorParser" version="3.4.2131" />	
+    </SUM2010>
+    <FALL2010>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.3.1641" />	
+      <tool name="NetworkMonitorParser" version="3.4.2131" />	
+    </FALL2010>
+    <DEC2010>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="NetworkMonitor" version="3.3.1641" />	
+      <tool name="NetworkMonitorParser" version="3.4.2131" />	
+    </DEC2010>
+  </Server>
+  <Client>
+    <C6>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.2.901" />
+      <tool name="NetworkMonitorParser" version="3.2.901" />
+      <tool name="PTF" version="2.1.861" CPUArchitecture="x86" />
+    </C6>
+    <C7>
+	  <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.2.1303" />
+      <tool name="NetworkMonitorParser" version="3.2.1303" />
+      <tool name="PTF" version="2.1.1026" CPUArchitecture="x86" />
+    </C7>
+    <C8>
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.2.1303" />
+      <tool name="NetworkMonitorParser" version="3.2.1303" />
+      <tool name="PTF" version="2.1.1218" CPUArchitecture="x86" />
+    </C8>
+    <C9> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.2.1303" />
+      <tool name="NetworkMonitorParser" version="3.3.1551" />
+      <tool name="PTF" version="2.1.1386" CPUArchitecture="x86" />
+    </C9>
+    <C10> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.3.1641" />
+      <tool name="NetworkMonitorParser" version="3.4.1761" />
+      <tool name="PTF" version="2.1.1386" CPUArchitecture="x86" />
+    </C10>
+    <SEP2009> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.3.1641" />
+      <tool name="NetworkMonitorParser" version="3.4.1883" />
+      <tool name="PTF" version="2.1.1777" CPUArchitecture="x86" />
+    </SEP2009>
+    <C11> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.3.1641" />
+      <tool name="NetworkMonitorParser" version="3.4.1761" />
+      <tool name="PTF" version="2.1.1777" CPUArchitecture="x86" />
+    </C11>
+    <C12> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.3.1641" />
+      <tool name="NetworkMonitorParser" version="3.4.2131" />
+      <tool name="ProtocolSDK" version="Feb2010" CPUArchitecture="x86" />
+    </C12>
+    <SUM2010> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.3.1641" />
+      <tool name="NetworkMonitorParser" version="3.4.2131" />
+      <tool name="ProtocolSDK" version="May2010Hotfix5" CPUArchitecture="x86" />
+    </SUM2010>
+    <FALL2010> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.3.1641" />
+      <tool name="NetworkMonitorParser" version="3.4.2131" />
+      <tool name="ProtocolSDK" version="Sep2010" CPUArchitecture="x86" />
+    </FALL2010>
+    <DEC2010> 
+      <tool name="DotNetFramework" version="2.1.21022" />
+      <tool name="vcredist" version="9.0.21022" />
+      <tool name="mstest" version="9.0.21206" CPUArchitecture="x86" />
+      <tool name="NetworkMonitor" version="3.3.1641" />
+      <tool name="NetworkMonitorParser" version="3.4.2131" />
+      <tool name="ProtocolSDK" version="Dec2010" CPUArchitecture="x86" />
+    </DEC2010>
+  </Client>
+</Configuration>

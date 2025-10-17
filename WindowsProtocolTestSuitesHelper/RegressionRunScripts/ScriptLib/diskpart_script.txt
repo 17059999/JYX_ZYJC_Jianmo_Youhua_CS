@@ -1,0 +1,5 @@
+select volume 1
+shrink desired=128
+create partition primary SIZE=128
+format fs=fat32
+assign letter=g

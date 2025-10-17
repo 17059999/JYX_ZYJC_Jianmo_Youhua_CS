@@ -1,0 +1,126 @@
+<lab>
+  <core>
+    <username>administrator</username>
+    <password>Password01!</password>
+    <legacyclient>true</legacyclient>
+    <basecpu>1</basecpu>
+    <Description>DC x 2 and Member x 4(NIC x 2), BranchCache sample setup static ip address</Description>
+  </core>
+  <network>
+    <vnet>
+      <hostisgateway>true</hostisgateway>
+      <name>JUNE-PLUGFEST</name>
+      <networktype>External</networktype>
+      <ip>10.10.0.1</ip>
+      <subnet>255.255.254.0</subnet>
+    </vnet>
+  </network>
+  <Parameters>
+    <!--Parameters for Config Driver Computer-->
+    <Parameter Name="ContentTransport" Value="PCCRTP" Comment="Transport for PTF config." />
+    <Parameter Name="ContentServerComputerName" Value="ContentServer" Comment="ContentServerComputerName for PTF config." />
+    <Parameter Name="ContentServerFQDN" Value="ContentServer.contoso.com" Comment="ContentServer Full Qualified Domain Name." />
+    <Parameter Name="HostedCacheServerComputerName" Value="HostedServer" Comment="HostedCacheServerComputerName for PTF config." />
+    <Parameter Name="DomainName" Value="contoso" Comment="DomainName for PTF config." />
+    <Parameter Name="SecurityPackageType" Value="Negotiate" Comment="SupportedSecurityPackages for PTF config." />
+    <!--Parameters for automation run-->
+    <Parameter Name="TestCase" Value="Domain-RunAllTestCases.ps1" Comment="Which test case to run." />
+    <Parameter Name="TestCaseTimeout" Value="14400" Comment="Test case time out in seconds." />
+    <!--Parameters for Computer information-->
+    <Parameter Name="userName" Value="Administrator" Comment="" />
+    <Parameter Name="password" Value="Password01!" Comment="" />
+    <Parameter Name="domain" Value="contoso.com" Comment="" />
+    <Parameter Name="testDriverName" Value="Client1" Comment="" />
+    <Parameter Name="contentServerCtrlIp" Value="10.10.0.136" Comment="" />
+    <Parameter Name="testDriverCtrlIp" Value="10.10.0.138" Comment="" />
+    <Parameter Name="testDirInVM" Value="C:\Test" Comment="" />
+    <Parameter Name="testServerName" Value="BranchCache_HostedCacheServer" Comment="" />
+    <Parameter Name="testServerCtrlIp" Value="10.10.0.137" Comment="" />
+    <Parameter Name="testDCCtrlIp" Value="10.10.0.135" Comment="" />
+  </Parameters>
+  <servers>
+    <vm>
+      <installorder>1</installorder>
+      <hypervname>BranchCache_DC</hypervname>
+      <name>DC</name>
+      <role>DC</role>
+      <domain>contoso.com</domain>
+      <username>Administrator</username>
+      <password>Password01!</password>
+      <isdc>true</isdc>
+      <vnet>JUNE-PLUGFEST</vnet>
+      <ip>10.10.0.135</ip>
+      <subnet>255.255.254.0</subnet>
+      <gateway>10.10.0.135</gateway>
+      <dns>127.0.0.1</dns>
+      <memory>1024</memory>
+      <cpu>1</cpu>
+      <minimumram>1024</minimumram>
+      <maximumram>2048</maximumram>
+      <installscript>createdc.ps1</installscript>
+      <postscript>Disable_Firewall.ps1;EnableRoutingAndRemoteAccess.ps1;SetPasswordNeverExpires.ps1</postscript>
+    </vm>
+    <vm>
+      <installorder>2</installorder>
+      <hypervname>BranchCache_ContentServer</hypervname>
+      <name>ContentServer</name>
+      <role>SUT01</role>
+      <domain>contoso.com</domain>
+      <vnet>JUNE-PLUGFEST</vnet>
+      <ip>10.10.0.136</ip>
+      <gateway>10.10.0.135</gateway>
+      <subnet>255.255.254.0</subnet>
+      <dns>10.10.0.135</dns>
+      <memory>1024</memory>
+      <cpu>1</cpu>
+      <minimumram>1024</minimumram>
+      <maximumram>2048</maximumram>
+      <installscript>domainjoin.ps1</installscript>
+      <postscript>Disable_Firewall.ps1;ConfigContentServer.ps1;DeployTestFile.ps1;SetPasswordNeverExpires.ps1</postscript>
+    </vm>
+    <vm>
+      <installorder>3</installorder>
+      <hypervname>BranchCache_HostedServer</hypervname>
+      <name>HostedServer</name>
+      <role>SUT02</role>
+      <domain>contoso.com</domain>
+      <vnet>JUNE-PLUGFEST</vnet>
+      <ip>10.10.0.137</ip>
+      <gateway>10.10.0.135</gateway>
+      <subnet>255.255.254.0</subnet>
+      <dns>10.10.0.135</dns>
+      <memory>1024</memory>
+      <cpu>1</cpu>
+      <minimumram>1024</minimumram>
+      <maximumram>2048</maximumram>
+      <installscript>domainjoin.ps1</installscript>
+      <postscript>Disable_Firewall.ps1;ConfigHostedCacheServer.ps1;SetPasswordNeverExpires.ps1;BindSSLCert.ps1</postscript>
+    </vm>
+    <vm>
+      <installorder>4</installorder>
+      <hypervname>BranchCache_Client1</hypervname>
+      <name>Client1</name>
+      <role>DriverComputer</role>
+      <domain>contoso.com</domain>
+      <vnet>JUNE-PLUGFEST</vnet>
+      <ip>10.10.0.138</ip>
+      <gateway>10.10.0.135</gateway>
+      <subnet>255.255.254.0</subnet>
+      <dns>10.10.0.135</dns>
+      <memory>4096</memory>
+      <cpu>4</cpu>
+      <minimumram>2048</minimumram>
+      <maximumram>4096</maximumram>
+      <installscript>domainjoin.ps1</installscript>
+      <postiso>VS2012.iso</postiso>
+      <postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;InstallMSIAndTools.ps1;TrustHostedCacheServer.ps1</postscript>
+	  <skipwaitingforpostscript>false</skipwaitingforpostscript>
+      <tools>
+        <tool name="SE" MSIName="SpecExplorer.msi" version="3.5.3146.0" CPUArchitecture="x86" />
+        <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+        <tool name="PTM" MSIName="ProtocolTestManager.msi" version="3.18.6.0" />
+        <TestsuiteMSI MSIName="BranchCache.msi" targetEndpoint="" />
+      </tools>
+    </vm>
+  </servers>
+</lab>

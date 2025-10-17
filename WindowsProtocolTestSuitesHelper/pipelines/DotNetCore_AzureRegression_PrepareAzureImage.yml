@@ -1,0 +1,71 @@
+trigger: none
+
+variables: 
+  - group: Azure Account
+  - name: WorkingDirectory
+    value: $(Agent.HomeDirectory)/../PrepareAzureImage
+
+jobs:
+  - job:
+    displayName: Prepare Azure Image
+    pool: 
+      name: 'TestSuiteHostPool'
+      demands:
+        - AzurePS
+    workspace: 
+      clean: all
+    timeoutInMinutes: 0
+
+    steps:
+      - task: DownloadSecureFile@1
+        displayName: "Download Azure account certificate"
+        name: azureAccountCert
+        inputs:
+          secureFile: "AzureAccountCert.pfx"
+
+      - task: PowerShell@2
+        displayName: "Install Azure account certificate"
+        inputs:
+          targetType: "inline"
+          script: |
+            Import-PfxCertificate -FilePath $(azureAccountCert.secureFilePath) -Password (ConvertTo-SecureString -String $(azure.certPassword) -AsPlainText -Force) -CertStoreLocation Cert:\LocalMachine\My
+
+      - task: PowerShell@2
+        displayName: Clean up working directory
+        inputs:
+            targetType: 'inline'
+            script: |
+                if (Test-Path $(WorkingDirectory)) {
+                    if (Test-Path $(WorkingDirectory)/Finalize/Controller.ps1) {
+                      & "$(WorkingDirectory)/Finalize/Controller.ps1" -basePath $(WorkingDirectory)
+                    }
+                    Remove-Item "$(WorkingDirectory)/logs" -Recurse -Force -ErrorAction SilentlyContinue
+                    Remove-Item "$(WorkingDirectory)" -Recurse -Force -ErrorAction SilentlyContinue
+                }
+
+      - task: CopyFiles@2
+        displayName: Copy Build Artifacts
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/RegressionRunScripts/AutoAzureImage'
+          Contents: '**'
+          TargetFolder: '$(WorkingDirectory)'
+          OverWrite: true
+          retryCount: '3'
+
+      - task: PowerShell@2
+        displayName: Run Prerequisites on Target
+        inputs:
+          filePath: '$(WorkingDirectory)/Prerequisite/Controller.ps1'
+          errorActionPreference: stop
+          
+      - task: AzurePowerShell@5
+        displayName: 'Run regression'
+        inputs:
+          azureSubscription: "Protocol Test Environment - Prod service connection"
+          ScriptType: filePath
+          azurePowerShellVersion: 'LatestVersion'
+          scriptPath: $(WorkingDirectory)/Controller.ps1
+          scriptArguments: "-basePath $(WorkingDirectory) -storageAccount $(azure.storageAccount) -token '$(tokenv2)'"
+          errorActionPreference: stop
+        timeoutInMinutes: 0
+          

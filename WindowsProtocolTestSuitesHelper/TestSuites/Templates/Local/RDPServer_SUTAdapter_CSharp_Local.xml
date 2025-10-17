@@ -1,0 +1,84 @@
+<lab>
+	<core>
+		<username>administrator</username>
+		<password>Password01!</password>
+		<legacyclient>true</legacyclient>
+		<basecpu>4</basecpu>
+		<TestSuiteName>RDPServer_DotNetCore_SUTControlAgent</TestSuiteName>
+		<Description>Server x 1 and Client x 1</Description>
+		<regressiontype>local</regressiontype>
+		<timeoutinminutes>600</timeoutinminutes>
+	</core>
+	<network>
+		<vnet>
+			<hostisgateway>true</hostisgateway>
+			<name>RDPServer_Internal</name>
+			<networktype>Internal</networktype>
+			<ip>192.168.173.250</ip>
+			<subnet>255.255.255.0</subnet>
+		</vnet>
+	</network>
+	<Parameters>
+		<!--Parameters for automation run-->
+		<Parameter Name="BatchToRun" Value="RunTestCasesByFilter.ps1" Comment="Which batch file to run test case." />
+		<Parameter Name="SelectedAdapter" Value="CSharp" Comment="Select test suite family members to run." />
+	</Parameters>
+	<servers>
+		<vm>
+			<role>DriverComputer</role>
+			<imageReference>
+				<diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+				<answerFile>17763_ServerDataCenter.xml</answerFile>
+			</imageReference>
+			<installorder>1</installorder>
+			<hypervname>RDPServer</hypervname>
+			<name>RDPServer</name>
+			<LMSName>Server:1</LMSName>
+			<domain>WorkGROUP.com</domain>
+			<vnet>RDPServer_Internal</vnet>
+			<ip>192.168.173.1</ip>
+			<gateway>Empty</gateway>
+			<dns>Empty</dns>
+			<memory>4096</memory>
+			<skipwaitingforpostscript>false</skipwaitingforpostscript>
+			<postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;InstallMSIAndTools.ps1;Write-InstallDoneSignal.ps1;Config-RSAKeys.ps1;PostConfig-Driver.ps1</postscript>
+			<tools>
+				<tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="Latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+				<tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+				<tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+				<tool name="PowerShellCore" MSIName="PowerShell-7.4.1-win-x64.msi" version="7.4.1" CPUArchitecture="x64" />
+				<tool name="certs" ZipName="id_rsa.zip" targetFolder="C:\id_rsa\.ssh" />
+				<TestsuiteZip ZipName="RDP-TestSuite-ServerEP.zip" targetFolder="c:\RDP-TestSuite-ServerEP"/>
+			</tools>
+		</vm>
+		<vm>
+			<role>SUT</role>
+			<imageReference>
+				<diskName>17763.194.amd64fre.rs5_release.VS2017-ServerDataCenter.vhd</diskName>
+				<answerFile>17763_ServerDataCenter.xml</answerFile>
+			</imageReference>
+			<installorder>2</installorder>
+			<hypervname>RDPServer</hypervname>
+			<name>RDPServer</name>
+			<LMSName>Client:1</LMSName>
+			<domain>WorkGROUP.com</domain>
+			<vnet>RDPServer_Internal</vnet>
+			<ip>192.168.173.101</ip>
+			<gateway>Empty</gateway>
+			<dns>Empty</dns>
+			<memory>2048</memory>
+			<sku>client</sku>
+			<agentPort>4470</agentPort>
+			<agentRemoteClient>mstsc</agentRemoteClient>
+			<skipwaitingforpostscript>false</skipwaitingforpostscript>
+			<postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Enable-WinRM.ps1;InstallMSIAndTools.ps1;InstallSUTControllerAdapter.ps1;Write-InstallDoneSignal.ps1;Config-AuthorizedKeys.ps1;PostConfig-SUT.ps1</postscript>
+			<tools>
+				<tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="Latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+				<tool name="PowerShellCore" MSIName="PowerShell-7.4.1-win-x64.msi" version="7.4.1" CPUArchitecture="x64" />
+				<tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+				<tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+				<TestsuiteZip ZipName="RDP-TestSuite-ServerEP.zip" targetFolder="c:\RDP-TestSuite-ServerEP"/>
+			</tools>
+		</vm>
+	</servers>
+</lab>

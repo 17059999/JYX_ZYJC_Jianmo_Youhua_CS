@@ -1,0 +1,15 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+FileServer,FileServer_Standard_Azure_DC1,Azure,Win2022_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 2,FS_DC_Azure.xml,IOLab/Password01!!,DC1,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-2022-azure-edition-preview;latest,DC1,workgroup,DC,,,,TestSuiteOnAzure-vnet,,10.0.1.7,default,,
+FileServer,FileServer_Standard_Azure_Event1,Azure,Win2022_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 2,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA11-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-2022-azure-edition-preview;latest,FA11-SRV,workgroup,NODE01,,,,TestSuiteOnAzure-vnet,,10.0.1.8,default,,10.0.1.7
+,,,,,,,,,,,,,,,,TestSuiteOnAzure-vnet,,10.0.1.9,default,,10.0.1.7
+,,,,,,,,FA11-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA11-CLI,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.10,default,,10.0.1.7
+,,,,,,,,,,,,,,,,TestSuiteOnAzure-vnet,,10.0.1.11,default,,10.0.1.7
+FileServer,FileServer_Standard_Azure_Event2,Azure,Win2022_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 2,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA12-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-2022-azure-edition-preview;latest,FA12-SRV,workgroup,NODE01,,,,TestSuiteOnAzure-vnet,,10.0.1.12,default,,10.0.1.7
+,,,,,,,,,,,,,,,,TestSuiteOnAzure-vnet,,10.0.1.13,default,,10.0.1.7
+,,,,,,,,FA12-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA12-CLI,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.14,default,,10.0.1.7
+,,,,,,,,,,,,,,,,TestSuiteOnAzure-vnet,,10.0.1.15,default,,10.0.1.7
+FileServer,FileServer_Standard_Azure_Event3,Azure,Win2022_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 2,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA13-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-2022-azure-edition-preview;latest,FA13-SRV,workgroup,NODE01,,,,TestSuiteOnAzure-vnet,,10.0.1.16,default,,10.0.1.7
+,,,,,,,,,,,,,,,,TestSuiteOnAzure-vnet,,10.0.1.17,default,,10.0.1.7
+,,,,,,,,FA13-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA13-CLI,workgroup,DriverComputer,,,,TestSuiteOnAzure-vnet,,10.0.1.18,default,,10.0.1.7
+,,,,,,,,,,,,,,,,TestSuiteOnAzure-vnet,,10.0.1.19,default,,10.0.1.7
+,,,,,,,,,,,,,,,,TestSuiteOnAzure-vnet,,10.0.1.20,default,,10.0.1.7

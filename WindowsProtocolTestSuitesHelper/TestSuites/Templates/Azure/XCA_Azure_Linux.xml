@@ -1,0 +1,46 @@
+<lab>
+	<core>
+		<username>IOLab</username>
+		<password>Password01!</password>
+		<TestSuiteName>XCA_DotNetCore_Standard</TestSuiteName>
+		<regressiontype>Azure</regressiontype>
+		<timeoutinminutes>390</timeoutinminutes>
+	</core>
+	<vmsetting>
+		<location>westus2</location>
+		<networkId>TestSuiteOnAzure-vnet</networkId>
+		<subnetName>default</subnetName>
+		<resourceGroup>TestSuiteOnAzure</resourceGroup>
+		<diskType>Premium_LRS</diskType>
+		<fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+		<genevaAccountRegion>westus2</genevaAccountRegion>
+	</vmsetting>
+	<Parameters>
+		<Parameter Name="TestCaseScript" Value="Execute-ProtocolTestOnDriver.ps1" Comment="Which test case to run." />
+		<Parameter Name="TestCaseTimeout" Value="1200" Comment="Test case time out in seconds." />
+		<Parameter Name="TestDirInVM" Value="~/XCA-TestSuite-EP" Comment="" />
+	</Parameters>
+	
+	<servers>
+		<vm>
+			<installorder>1</installorder>
+			<role>DriverComputer</role>
+			<os>Linux</os>
+			<vmSize>Standard_D2s_v3</vmSize>
+			<imageReference>
+				<publisher>Canonical</publisher>
+				<offer>0001-com-ubuntu-server-jammy</offer>
+				<sku>22_04-lts</sku>
+				<version>latest</version>
+			</imageReference>
+			<name>XCA-D</name>
+			<domain>workgroup</domain>
+			<ip>10.0.1.74</ip>
+			<postscript>InstallToolsOnLinux.ps1</postscript>
+			<tools>
+				<tool name="DotNetCore" installCommand="sudo apt-get install -y dotnet-sdk-8.0"/>
+				<TestsuiteZip ZipName="XCA-TestSuite-EP.zip" targetFolder="~/XCA-TestSuite-EP"/>
+			</tools>
+		</vm>
+	</servers>
+</lab>

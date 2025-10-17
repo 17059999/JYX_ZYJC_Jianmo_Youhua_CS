@@ -1,0 +1,323 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SystemCenterUnifiedInstaller Type="Input" Version="0.1">
+  <Manifest>
+    <CompanyName>Microsoft</CompanyName>
+    <CompanyUser>test</CompanyUser>
+    <ProductKey />
+    <RunSqlDatabasesOnDedicated>false</RunSqlDatabasesOnDedicated>
+    <RunReportingOnDedicated>false</RunReportingOnDedicated>
+    <UseDefaultPortConfigurations>false</UseDefaultPortConfigurations>
+    <InstallerLogLevel />
+    <InstallerRootLocation>C:\V1_BETA\Microsoft System Center 2012 Unified Installer</InstallerRootLocation>
+    <UseDefaultProgramFilesPath />
+    <EnableMicrosoftUpdates>False</EnableMicrosoftUpdates>
+    <EnableErrorReporting>Never</EnableErrorReporting>
+    <EnableCEIP>False</EnableCEIP>
+    <SendOdrReports />
+    <InstallerServiceAccount>
+      <Domain>sc2012poc</Domain>
+      <Username>administrator</Username>
+      <Password>yOvhElZUCir2y3++K5c/YA==</Password>
+    </InstallerServiceAccount>
+    <TempInstallDrive>C</TempInstallDrive>
+    <TempInstallDir>Temp\Unified Installer</TempInstallDir>
+    <InstallerRunType>Local</InstallerRunType>
+  </Manifest>
+  <Products>
+    <Product>
+      <Components>
+        <Component Name="System Center Orchestrator" Type="Orchestrator" MinimumVersion="7.0.965.0" Selected="true" SetupPath="C:\Temp\Unified Installer\Orchestrator\setup\setup.exe">
+          <SetupExeMinBuild>Install</SetupExeMinBuild>
+          <DestinationPath>C:\Program Files\Microsoft System Center 2012\Orchestrator</DestinationPath>
+          <AcceptEula>true</AcceptEula>
+          <Role Name="Server" Type="Server" TargetComputer="sc2012-sco01">
+            <Input>
+              <Ini Exists="false">
+                <Content />
+              </Ini>
+            </Input>
+            <Administrator>
+              <Domain>sc2012poc</Domain>
+              <Username>administrator</Username>
+            </Administrator>
+            <ServiceAccount>
+              <UseSingleServiceAccount>true</UseSingleServiceAccount>
+              <Domain>sc2012poc</Domain>
+              <Username>administrator</Username>
+              <Password>yOvhElZUCir2y3++K5c/YA==</Password>
+            </ServiceAccount>
+            <SqlServer>
+              <SqlServerName>sc2012-sco01</SqlServerName>
+              <SqlServerInstance />
+              <DatabaseName>Orchestrator</DatabaseName>
+            </SqlServer>
+            <DatabaseAccount>
+              <Domain />
+              <Username />
+              <Password>+WJYLqQkckeEq+txUiYThA==</Password>
+            </DatabaseAccount>
+            <ActionAccount />
+          </Role>
+        </Component>
+        <Component Name="System Center Virtual Machine Manager" Type="VirtualMachineManager" MinimumVersion="3.0.1524.0" Selected="true" SetupPath="C:\Temp\Unified Installer\VirtualMachineManager\setup.exe">
+          <SetupExeMinBuild>Install</SetupExeMinBuild>
+          <DestinationPath>C:\Program Files\Microsoft System Center 2012\Virtual Machine Manager</DestinationPath>
+          <AcceptEula>true</AcceptEula>
+          <Role Name="Server" Type="Server" TargetComputer="sc2012-vmm01">
+            <Input>
+              <Ini Exists="true">
+                <Content>[OPTIONS]
+# ProductKey=xxxxx-xxxxx-xxxxx-xxxxx-xxxxx
+# UserName=Administrator
+# CompanyName=Microsoft Corporation
+# ProgramFiles=C:\Program Files\Microsoft System Center Virtual Machine Manager 2008 R2
+# CreateNewSqlDatabase=1
+#SqlInstanceName= MICROSOFT$VMM$
+# SqlDatabaseName=VirtualManagerDB
+# RemoteDatabaseImpersonation=0
+# SqlMachineName=&lt;sqlmachinename&gt;
+# IndigoTcpPort=8100
+# IndigoHTTPSPort=8101
+# IndigoNETTCPPort=8102
+# IndigoHTTPPort=8103
+# WSManTcpPort=80
+# BitsTcpPort=443
+# CreateNewLibraryShare=1
+# LibraryShareName=MSSCVMMLibrary
+# LibrarySharePath=C:\ProgramData\Virtual Machine Manager Library Files
+# LibraryShareDescription=Virtual Machine Manager Library Files
+# SQMOptIn = 0
+# MUOptIn = 0
+# VmmServiceLocalAccount = 0
+# TopContainerName = VMMServer
+# HighlyAvailable = 0
+# VmmServerName = &lt;VMMServerName&gt;
+# VMMStaticIPAddress = &lt;comma-separated-ip-for-HAVMM&gt;
+# Upgrade = 1</Content>
+              </Ini>
+            </Input>
+            <ServiceAccount>
+              <UseSingleServiceAccount>true</UseSingleServiceAccount>
+              <Domain>sc2012poc</Domain>
+              <Username>administrator</Username>
+              <Password>yOvhElZUCir2y3++K5c/YA==</Password>
+            </ServiceAccount>
+            <SqlServer>
+              <SqlServerName>sc2012-vmm01</SqlServerName>
+              <SqlServerInstance />
+              <DatabaseName />
+            </SqlServer>
+            <DatabaseAccount>
+              <Domain>sc2012poc</Domain>
+              <Username>administrator</Username>
+              <Password>yOvhElZUCir2y3++K5c/YA==</Password>
+            </DatabaseAccount>
+          </Role>
+          <Role Name="AdministrationConsole" Type="AdministrationConsole" TargetComputer="sc2012-vmm01">
+            <SqlServer>
+              <Server>sc2012-vmm01</Server>
+              <Instance />
+              <Name />
+            </SqlServer>
+            <Input>
+              <Ini Exists="true">
+                <Content>[OPTIONS]
+# ProgramFiles=C:\Program Files\Microsoft System Center Virtual Machine Manager 2008 R2
+# IndigoTcpPort=8100
+# MUOptIn = 0
+# VmmServerForOpsMgrConfig = &lt;VMMServerName&gt;</Content>
+              </Ini>
+            </Input>
+          </Role>
+        </Component>
+        <Component Name="System Center App Controller" Type="AppController" MinimumVersion="1.0.1001.0" Selected="true" SetupPath="C:\Temp\Unified Installer\AppController\setup.exe">
+          <SetupExeMinBuild>Install</SetupExeMinBuild>
+          <DestinationPath>C:\Program Files\Microsoft System Center 2012\App Controller</DestinationPath>
+          <AcceptEula>true</AcceptEula>
+          <Role Name="Server" Type="Server" TargetComputer="sc2012-ac01" InstallPath="C:\Program Files\Microsoft System Center 2012\App Controller">
+            <ServiceAccount>
+              <Domain>sc2012poc</Domain>
+              <Username>administrator</Username>
+              <Password>yOvhElZUCir2y3++K5c/YA==</Password>
+            </ServiceAccount>
+            <Ip>10.10.10.2</Ip>
+            <Port>443</Port>
+            <SqlServer>
+              <SqlServerName>sc2012-ac01</SqlServerName>
+              <SqlServerInstance />
+              <SqlPort>1433</SqlPort>
+              <DatabaseName>AppController</DatabaseName>
+            </SqlServer>
+            <Ceip>0</Ceip>
+            <MicrosoftUpdate>0</MicrosoftUpdate>
+          </Role>
+        </Component>
+        <Component Name="System Center Operations Manager" Type="OperationsManager" MinimumVersion="7.0.8289.0" Selected="true" SetupPath="C:\Temp\Unified Installer\OperationsManager\setup.exe">
+          <SetupExeMinBuild>Install</SetupExeMinBuild>
+          <DestinationPath>C:\Program Files\Microsoft System Center 2012\Operations Manager</DestinationPath>
+          <AcceptEula>true</AcceptEula>
+          <Role Name="Server" Type="ManagementServer" TargetComputer="sc2012-om01">
+            <ManagementGroupName>OperationsManagerMG</ManagementGroupName>
+            <SqlServer>
+              <SqlServerName>sc2012-om01</SqlServerName>
+              <SqlServerInstance />
+              <DatabaseName>OperationsManagerDB</DatabaseName>
+            </SqlServer>
+            <DwSqlServer>
+              <SqlServerName>sc2012-om01</SqlServerName>
+              <SqlServerInstance />
+              <DatabaseName>OperationsManagerDW</DatabaseName>
+            </DwSqlServer>
+            <ServiceAccount>
+              <UseSingleServiceAccount>true</UseSingleServiceAccount>
+              <Domain>sc2012poc</Domain>
+              <Username>administrator</Username>
+              <Password>yOvhElZUCir2y3++K5c/YA==</Password>
+            </ServiceAccount>
+            <ActionAccount />
+          </Role>
+          <Role Name="Operations Console" Type="OperationsConsole" TargetComputer="sc2012-om01"></Role>
+        </Component>
+        <Component Name="System Center Configuration Manager" Type="ConfigurationManager" MinimumVersion="5.0.7634" Selected="true" SetupPath="C:\Temp\Unified Installer\ConfigurationManager\SMSSETUP\BIN\x64\setup.exe">
+          <SetupExeMinBuild>Install</SetupExeMinBuild>
+          <DestinationPath>C:\Program Files\Microsoft System Center 2012\Configuration Manager</DestinationPath>
+          <AcceptEula>true</AcceptEula>
+          <Role Name="Server" Type="Server" TargetComputer="sc2012-cm01">
+            <Action>InstallPrimarySite</Action>
+            <ProductID>HSTSV-JOAKT-OPISF-FJISP-FPPSV</ProductID>
+            <SiteCode>SC1</SiteCode>
+            <SiteName>SC1 Site</SiteName>
+            <SMSInstallDir>C:\Program Files\Microsoft System Center 2012\Configuration Manager</SMSInstallDir>
+            <SDKServer>sc2012-cm01.sc2012poc.local</SDKServer>
+            <RoleCommunicationProtocol>EnforceHTTPS</RoleCommunicationProtocol>
+            <ClientsUsePKICertificate>true</ClientsUsePKICertificate>
+            <PrerequisitePath>C:\</PrerequisitePath>
+            <ServerLanguages />
+            <ClientLanguages />
+            <MobileDeviceLanguage>0</MobileDeviceLanguage>
+            <ManagementPoint>sc2012-cm01.sc2012poc.local</ManagementPoint>
+            <ManagementPointProtocol>HTTPS</ManagementPointProtocol>
+            <DistributionPoint>sc2012-cm01.sc2012poc.local</DistributionPoint>
+            <DistributionPointProtocol>HTTPS</DistributionPointProtocol>
+            <DistributionPointInstallIIS>true</DistributionPointInstallIIS>
+            <AdminConsole>true</AdminConsole>
+            <SqlServer>
+              <SqlServerName>sc2012-cm01</SqlServerName>
+              <SqlServerInstance />
+              <DatabaseName>CM_2012</DatabaseName>
+            </SqlServer>
+            <SQLSSBPort>4022</SQLSSBPort>
+          </Role>
+        </Component>
+      </Components>
+    </Product>
+  </Products>
+  <Downloads>
+    <Products>
+      <Product>
+        <Components>
+          <Component Type="Orchestrator">
+            <DownloadPath>d:\SYSTEM CENTER PRODUCTS\SCO RC PUBLIC</DownloadPath>
+            <DownloadDestinationPath>d:\SYSTEM CENTER PRODUCTS\SCO RC PUBLIC</DownloadDestinationPath>
+            <DownloadFileName />
+            <DownloadMethod>Manual</DownloadMethod>
+            <DownloadExtracted>true</DownloadExtracted>
+            <DownloadExtractLocation>d:\SYSTEM CENTER PRODUCTS\SCO RC PUBLIC</DownloadExtractLocation>
+            <DownloadSource />
+            <LibraryServer />
+          </Component>
+          <Component Type="VirtualMachineManager">
+            <DownloadPath>D:\SYSTEM CENTER PRODUCTS\VMM RC PUBLIC</DownloadPath>
+            <DownloadDestinationPath>C:\Temp\Unified Installer\VirtualMachineManager</DownloadDestinationPath>
+            <DownloadFileName />
+            <DownloadMethod>Manual</DownloadMethod>
+            <DownloadExtracted>true</DownloadExtracted>
+            <DownloadExtractLocation>D:\SYSTEM CENTER PRODUCTS\VMM RC PUBLIC</DownloadExtractLocation>
+            <DownloadSource />
+            <LibraryServer />
+          </Component>
+          <Component Type="AppController">
+            <DownloadPath>D:\SYSTEM CENTER PRODUCTS\AC BETA PUBLIC</DownloadPath>
+            <DownloadDestinationPath>C:\Temp\Unified Installer\AppController</DownloadDestinationPath>
+            <DownloadFileName />
+            <DownloadMethod>Manual</DownloadMethod>
+            <DownloadExtracted>true</DownloadExtracted>
+            <DownloadExtractLocation>D:\SYSTEM CENTER PRODUCTS\AC BETA PUBLIC</DownloadExtractLocation>
+            <DownloadSource />
+            <LibraryServer />
+          </Component>
+          <Component Type="OperationsManager">
+            <DownloadPath>D:\SYSTEM CENTER PRODUCTS\OM RC PUBLIC</DownloadPath>
+            <DownloadDestinationPath>C:\Temp\Unified Installer\OperationsManager</DownloadDestinationPath>
+            <DownloadFileName />
+            <DownloadMethod>Manual</DownloadMethod>
+            <DownloadExtracted>true</DownloadExtracted>
+            <DownloadExtractLocation>D:\SYSTEM CENTER PRODUCTS\OM RC PUBLIC</DownloadExtractLocation>
+            <DownloadSource />
+            <LibraryServer />
+          </Component>
+          <Component Type="ConfigurationManager">
+            <DownloadPath>D:\SYSTEM CENTER PRODUCTS\CM RC PUBLIC</DownloadPath>
+            <DownloadDestinationPath>C:\Temp\Unified Installer\ConfigurationManager</DownloadDestinationPath>
+            <DownloadFileName />
+            <DownloadMethod>Manual</DownloadMethod>
+            <DownloadExtracted>true</DownloadExtracted>
+            <DownloadExtractLocation>D:\SYSTEM CENTER PRODUCTS\CM RC PUBLIC</DownloadExtractLocation>
+            <DownloadSource />
+            <LibraryServer />
+          </Component>
+          <Component Type="ServiceManager">
+            <DownloadPath />
+            <DownloadDestinationPath>C:\Temp\Unified Installer\ServiceManager</DownloadDestinationPath>
+            <DownloadFileName />
+            <DownloadMethod>Manual</DownloadMethod>
+            <DownloadExtracted>true</DownloadExtracted>
+            <DownloadExtractLocation />
+            <DownloadSource />
+            <LibraryServer />
+          </Component>
+          <Component Type="DataProtectionManager">
+            <DownloadPath />
+            <DownloadDestinationPath>C:\Temp\Unified Installer\DataProtectionManager</DownloadDestinationPath>
+            <DownloadFileName />
+            <DownloadMethod>Manual</DownloadMethod>
+            <DownloadExtracted>true</DownloadExtracted>
+            <DownloadExtractLocation />
+            <DownloadSource />
+            <LibraryServer />
+          </Component>
+        </Components>
+      </Product>
+    </Products>
+    <Prerequisites>
+      <Prerequisite Name="Microsoft .NET Framework 4 Extended">
+        <DownloadPath>D:\V1_BETA_PREREQS\NET40</DownloadPath>
+        <DownloadDestinationPath>D:\V1_BETA_PREREQS\NET40</DownloadDestinationPath>
+      </Prerequisite>
+      <Prerequisite Name="Microsoft Report Viewer Redistributable 2008">
+        <DownloadPath>D:\V1_BETA_PREREQS\RVR</DownloadPath>
+        <DownloadDestinationPath>D:\V1_BETA_PREREQS\RVR</DownloadDestinationPath>
+      </Prerequisite>
+      <Prerequisite Name="SQL Server 2008 R2 Database Engine Services">
+        <DownloadPath>D:\V1_BETA_PREREQS\SQL</DownloadPath>
+        <DownloadDestinationPath>D:\V1_BETA_PREREQS\SQL</DownloadDestinationPath>
+      </Prerequisite>
+      <Prerequisite Name="Microsoft SQL Server 2008 R2 Native Client">
+        <DownloadPath>D:\V1_BETA_PREREQS\SQLNC</DownloadPath>
+        <DownloadDestinationPath>D:\V1_BETA_PREREQS\SQLNC</DownloadDestinationPath>
+      </Prerequisite>
+      <Prerequisite Name="Windows Automated Installation Kit">
+        <DownloadPath>D:\V1_BETA_PREREQS\WAIK</DownloadPath>
+        <DownloadDestinationPath>D:\V1_BETA_PREREQS\WAIK</DownloadDestinationPath>
+      </Prerequisite>
+      <Prerequisite Name="Microsoft SQL Server Analysis Management Objects">
+        <DownloadPath />
+        <DownloadDestinationPath />
+      </Prerequisite>
+      <Prerequisite Name="Microsoft System Center Virtual Machine Manager Administrator Console (x64)">
+        <DownloadPath>D:\SYSTEM CENTER PRODUCTS\VMM RC PUBLIC</DownloadPath>
+        <DownloadDestinationPath>C:\Temp\Unified Installer\VirtualMachineManager</DownloadDestinationPath>
+      </Prerequisite>
+    </Prerequisites>
+  </Downloads>
+</SystemCenterUnifiedInstaller>

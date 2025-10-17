@@ -1,0 +1,192 @@
+trigger: none 
+
+variables:
+  - group: Azure Account V2
+  - group: Build Variables
+  - group: External Repo Variables
+  
+jobs:
+  - job:
+    displayName: Local Regression
+    pool: 
+      name: TestSuiteHostPool
+    workspace:
+      clean: all
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: none
+
+      - task: PowerShell@2
+        displayName: 'Record Start Time'
+        inputs:
+          targetType: 'inline'
+          script: |
+            [System.dateTime]::UtcNow.ToString("MM/dd/yyyy HH:mm:ss") | Out-File '$(Common.TestResultsDirectory)\StartTime.txt' -Encoding utf8 -Force
+
+      - script: |
+          hostname > $(Common.TestResultsDirectory)\HostName.txt
+        displayName: 'Record Host Name'
+
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download Build Artifacts'
+        inputs:
+          buildType: specific
+          project: 'b67fd756-1c65-48ef-9824-eeb3cb9b2728'
+          pipeline: $(test.pipelineId)
+          buildVersionToDownload: specific
+          buildId: $(test.buildId)
+          artifactName: drop
+          downloadPath: '$(Build.BinariesDirectory)'
+
+      - task: PowerShell@2
+        displayName: Clean Up Work Folder Script Files
+        inputs:
+          targetType: 'inline'
+          script: |
+            $workingFolder = '$(Agent.HomeDirectory)/../WinteropProtocolTesting'
+            if(Test-Path $workingFolder){
+               Remove-Item "$workingFolder\AzureRegression" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\AzureScripts" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\Common" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\CommonScript" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\LocalRegression" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\ManualRunScript" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\ProtocolTestSuite" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\ScriptLib" -Recurse -Force -ErrorAction SilentlyContinue
+               Remove-Item "$workingFolder\VSTORMLITE" -Recurse -Force -ErrorAction SilentlyContinue
+            }
+
+      - task: CopyFiles@2
+        displayName: 'Copy Build to Local'
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/drop'
+          TargetFolder: '$(Agent.HomeDirectory)/../WinteropProtocolTesting'
+          OverWrite: true
+
+      - task: PowerShell@2
+        displayName: 'Initialize TestSuiteEnvironment'
+        inputs:
+          filePath: '$(Agent.HomeDirectory)/../WinteropProtocolTesting/LocalRegression/Initialize-TestSuiteEnvironment.ps1'
+          arguments: '-TestSuiteNames $(test.testSuiteName) -ToolShare "$(build.sharePath)\..\ToolShare" -VHDShare "$(build.sharePath)\..\VHDShare" -MediaShare "$(build.sharePath)\..\MediaShare" -EnvironmentName $(test.environmentName)'
+        timeoutInMinutes: 0
+
+      - task: PowerShell@2
+        displayName: Clean Up
+        inputs:
+          filePath: '$(Agent.HomeDirectory)/../WinteropProtocolTesting/LocalRegression/Cleanup-TestSuiteEnvironment.ps1'
+          arguments: '-TestSuiteName $env:TestSuiteName -EnvironmentName $env:EnvironmentName'
+        env:
+          TestSuiteName: $(test.testSuiteName)
+          EnvironmentName: $(test.environmentName)
+        timeoutInMinutes: 0
+
+      - task: PowerShell@2
+        displayName: Setup Environment
+        inputs:
+          filePath: '$(Agent.HomeDirectory)/../WinteropProtocolTesting/LocalRegression/Setup-TestSuiteEnvironment.ps1'
+          arguments: '-TestSuiteName $env:TestSuiteName -EnvironmentName $env:EnvironmentName'
+          workingDirectory: '$(Agent.HomeDirectory)/../WinteropProtocolTesting'
+          errorActionPreference: continue
+        env:
+          TestSuiteName: $(test.testSuiteName)
+          EnvironmentName: $(test.environmentName)
+        timeoutInMinutes: 0
+
+      - task: PowerShell@2
+        displayName: Install Az Module
+        inputs:
+          targetType: 'inline'
+          script: |
+            try
+            {
+              $az = Get-InstalledModule -Name "Az"
+              if($null -eq $az -or $az -eq "")
+              {
+                Write-Host "Installing Az module."
+                Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Confirm:$False -Force -AllowClobber
+                $az = Get-InstalledModule -Name "Az"
+                if($null -eq $az -or $az -eq "")
+                {
+                  throw "Could not install Az on machine"
+                }
+                else
+                {
+                  Write-Host "Az module is now installed on this machine."
+                }
+              }
+              else
+              {
+                Write-Host "Az module is already installed on this machine, skipping this task."
+              }
+            }
+            catch
+            {
+              Write-Host "Installing Az module."
+              Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Confirm:$False -Force -AllowClobber
+              $az = Get-InstalledModule -Name "Az"
+              if($null -eq $az -or $az -eq "")
+              {
+                throw "Could not install Az on machine"
+              }
+              else
+              {
+                Write-Host "Az module is now installed on this machine."
+              }
+            }
+
+      - task: AzurePowerShell@5
+        displayName: TestSuiteCases
+        inputs:
+          azureSubscription: "Protocol Test Environment - Prod service connection"
+          ScriptType: FilePath
+          azurePowerShellVersion: 'LatestVersion'
+          scriptPath: '$(Agent.HomeDirectory)/../WinteropProtocolTesting/LocalRegression/Execute-TestSuiteCases.ps1'
+          scriptArguments: '-TestSuiteName $env:TestSuiteName -EnvironmentName $env:EnvironmentName -SubscriptionId "$(azure.subscriptionId)" -applicationId "$(azure.applicationId)" -thumbPrint "$(azure.thumbPrint)" -tenantId "$(azure.tenantId)" -resultStorageAccount "$(azure.resultStorageAccount)" -fileShareResourceGroup "$(azure.fileShareResourceGroup)"'
+          workingDirectory: '$(Agent.HomeDirectory)/../WinteropProtocolTesting'
+          errorActionPreference: continue
+        env:
+          TestSuiteName: $(test.testSuiteName)
+          EnvironmentName: $(test.environmentName)
+        timeoutInMinutes: 0
+
+      - task: CopyFiles@2
+        displayName: 'Copy Test Results to: Common Test Results Directory'
+        inputs:
+          SourceFolder: '$(Agent.HomeDirectory)/../WinteropProtocolTesting/TestResults/$(test.testSuiteName)'
+          TargetFolder: '$(Common.TestResultsDirectory)'
+
+      - task: PowerShell@2
+        displayName: 'Publish report to Tesult Analyzer'
+        inputs:
+          filePath: '$(Agent.HomeDirectory)/../WinteropProtocolTesting/Common/PushDataToAnalyzer.ps1'
+          arguments: '-TestSuiteName $env:TestSuiteName -Branch $env:Branch -WorkingFolder $env:WorkingFolder -DefinitionName $env:DefinitionName -BuildNumber $env:BuildNumber -TriggeredBy $env:TriggeredBy -RequestUrl: $env:RequestUrl -token: $env:RequestToken -resultStorageAccount "$(azure.resultStorageAccount)"'
+          errorActionPreference: continue
+        env:
+          TestSuiteName: $(test.testSuiteName)
+          Branch: $(test.sourceBranch)
+          WorkingFolder: $(Common.TestResultsDirectory)
+          DefinitionName: $(Build.DefinitionName)
+          BuildNumber: $(Build.BuildNumber)
+          TriggeredBy: $(Build.RequestedFor)
+          RequestUrl: $(azure.ResultAnalyzerUrl)
+          RequestToken: $(azure.ResultAnalyzerToken)
+        timeoutInMinutes: 0
+
+      - task: PublishTestResults@2
+        displayName: 'Publish trx files'
+        inputs:
+          testResultsFormat: VSTest
+          testResultsFiles: '$(Common.TestResultsDirectory)/*.trx'
+          buildConfiguration: $(test.testSuiteName)
+          mergeTestResults: true
+        timeoutInMinutes: 0
+        condition: always()
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish report'
+        inputs:
+          PathtoPublish: '$(Common.TestResultsDirectory)'
+        timeoutInMinutes: 0
+        condition: always()
+        

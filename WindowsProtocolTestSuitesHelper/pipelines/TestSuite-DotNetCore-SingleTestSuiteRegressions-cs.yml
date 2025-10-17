@@ -1,0 +1,16 @@
+parameters:
+  build.archiveName: ""
+  test.regressionPipelineNames: ""
+  test.testSuiteBaseFolder: "drop"
+
+steps:
+  - checkout: self
+
+  - task: PowerShell@2
+    displayName: "Queue Regression Builds for ${{parameters['build.archiveName']}}.zip"
+    inputs:
+      targetType: filePath
+      filePath: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/Queue-MultiplePipelinesWithParameters.ps1"
+      arguments: '-AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -PipelineNames "${{parameters[''test.regressionPipelineNames'']}}" -TargetRepoBranch "$(test.regressionPipelinesBranch)" -PipelineParameters "`"test.buildId`": `"$(Build.BuildId)`", `"test.testSuiteBaseFolder`": `"${{parameters[''test.testSuiteBaseFolder'']}}`""'
+      workingDirectory: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common"
+    condition: succeeded()

@@ -1,0 +1,5 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+FileServer,FileServer_Standard_Azure_Event1,Azure,Win2022_Domain_NonCluster_SMB311,VulnerabilityTest-Will,West Us 2,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA01-SRV,microsoftwindowsserver;windowsserver;2025-datacenter-azure-edition;latest,FA01-SRV,SNIA-EMEA-2025.org,NODE01,,,,TestVnet-Will,,192.168.200.20,VMSubnet,,192.168.200.11
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.21,VMSubnet,,192.168.200.11
+,,,,,,,,FA01-CLI,microsoftwindowsdesktop;windows-11;win11-24h2-ent;latest,FA01-CLI,SNIA-EMEA-2025.org,DriverComputer,,,,TestVnet-Will,,192.168.200.22,VMSubnet,,192.168.200.11
+,,,,,,,,,,,,,,,,TestVnet-Will,,192.168.200.23,VMSubnet,,192.168.200.11

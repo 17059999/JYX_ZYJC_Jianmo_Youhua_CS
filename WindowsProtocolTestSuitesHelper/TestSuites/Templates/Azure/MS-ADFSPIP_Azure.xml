@@ -1,0 +1,88 @@
+<lab>
+	 <core>
+    <username>IOLab</username>
+    <password>Password01!</password>
+	<TestSuiteName>MS-ADFSPIP</TestSuiteName>
+    <regressiontype>Azure</regressiontype>
+	<timeoutinminutes>210</timeoutinminutes>
+  </core>
+
+  <vmsetting>
+    <location>westus2</location>
+    <networkId>TestSuiteOnAzure-vnet</networkId>
+    <subnetName>default</subnetName>
+    <resourceGroup>TestSuiteOnAzure</resourceGroup>
+    <diskType>Premium_LRS</diskType>
+    <vmSize>Standard_DS1_v2</vmSize>
+    <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+    <genevaAccountRegion>westus2</genevaAccountRegion>
+  </vmsetting>
+  
+	<servers>
+		<vm>
+			<role>DC</role>
+			<installorder>1</installorder>
+			<imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2016-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+			<name>DC01</name>
+			<domain>contoso.com</domain>
+			<isdc>true</isdc>	  
+			<!-- Network configuration                    -->
+			<!-- Multiple DNS or IP settings cannot be    -->
+			<!-- handled by VSTORMLITE automatically.     -->
+			<!-- scripts to config multiple DNS or IP     -->
+			<!-- setting are required in the post script. -->  
+			<ip>30.10.1.1</ip>
+			<dns>127.0.0.1</dns>		
+			<!-- PostScript are scripts to be executed      -->
+			<!-- by VSTORMLITE right after the VM is built, -->
+			<!-- before running any configuration scripts   -->
+			<!-- from the test suite.                       -->    
+			<skipwaitingforpostscript>false</skipwaitingforpostscript>
+			<postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Config-DCCA.ps1</postscript>
+		</vm>
+
+		<vm>
+			<role>PROXY</role>
+			<installorder>2</installorder>
+			<imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2016-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+			<name>PROXY01</name>
+			<domain></domain>
+			<ip>30.10.1.50</ip>
+			<dns>30.10.1.1</dns>
+			<skipwaitingforpostscript>false</skipwaitingforpostscript>
+			<postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;Config-PROXY.ps1;Write-InstallDoneSignal.ps1</postscript>
+		</vm>
+
+		<vm>
+			<role>Driver</role>
+			<installorder>3</installorder>
+			<imageReference>
+        <publisher>MicrosoftWindowsServer</publisher>
+        <offer>WindowsServer</offer>
+        <sku>2016-Datacenter</sku>
+        <version>latest</version>
+      </imageReference>
+			<name>DRIVER01</name>
+			<domain>contoso.com</domain>
+			<ip>30.10.1.100</ip>
+			<dns>30.10.1.1</dns>
+			<skipwaitingforpostscript>false</skipwaitingforpostscript>
+			<postscript>Disable_Firewall.ps1;SetPasswordNeverExpires.ps1;InstallMSIAndTools.ps1;Config-Driver.ps1;Write-InstallDoneSignal.ps1;Update-VisualStudioLicense.ps1</postscript>
+			<tools>
+				<tool name="SE" MSIName="SpecExplorer.msi" version="3.5.3146.0" CPUArchitecture="x86" />
+                <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+				<TestsuiteMSI MSIName="MS-ADFSPIP-TestSuite-ClientEP.msi" targetEndpoint="" />
+			</tools>
+		</vm>
+	</servers>	
+</lab>

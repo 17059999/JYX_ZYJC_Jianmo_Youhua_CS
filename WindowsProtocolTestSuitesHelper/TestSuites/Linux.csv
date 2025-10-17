@@ -1,0 +1,5 @@
+OS,ResourceGroup,Location,UserName,Password,VMName,Publisher,Offer,Sku,Version,Domain,Role,VMSwitch,IP,Subnet,DiskType,VMSize
+Linux,TestSuiteOnAzure,West US 2,IOLab,Password01!!,DeployLinux1,Canonical,0001-com-ubuntu-server-focal,20_04-lts,latest,workgroup,DriverComputer,TestSuiteOnAzure-vnet,10.0.1.180,default,Premium_LRS,Standard_D2ds_v4
+Linux,TestSuiteOnAzure,West US 2,IOLab,Password01!!,DeployLinux2,Canonical,0001-com-ubuntu-server-focal,20_04-lts,latest,workgroup,DriverComputer,TestSuiteOnAzure-vnet,10.0.1.185,default,Premium_LRS,Standard_D2ds_v4
+Windows,TestSuiteOnAzure,West US 2,IOLab,Password01!!,DeployWindow1,MicrosoftWindowsServer,WindowsServer,2022-datacenter,latest,workgroup,DriverComputer,TestSuiteOnAzure-vnet,10.0.1.190,default,StandardSSD_LRS,Standard_D2ds_v4
+Windows,TestSuiteOnAzure,West US 2,IOLab,Password01!!,DeployWindow2,MicrosoftWindowsServer,WindowsServer,2022-datacenter,latest,workgroup,DriverComputer,TestSuiteOnAzure-vnet,10.0.1.195,default,StandardSSD_LRS,Standard_D2ds_v4

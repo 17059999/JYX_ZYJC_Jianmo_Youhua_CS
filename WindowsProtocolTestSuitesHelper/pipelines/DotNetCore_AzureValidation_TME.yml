@@ -1,0 +1,218 @@
+# If the TestSuite artifacts are published to a destination different from 'drop', pass that destination as 'testSuiteBaseFolder'.
+# NOTE that 'drop' folder is expected to be in the 'testSuiteBaseFolder'.
+
+trigger: none 
+
+variables:
+  - group: Azure Account V3
+  - group: Build Variables
+  - group: External Repo Variables
+  - group: SMTPv2
+  - group: SMTPv3
+
+  - name: targetRepo.filter
+    value: $(test.testSuiteName)_$(test.filter)
+  - name: test.testSuiteRootFolder
+    value: $[
+        replace(
+          replace(
+            eq(variables['test.testSuiteBaseFolder'], ''),
+            True,
+            'drop'
+          ),
+          False,
+          variables['test.testSuiteBaseFolder']
+        )
+      ]
+  - name: test.testSuiteDropFolder
+    value: $[
+        replace(
+          replace(
+            eq(variables['test.testSuiteBaseFolder'], ''),
+            True,
+            'drop'
+          ),
+          False,
+          format('{0}/drop', variables['test.testSuiteBaseFolder'])
+        )
+      ]
+
+jobs:
+  - job:
+    displayName: Azure Regression
+    pool:
+      name: 'TestSuiteBuildESPoolTME-CentralUS'
+    workspace:
+      clean: all
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: self
+
+      - task: PowerShell@2
+        displayName: Download Build Artifacts
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Download-BuildArtifacts.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName $(test.testSuiteRootFolder) -downloadPath $(Build.BinariesDirectory)'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+          REMOTE_ACCESSTOKEN: $(test.remoteAccessToken)
+          REMOTE_APIURL: $(test.remoteApiUrl)
+        condition: succeeded()
+      
+      - task: ExtractFiles@1
+        inputs:
+          archiveFilePatterns: '$(Build.BinariesDirectory)/$(test.testSuiteDropFolder)/$(test.zipFileName)' 
+          destinationFolder: '$(Build.BinariesDirectory)/Extracted'
+          cleanDestinationFolder: true
+
+      - task: PowerShell@2
+        displayName: Download CommonScripts Artifacts
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Download-BuildArtifacts.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName CommonScripts -downloadPath $(Build.BinariesDirectory)'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+          REMOTE_ACCESSTOKEN: $(test.remoteAccessToken)
+          REMOTE_APIURL: $(test.remoteApiUrl)
+
+      - task: CopyFiles@2
+        displayName: 'Copy CommonScripts files To $(test.testSuiteName)/Scripts'
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/CommonScripts'
+          TargetFolder: '$(build.artifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)/Scripts'
+          OverWrite: true
+      
+      - task: CopyFiles@2
+        displayName: 'Copy CommonScripts to ScriptLib folder'
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/CommonScripts'
+          TargetFolder: '$(build.artifactStagingDirectory)/ScriptLib'
+          OverWrite: true
+
+      - template: DotNetCore_Regression_GenerateXmlTemplates.yml
+        parameters:
+          build.templatesPath: 'TestSuites\Templates\Azure'
+          build.csvPath: $(Agent.BuildDirectory)\s\TestSuites\$(targetRepo.csvFile)
+
+      - task: CopyFiles@2
+        displayName: Copy ScriptLib to ScriptLib folder
+        inputs:
+          SourceFolder: 'RegressionRunScripts\ScriptLib'
+          TargetFolder: '$(build.artifactStagingDirectory)\ScriptLib'
+          OverWrite: true
+
+      - task: CopyFiles@2
+        displayName: Copy VSTORMLITE Files
+        inputs:
+          SourceFolder: 'RegressionRunScripts\VSTORMLITE'
+          TargetFolder: '$(build.artifactStagingDirectory)\VSTORMLITE'
+          OverWrite: true
+
+      - task: CopyFiles@2
+        displayName: Copy AzureRegression Files
+        inputs:
+          SourceFolder: 'RegressionRunScripts/AzureRegression'
+          TargetFolder: '$(build.artifactStagingDirectory)\AzureRegression'
+          OverWrite: true     
+
+      - task: CopyFiles@2
+        displayName: Copy RegressionRunScripts/Common Files
+        inputs:
+          SourceFolder: 'RegressionRunScripts/Common'
+          TargetFolder: '$(build.artifactStagingDirectory)\Common'
+          OverWrite: true 
+
+      - task: CopyFiles@2
+        displayName: Copy zip to deploy folder
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/$(test.testSuiteDropFolder)'
+          Contents: '*.zip'
+          TargetFolder: '$(build.artifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)/deploy'
+
+      - task: CopyFiles@2
+        displayName: Copy Scripts for $(test.testSuiteName)
+        inputs:
+          SourceFolder: 'TestSuites/$(test.testSuiteName)/Setup'
+          TargetFolder: '$(build.artifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)'
+        condition: and(succeeded(), not(eq(variables['test.testSuiteName'], 'RDPServer')), not(eq(variables['test.testSuiteName'], 'RDPClient')))
+
+      - task: CopyFiles@2
+        displayName: Copy Scripts from $(test.testSuiteName)
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/Extracted'
+          Contents: |
+            **\Scripts\*
+          TargetFolder: '$(build.artifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)'
+
+      - task: CopyFiles@2
+        displayName: Copy xml for $(test.testSuiteName)
+        inputs:
+          SourceFolder: '$(Build.BinariesDirectory)/RegressionEnvironments/$(test.testSuiteName)'
+          TargetFolder: '$(build.artifactStagingDirectory)/ProtocolTestSuite/$(test.testSuiteName)/VSTORMLITEFiles/XML'
+          OverWrite: true
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Build Artifact'
+        inputs:
+          PathtoPublish: '$(build.artifactStagingDirectory)'
+          artifactName: 'drop'
+        condition: succeeded()
+
+      - task: PowerShell@2
+        displayName: Queue Jobs
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Queue-Validation.ps1'
+          arguments: '-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -BuildDefinitionName $(test.downstreamPipelineName) -ConfigFileFolder $(Build.BinariesDirectory)\RegressionEnvironments -Waiting true -TargetedCategoryName "$(test.targetedCategoryName)" -TargetedTestName "$(test.TargetedTestName)" -checkVMs "$(checkVMs)" -runTests "$(test.runTests)"'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+          REMOTE_ACCESSTOKEN: $(test.remoteAccessToken)
+          REMOTE_APIURL: $(test.remoteApiUrl)
+        condition: succeeded()
+      
+      - task: AzurePowerShell@4
+        displayName: 'Login'
+        inputs:
+          azureSubscription: "Protocol Test Env - TME01 MI"
+          ScriptType: 'InlineScript'
+          Inline: |
+          azurePowerShellVersion: 'LatestVersion'
+          errorActionPreference: continue
+        timeoutInMinutes: 0
+      - task: PowerShell@2
+        displayName: Send Mail
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Collect-RegressionResult.ps1'
+          arguments: '-TestSuiteName $(test.testSuiteName) -EnvType "Azure" -AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -SubscriptionId "$(azure.subscriptionId)" -SourceBuildId "$(test.buildId)" -ResultStorageAccount "$(azure.resultStorageAccount)" -FileShareResourceGroup "$(azure.fileShareResourceGroup)" -checkVMs "$(checkVMs)" -runTests "$(test.runTests)"'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          REMOTE_ACCESSTOKEN: $(test.remoteAccessToken)
+          REMOTE_APIURL: $(test.remoteApiUrl)
+          SMTP_SENDERPASSWORD: $(smtp.senderPassword)
+          SMTP_SMTPHOST: $(smtp.smtpHost)
+          SMTP_SMTPPORT: $(smtp.smtpPort)
+          SMTP_SENDERUSERNAME: $(smtp.senderUsername)
+          SENDTOTEST: $(sendToTest)
+        condition: succeeded()
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Result Artifact'
+        inputs:
+          PathtoPublish: '$(Build.Repository.LocalPath)/RegressionRunScripts/Common/TestResults'
+          artifactName: 'results'
+        condition: always()

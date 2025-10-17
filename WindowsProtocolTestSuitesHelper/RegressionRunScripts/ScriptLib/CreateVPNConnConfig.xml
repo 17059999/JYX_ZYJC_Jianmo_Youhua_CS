@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<RemoteAccessEntries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RemoteAccessEntry>
+    <Name>Connect to Work</Name>
+    <SharedProfile>true</SharedProfile>
+    <ConnectionType>VPN</ConnectionType>
+    <Negotiate_IPv4>true</Negotiate_IPv4>
+    <Negotiate_IPv6>true</Negotiate_IPv6>
+    <VpnStrategy>PPTPOnly</VpnStrategy>
+    <EncryptionType>RequireEncryption</EncryptionType>
+    <RouteIPv4TrafficOverRAS>true</RouteIPv4TrafficOverRAS>
+    <RouteIPv6TrafficOverRAS>true</RouteIPv6TrafficOverRAS>
+    <ShowUsernamePassword>true</ShowUsernamePassword>
+    <ShowDomain>true</ShowDomain>
+    <ShowDialProgressBar>true</ShowDialProgressBar>
+    <PreviewDestination>true</PreviewDestination>
+    <RequireCHAP>true</RequireCHAP>
+    <RequireMSCHAPv2>true</RequireMSCHAPv2>
+    <RequireEAP>false</RequireEAP>
+    <RequireEncryptedPassword>true</RequireEncryptedPassword>
+    <RequireMsEncryptedPassword>true</RequireMsEncryptedPassword>
+    <DontCacheRASCredentialsInCredman>false</DontCacheRASCredentialsInCredman>
+    <ReconnectIfDropped>true</ReconnectIfDropped>
+    <ProxySettings>
+      <UseManualProxy>true</UseManualProxy>
+      <ManualProxyServer>companyproxy</ManualProxyServer>
+      <ByPassProxyForLocal>false</ByPassProxyForLocal>
+    </ProxySettings>
+    <Destination>
+      <DestinationAddress>172.22.51.174</DestinationAddress>
+    </Destination>
+    <Destination>
+      <DestinationAddress>vpn.contoso.com</DestinationAddress>
+    </Destination>
+  </RemoteAccessEntry>
+ </RemoteAccessEntries>

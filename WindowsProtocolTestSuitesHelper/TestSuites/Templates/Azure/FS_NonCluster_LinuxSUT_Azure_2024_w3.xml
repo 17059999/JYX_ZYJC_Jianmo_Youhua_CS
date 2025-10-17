@@ -1,0 +1,70 @@
+<lab>
+	<core>
+		<username>IOLab</username>
+		<password></password>
+		<TestSuiteName>FileServer_DotNetCore_Standard_LinuxSUT</TestSuiteName>
+		<regressiontype>Azure</regressiontype>
+		<timeoutinminutes>270</timeoutinminutes>
+	</core>
+	<vmsetting>
+		<location>westus2</location>
+		<networkId>TestSuiteOnAzure-vnet</networkId>
+		<subnetName>default</subnetName>
+		<resourceGroup>TestSuiteOnAzure</resourceGroup>
+		<diskType>Premium_LRS</diskType>
+		<fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+		<genevaAccountRegion>westus2</genevaAccountRegion>
+	</vmsetting>
+	<Parameters>
+		<Parameter Name="TestCaseScript" Value="Execute-TestCaseByContext.ps1" Comment="Which test case to run." />
+		<Parameter Name="TestCaseTimeout" Value="28800" Comment="Test case time out in seconds." />
+		<Parameter Name="ContextName" Value="Samba_Domain_SMB30" Comment="" />
+		<Parameter Name="TestDirInVM" Value="C:\Test" Comment="" />
+	</Parameters>
+	<servers>
+		<vm>
+			<os>Linux</os>
+			<installorder>1</installorder>
+			<role>NODE01</role>
+			<vmSize>Standard_DS2_v2_Promo</vmSize>
+			<imageReference>
+				<publisher>Canonical</publisher>
+				<offer>0001-com-ubuntu-server-jammy</offer>
+				<sku>22_04-lts</sku>
+				<version>latest</version>
+			</imageReference>
+			<name>FS-SRV</name>
+			<domain></domain>
+			<ip>10.0.1.72</ip>
+			<ip>10.0.1.73</ip>
+			<dns>10.0.1.71</dns>
+			<installscript>InstallToolsOnLinux.ps1</installscript>
+			<installfeaturescript>RestartComputer.PS1</installfeaturescript>
+			<postscript>Configure-DCToLinux.ps1;Configure-SambaToLinux.ps1</postscript>
+			<skipwaitingforpostscript>false</skipwaitingforpostscript>
+		</vm>
+		<vm>
+			<installorder>2</installorder>
+			<role>DriverComputer</role>
+			<vmSize>Standard_DS2_v2_Promo</vmSize>
+			<imageReference>
+				<imageRefId>Win101803_VS2017</imageRefId>
+			</imageReference>
+			<name>FS-CLI</name>
+			<domain></domain>
+			<ip>10.0.1.74</ip>
+			<ip>10.0.1.75</ip>
+			<dns>10.0.1.71</dns>
+			<installscript>UpdateRouteForMultiNics.ps1;InstallMSIAndTools.ps1;Write-InstallScriptDoneSignal.ps1;RestartComputer.PS1</installscript>
+			<postscript>PostConfig-Driver.ps1;Config-RSAKeys.ps1</postscript>
+			<tools>
+				<tool name="DotNetCore" EXEName="dotnet-sdk-latest.exe" version="latest" CPUArchitecture="x64" ArgumentList="/quiet"/>
+				<tool name="Win32-OpenSSH" ZipName="OpenSSH-Win64.zip" version="v9.2.2.0p1-Beta" CPUArchitecture="x64" targetFolder="c:\" />
+				<tool name="Win32-OpenSSH-Certs" ZipName="win_ssh_keys.zip" targetFolder="c:\OpenSSH-Win64" installScript="install.ps1" />
+				<tool name="PowerShellCore" MSIName="PowerShellCore.msi" version="7.4.6" CPUArchitecture="x64" />
+				<tool name="certs" ZipName="id_rsa.zip" targetFolder="C:\id_rsa\.ssh" />
+				<TestsuiteZip ZipName="FileServer-TestSuite-ServerEP.zip" targetFolder="c:\FileServer-TestSuite-ServerEP"/>
+			</tools>
+		</vm>
+	</servers>
+</lab>

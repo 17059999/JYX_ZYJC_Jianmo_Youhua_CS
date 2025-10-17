@@ -1,0 +1,8 @@
+[Components]
+msmq=on
+msmq_Common=on
+msmq_Core=on
+msmq_TriggersService=on
+msmq_HTTPSupport=on
+msmq_LocalStorage=on
+msmq_ADIntegrated=on

@@ -1,0 +1,140 @@
+variables:
+  - group: Azure Account V3
+  - group: Build Variables
+  - group: SMTPv2
+  - group: Regression on Linux
+
+jobs:
+  - job:
+    displayName: Run regression
+    pool:
+      name: TestSuiteHostPool
+      demands:
+        - SMBD -equals $(test.OperatingSystem)
+
+    workspace:
+      clean: all
+    timeoutInMinutes: 0
+    steps:
+      - checkout: self
+
+      - task: PowerShell@2
+        displayName: "Wait for the Completion of Previous Builds"
+        inputs:
+          targetType: filePath
+          filePath: "RegressionRunScripts/Common/WaitPipeline.ps1"
+          arguments: "-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -PipelineId $(System.DefinitionId) -BuildId $(Build.BuildId)"
+          workingDirectory: "RegressionRunScripts/Common"
+
+      - task: PowerShell@2
+        displayName: Download Build Artifacts
+        inputs:
+          filePath: "RegressionRunScripts/Common/Download-BuildArtifacts.ps1"
+          arguments: "-AccessToken $(System.AccessToken) -ApiUrl $(build.apiUrl) -ArtifactName drop -DownloadPath $(Build.BinariesDirectory)"
+          workingDirectory: "RegressionRunScripts/Common"
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          SPECIFIC_BUILDID: $(test.buildId)
+        condition: succeeded()
+
+      - task: PowerShell@2
+        displayName: "Copy Environment Configurations"
+        inputs:
+          targetType: inline
+          script: |
+            Copy-Item -Path "$(Build.Repository.LocalPath)/TestSuites/MS-SMBD/Setup/Environments" -Destination "$(Build.BinariesDirectory)/drop" -Recurse
+        condition: succeeded()
+      
+      - task: PowerShell@2
+        displayName: "Run Regression"
+        inputs:
+          targetType: "inline"
+          script: |
+            $testResultsFolder = "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/TestResults/$(Build.BuildId)"
+            Write-Host "##vso[task.setvariable variable=test.testResultsFolder]$testResultsFolder"
+            New-Item $testResultsFolder -ItemType Directory
+            [System.DateTime]::UtcNow.ToString("MM/dd/yyyy HH:mm:ss") | Out-File "$testResultsFolder/StartTime.txt" -Encoding UTF8 -Force
+            $azureParams = @{
+              ApplicationId          = "$(azure.applicationId)"
+              ThumbPrint             = "$(azure.thumbPrint)"
+              TenantId               = "$(azure.tenantId)"
+              FileShareResourceGroup = "$(azure.fileShareResourceGroup)"
+              ResultStorageAccount   = "$(azure.resultStorageAccount)"
+            }
+
+            if("$(test.card)" -eq "Chelsio")
+            {
+                $(Build.Repository.LocalPath)/TestSuites/MS-SMBD/Setup/Scripts/Execute-ProtocolTest.ps1 -AzureParams $azureParams -SharedPath $(Build.BinariesDirectory)/drop -MachineName "$(test.driverComputerName)" -EnvironmentName Chelsio -TestResultsPath $testResultsFolder -TestSuiteName "$(test.testSuiteName)" -ZipName "$(test.zipFileName)" -UserName "$(test.userName)" -OperatingSystem "$(test.operatingSystem)"
+            }
+            if("$(test.card)" -eq "Mellanox")
+            {
+                $(Build.Repository.LocalPath)/TestSuites/MS-SMBD/Setup/Scripts/Execute-ProtocolTest.ps1 -AzureParams $azureParams -SharedPath $(Build.BinariesDirectory)/drop -MachineName "$(test.driverComputerName)" -EnvironmentName Mellanox -TestResultsPath $testResultsFolder -TestSuiteName "$(test.testSuiteName)" -ZipName "$(test.zipFileName)" -UserName "$(test.userName)" -OperatingSystem "$(test.operatingSystem)"
+            }
+
+          errorActionPreference: continue
+
+      - task: PowerShell@2
+        displayName: "Generate Regression Info"
+        inputs:
+          targetType: "inline"
+          script: |
+            Import-Module "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/DevOpsLib.psm1"
+            $buildInfo = Get-BuildInfoByBuildId -ApiUrl "$(build.apiUrl)" -AccessToken "$(System.AccessToken)" -BuildId $(Build.BuildId)
+
+            $Global:StartTime = Get-Content "$(test.testResultsFolder)/StartTime.txt"
+            Push-Location "RegressionRunScripts/ScriptLib"
+            ./Generate-RegressionInfo.ps1 -logFilePath "$(test.testResultsFolder)" -configFile "MS-SMBD" -EnvironmentName "MS-SMBD_RS1" -blobContainerName "$(test.blobContainerName)"
+            Pop-Location
+
+            $jsonFile = Get-ChildItem "$(test.testResultsFolder)" -Filter "*.json" | Select-Object -First 1
+            $resultInfo = (Get-Content $jsonFile.FullName) | ConvertFrom-Json
+            $resultInfo.jobUrl = $buildInfo._links.web.href
+            $resultInfo | ConvertTo-Json | Out-File $jsonFile.FullName -Encoding UTF8 -Force
+          errorActionPreference: continue
+
+      - task: AzurePowerShell@4
+        displayName: 'Login'
+        condition: ne(variables['test.OperatingSystem'], 'Linux')
+        inputs:
+          azureSubscription: "Protocol Test Env - TME01 MI"
+          ScriptType: 'InlineScript'
+          Inline: |
+          azurePowerShellVersion: 'LatestVersion'
+          errorActionPreference: continue
+        timeoutInMinutes: 0
+
+      - task: PowerShell@2
+        displayName: Send Mail
+        inputs:
+          filePath: 'RegressionRunScripts/Common/Collect-RegressionResult.ps1'
+          arguments: '-TestSuiteName $(test.testSuiteName) -EnvType "Azure" -AccessToken "$(System.AccessToken)" -ApiUrl "$(build.apiUrl)" -SubscriptionId "$(azure.subscriptionId)" -SourceBuildId "$(test.buildId)" -ResultStorageAccount "$(azure.resultStorageAccount)" -FileShareResourceGroup "$(azure.fileShareResourceGroup)" -checkVMs "false"'
+          workingDirectory: 'RegressionRunScripts/Common'
+        timeoutInMinutes: 0
+        enabled: true
+        env:
+          BUILD_BUILDID: $(Build.BuildId)
+          REMOTE_ACCESSTOKEN: $(test.remoteAccessToken)
+          REMOTE_APIURL: $(test.remoteApiUrl)
+          SMTP_SENDERPASSWORD: $(smtp.senderPassword)
+          SMTP_SMTPHOST: $(smtp.smtpHost)
+          SMTP_SMTPPORT: $(smtp.smtpPort)
+          SMTP_SENDERUSERNAME: $(smtp.senderUsername)
+          SMTP_SENDTO: $(smtp.sendTo)
+        condition: and(ne(variables['test.OperatingSystem'], 'Linux'), succeeded())
+
+      - task: PublishTestResults@2
+        displayName: "Publish Trx files"
+        inputs:
+          testResultsFormat: VSTest
+          testResultsFiles: "**/*.trx"
+          searchFolder: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/TestResults"
+        timeoutInMinutes: 0
+        condition: always()
+
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish Result Artifact"
+        inputs:
+          PathtoPublish: "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/TestResults"
+          artifactName: "results"
+        timeoutInMinutes: 0
+        condition: always()

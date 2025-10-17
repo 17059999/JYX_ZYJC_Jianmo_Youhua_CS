@@ -1,0 +1,34 @@
+trigger: none
+
+variables:
+  - group: Build Variables
+
+jobs:
+  - job:
+    displayName: Trigger Security Checks
+    pool:
+      vmImage: windows-2022
+    workspace:
+      clean: true
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: self
+
+      - task: PowerShell@2
+        displayName: "Trigger all security checks pipelines"
+        inputs:
+          targetType: "inline"
+          script: |
+            Import-Module "$(Build.Repository.LocalPath)/RegressionRunScripts/Common/DevOpsLib.psm1"
+
+            $definitions = Get-PipelineDefinitions -ApiUrl "$(build.apiUrl)" -AccessToken "$(System.AccessToken)"
+            $securityChecksPipelines = $definitions.value | Where-Object {
+                ($_.path -match "S360 Security Checks") -and ($_.id -ne $(System.DefinitionId))
+            }
+
+            foreach ($pipeline in $securityChecksPipelines) {
+                $buildId = Trigger-Build -ApiUrl "$(build.apiUrl)" -AccessToken "$(System.AccessToken)" -CurrBuildId $(Build.BuildId) -PipelineId $pipeline.id
+                Write-Host "Triggered a new build with build ID $buildId of pipeline `"$($pipeline.name)`""
+            }
+          errorActionPreference: continue

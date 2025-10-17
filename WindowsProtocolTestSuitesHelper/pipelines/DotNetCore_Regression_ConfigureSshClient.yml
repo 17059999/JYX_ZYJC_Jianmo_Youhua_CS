@@ -1,0 +1,29 @@
+steps:
+  - task: DownloadSecureFile@1
+    displayName: "Download SSH client config"
+    name: sshClientConfig
+    inputs:
+      secureFile: "SshClientConfig.zip"
+
+  - task: PowerShell@2
+    displayName: "Config SSH client"
+    inputs:
+      targetType: "inline"
+      script: |
+        $sourcePath = "$(sshClientConfig.secureFilePath)"
+        $stagingPath = "$(Build.ArtifactStagingDirectory)\SshClientConfig"
+
+        Expand-Archive -Path $sourcePath -DestinationPath $stagingPath -Force
+        $sshConfigPath = "$($env:USERPROFILE)\.ssh"
+        if (Test-Path $sshConfigPath) {
+          Remove-Item $sshConfigPath -Recurse -Force
+        }
+        mkdir $sshConfigPath -Force
+        Copy-Item "$stagingPath\*" $sshConfigPath -Recurse -Force
+
+  - task: PowerShell@2
+    displayName: "Print SSH client version info"
+    inputs:
+      targetType: "inline"
+      script: |
+        ssh -V

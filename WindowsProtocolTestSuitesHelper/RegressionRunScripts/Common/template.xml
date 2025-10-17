@@ -1,0 +1,173 @@
+<lab>
+    <core>
+        <username>IOLab</username>
+        <password>Password01!</password>
+        <!-- Below are all avaliable choices for environment -->
+        <!-- Azure -->
+        <!-- Local	 -->
+        <regressiontype>Azure</regressiontype>
+    </core>
+    <vmsetting>
+        <!-- Below are all avaliable choices for location, we're using West US 2 -->
+        <!-- East Asia -->
+        <!-- Australia East	 -->
+        <!-- Australia Central -->
+        <!-- Brazil South -->
+        <!-- Canada Central -->
+        <!-- China North -->
+        <!-- China North 2 -->
+        <!-- North Europe -->
+        <!-- France Central -->
+        <!-- Germany Central -->
+        <!-- Central India -->
+        <!-- West India -->
+        <!-- Japan East -->
+        <!-- Korea Central -->
+        <!-- East US -->
+        <!-- East US 2 -->
+        <!-- North Central US -->
+        <!-- West US 2 -->
+        <!-- UK West -->
+        <!-- US DoD East -->
+        <!-- US Gov Arizona -->
+        <!-- US Gov Iowa -->
+        <!-- US Gov Virginia -->
+        <location>westus2</location>
+        <!-- NetworkId/SubnetName should in same Resource Group as configured in node resourceGroup -->
+        <networkId>TestSuiteOnAzure-vnet</networkId>
+        <subnetName>default</subnetName>
+        <resourceGroup>TestSuiteOnAzure</resourceGroup>
+        <!-- Below are all avaliable choices for diskType, we're using Premium_LRS by default       -->
+        <!-- Name	        Supported Account Kinds	    Description                                 -->
+        <!-- Standard_LRS	Storage, BlobStorage	    Standard Locally Redundant Storage          -->
+        <!-- Standard_GRS	Storage, BlobStorage	    Standard Geo Replicated Storage             -->
+        <!-- Standard_RAGRS	Storage, BlobStorage	    Standard Read-Access Geo Replicated Storage -->
+        <!-- Standard_ZRS	Storage	                    Standard Zone Redundant Storage             -->
+        <!-- Premium_LRS	Storage	                    Provisioned IO Locally Redundant Storage    -->
+        <diskType>Premium_LRS</diskType>
+        <!-- Below are all avaliable choices for vmSize, we're using Standard_DS1_v2 by default     -->
+        <!-- Size(vmSize)        vCPU	Memory(GB)	Local SSD(GB)	Max NICs                        -->
+        <!-- Standard_B1s	    1	    1	        4	            2                               -->
+        <!-- Standard_B1ms	    1	    2	        4	            2                               -->
+        <!-- Standard_B2s	    2	    4	        8	            3                               -->
+        <!-- Standard_B2ms	    2	    8	        16	            3                               -->
+        <!-- Standard_B4ms	    4	    16	        32	            4                               -->
+        <!-- Standard_B8ms	    8	    32	        64	            4                               -->
+        <!-- Standard_D2s_v3	2	    8	        16	            2                               -->
+        <!-- Standard_D4s_v3	4	    16	        32	            2                               -->
+        <!-- Standard_D8s_v3	8	    32	        64	            4                               -->
+        <!-- Standard_D16s_v3	16	    64	        128	            8                               -->
+        <!-- Standard_D32s_v3	32	    128	        256	            8                               -->
+        <!-- Standard_D64s_v3	64	    256	        512	            8                               -->
+        <!-- Standard_D2_v3	    2	    8	        50	            2                               -->
+        <!-- Standard_D4_v3	    4	    16	        100	            2                               -->
+        <!-- Standard_D8_v3	    8	    32	        200	            4                               -->
+        <!-- Standard_D16_v3	16	    64	        400	            8                               -->
+        <!-- Standard_D32_v3	32	    128	        800	            8                               -->
+        <!-- Standard_D64_v3	64	    256	        1600	        8                               -->
+        <!-- Standard_DS1_v2	1	    3.5	        7	            2                               -->
+        <!-- Standard_DS2_v2	2	    7	        14	            2                               -->
+        <!-- Standard_DS3_v2	4	    14	        28	            4                               -->
+        <!-- Standard_DS4_v2	8	    28	        56	            8                               -->
+        <!-- Standard_DS5_v2	16	    56	        112	            8                               -->
+        <!-- Standard_D1_v2	    1	    3.5	        50	            2                               -->
+        <!-- Standard_D2_v2	    2	    7	        100	            2                               -->
+        <!-- Standard_D3_v2	    4	    14	        200	            4                               -->
+        <!-- Standard_D4_v2	    8	    28	        400	            8                               -->
+        <!-- Standard_D5_v2	    16	    56	        800	            8                               -->
+        <!-- Standard_A1_v2	    1	    2	        10	            2                               -->
+        <!-- Standard_A2_v2	    2	    4	        20	            2                               -->
+        <!-- Standard_A4_v2	    4	    8	        40	            4                               -->
+        <!-- Standard_A8_v2	    8	    16	        80	            8                               -->
+        <!-- Standard_A2m_v2	2	    16	        20	            2                               -->
+        <!-- Standard_A4m_v2	4	    32	        40	            4                               -->
+        <!-- Standard_A8m_v2	8	    64	        80	            8                               -->
+        <!-- Standard_DC2s	    2	    8	        100	            2                               -->
+        <!-- Standard_DC4s	    4	    16	        200	            2                               -->
+        <vmSize>Standard_DS1_v2</vmSize>
+        <!-- You can open form Azure portal: Home->Storage accounts->testsuiteshare->Files->protocoltestsuiteshare -->
+        <fileShareRoot>https://testsuiteshare.file.core.windows.net/protocoltestsuiteshare</fileShareRoot>
+        <genevaAccountRegion>westus2</genevaAccountRegion>
+    </vmsetting>
+    <Parameters>
+        <Parameter Name="TestCaseScript" Value="Execute-TestCaseByContext.ps1" Comment="Which test case to run." />
+        <Parameter Name="TestCaseTimeout" Value="28800" Comment="Test case time out in seconds." />
+        <Parameter Name="ContextName" Value="Win2016_Domain_NonCluster_SMB311" Comment="" />
+        <Parameter Name="TestDirInVM" Value="C:\Test" Comment="" />
+    </Parameters>
+    <servers>
+        <vm>
+            <role>NODE01</role>
+            <installorder>1</installorder>
+            <!-- if you're using your customized VHD, please refer to DriverComputer-->
+            <imageReference>
+                <!-- publisher                  offer           sku                                 -->
+                <!-- MicrosoftWindowsDesktop    Windows-10      RS5-Pro                             -->
+                <!-- MicrosoftWindowsDesktop    Windows-10      rs4-pro                             -->
+                <!-- MicrosoftWindowsDesktop    Windows-10      RS3-Pro                             -->
+                <!-- MicrosoftWindowsDesktop    Windows-10      RS2-Pro                             -->
+                
+                <!-- MicrosoftWindowsServer     WindowsServer   2016-Datacenter                     -->
+                <!-- MicrosoftWindowsServer     WindowsServer   2016-Datacenter-Server-Core         -->
+                <!-- MicrosoftWindowsServer     WindowsServer   2016-Datacenter-with-Containers     -->
+                <!-- MicrosoftWindowsServer     WindowsServer   2012-R2-Datacenter                  -->
+                <!-- MicrosoftWindowsServer     WindowsServer   2012-Datacenter                     -->
+                <!-- MicrosoftWindowsServer     WindowsServer   2008-R2-SP1                         -->
+
+                <!-- MicrosoftWindowsServer     WindowsServer   2019-Datacenter                     -->
+                <!-- MicrosoftWindowsServer     WindowsServer   2019-Datacenter-Core                -->
+
+                <!-- MicrosoftVisualStudio      VisualStudio    VS-2017-Comm-Latest-WS2016          -->
+                <!-- MicrosoftVisualStudio      VisualStudio    VS-2017-Ent-Latest-WS2016           -->
+                <!-- MicrosoftVisualStudio      VisualStudio    VS-2017-Comm-Latest-WS2016          -->
+
+                <!-- One way to find an image in a location is to run the Get-AzureRMVMImagePublisher, Get-AzureRMVMImageOffer, and Get-AzureRMVMImageSku -->
+                <!-- https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-image-gallery -->
+                <publisher>MicrosoftWindowsServer</publisher>
+                <offer>WindowsServer</offer>
+                <sku>2016-Datacenter</sku>
+                <!-- always latest -->
+                <version>latest</version>
+            </imageReference>
+            <name>SMB2-SRV01</name>
+            <domain>SNIA-12R2.org</domain>
+            <ip>10.0.1.61</ip>
+            <ip>10.0.1.62</ip>
+            <dns>10.0.1.60</dns>
+            <!-- make sure write a signal file after installscript/installfeaturescript/postscript/configscript completed -->
+            <!-- NodeName               SignalName                              -->
+            <!-- installscript          Install.Completed.signal                -->
+            <!-- installfeaturescript   InstallFeatureScript.Completed.signal   -->
+            <!-- postscript             PostScript.Completed.signal             -->
+            <!-- configscript           ConfigScript.Completed.signal           -->
+            <installfeaturescript>Install-WindowsFeature.ps1;Write-InstallFeatureScirptDone.ps1;RestartComputer.PS1</installfeaturescript>
+            <postscript>PostConfig-STDNode01.ps1</postscript>
+        </vm>
+
+        <vm>
+            <role>DriverComputer</role>
+            <installorder>5</installorder>
+            <!-- if you're using Azure provider VHD, please refer to NODE01-->
+            <imageReference>
+                <!-- Image file under Current ResourceGroup, currently we have two images under TestSuiteOnAzure resourcegroup as below:-->
+                <!-- Win101803_VS2017       -->
+                <!-- Server2016_1803_VS2017 -->
+                <imageRefId>Win101803_VS2017</imageRefId>
+            </imageReference>
+            <name>SMB2-CLI01</name>
+            <domain>SNIA-12R2.org</domain>
+            <ip>10.0.1.63</ip>
+            <ip>10.0.1.64</ip>
+            <dns>10.0.1.60</dns>
+            <installscript>InstallMSIAndTools.ps1;Write-InstallScriptDoneSignal.ps1;RestartComputer.PS1</installscript>
+            <postscript>PostConfig-STDDriver.ps1</postscript>
+            <tools>
+                <tool name="MMA" MSIName="MessageAnalyzer64.msi" version="4.0.8112.0" CPUArchitecture="x64" />
+                <tool name="SE" MSIName="SpecExplorer.msi" version="3.5.3146.0" CPUArchitecture="x86" />
+                <tool name="PTF" MSIName="ProtocolTestFrameworkInstaller.msi" version="1.0.7500.0" CPUArchitecture="x86" />
+                <tool name="PTM" MSIName="ProtocolTestManager.msi" version="2.0.66.0" />
+                <TestsuiteMSI MSIName="FileServer-TestSuite-ServerEP.msi" targetEndpoint="" />
+            </tools>      
+        </vm>
+    </servers>
+</lab>

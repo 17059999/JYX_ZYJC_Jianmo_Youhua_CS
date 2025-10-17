@@ -1,0 +1,74 @@
+trigger: none 
+
+variables:
+  - group: Azure Account
+  - group: Build Variables
+  - group: External Repo Variables
+  
+jobs:
+  - job:
+    displayName: ManualRun scripts
+    pool:
+      vmImage: 'windows-latest'
+    workspace:
+      clean: false
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: self
+
+      - checkout: git://WindowsProtocolTestSuites/WindowsProtocolTestSuites@$(targetRepo.branch)
+
+      - task: CopyFiles@2
+        displayName: 'Copy TestSuite'
+        inputs:
+          SourceFolder: '$(Agent.BuildDirectory)\s\WindowsProtocolTestSuites\TestSuites'
+          Contents: |
+           **\Setup\**
+          TargetFolder: '$(Build.StagingDirectory)\TestSuites'
+          CleanTargetFolder: true
+      
+      - task: CopyFiles@2
+        displayName: 'Copy CommonScripts in TestSuite'
+        inputs:
+          SourceFolder: '$(Agent.BuildDirectory)\s\WindowsProtocolTestSuites\CommonScripts'
+          TargetFolder: '$(Build.StagingDirectory)\CommonScripts'
+          CleanTargetFolder: true
+
+      - task: CopyFiles@2
+        displayName: 'Copy WindowsProtocolTestSuitesHelper files'
+        inputs:
+          Contents:  |
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\AzureScripts\**
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\ManualRunScripts\**
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\CommonScript\**
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\RegressionRunScripts\**
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\TestSuites\**
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\!TestSuites\Templates\**
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\!TestSuites\*
+            $(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\*.ps1
+          TargetFolder: '$(Build.StagingDirectory)'
+
+      - task: AzureCLI@2
+        displayName: 'Download ConfigureGenerator tool'
+        inputs:
+          azureSubscription: 'Core-ENS-GRC-Shanghai (43ceac48-878b-45c7-9a98-4bdca5a11f25)'
+          scriptType: ps
+          scriptLocation: inlineScript
+          inlineScript: |
+            New-Item -ItemType Directory $(Build.StagingDirectory)\WindowsProtocolTestSuitesHelper\AzureScripts\ConfigureGenerator
+            az storage file download-batch --connection-string '$(azure.storageConnectString)' --destination $(Build.StagingDirectory)\WindowsProtocolTestSuitesHelper\AzureScripts\ConfigureGenerator --source protocoltestsuiteshare/ToolShare/ConfigureGenerator
+
+      - task: CopyFiles@2
+        displayName: 'Copy Templates files'
+        inputs:
+          SourceFolder: '$(Agent.BuildDirectory)\s\WindowsProtocolTestSuitesHelper\TestSuites\Templates\Events'
+          TargetFolder: '$(Build.StagingDirectory)/WindowsProtocolTestSuitesHelper/AzureScripts/ConfigureGenerator/XmlTemplates'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Scripts'
+        inputs:
+          PathtoPublish: '$(Build.StagingDirectory)'
+          timeoutInMinutes: 0
+          condition: always()
+      

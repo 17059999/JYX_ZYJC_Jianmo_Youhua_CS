@@ -1,0 +1,41 @@
+;SetupMgrTag
+[Unattended]
+    OemSkipEula=Yes
+    InstallFilesPath=C:\sysprep\i386
+
+[GuiUnattended]
+    AdminPassword="Password01!"
+    EncryptedAdminPassword=NO
+    AutoLogon=Yes
+    AutoLogonCount=6
+    OEMSkipRegional=1
+    TimeZone=4
+    OemSkipWelcome=1
+
+[UserData]
+    ProductKey=CBVKQ-XJ3M4-GWVK7-HDMM2-3K4W6
+    FullName="Yang"
+    OrgName="MS"
+    ComputerName=SUT04
+
+[LicenseFilePrintData]
+    AutoMode=PerServer
+    AutoUsers=9
+
+[TapiLocation]
+    CountryCode=1
+
+[RegionalSettings]
+    LanguageGroup=1
+    Language=00000409
+
+[SetupMgr]
+    DistFolder=C:\sysprep\i386
+    DistShare=windist
+
+[Identification]
+    JoinWorkgroup=WORKGROUP
+
+[Networking]
+    InstallDefaultComponents=Yes
+

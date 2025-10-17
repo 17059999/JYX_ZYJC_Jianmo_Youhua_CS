@@ -1,0 +1,61 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+FileServer,FileServer_Standard_Azure_Event1,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA01-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA01-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.40,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.41,VMSubnet,,192.168.142.251
+,,,,,,,,FA01-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA01-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.42,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.43,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event2,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA02-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA02-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.44,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.45,VMSubnet,,192.168.142.251
+,,,,,,,,FA02-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA02-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.46,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.47,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event3,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA03-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA03-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.48,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.49,VMSubnet,,192.168.142.251
+,,,,,,,,FA03-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA03-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.50,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.51,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event4,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA04-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA04-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.52,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.53,VMSubnet,,192.168.142.251
+,,,,,,,,FA04-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA04-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.54,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.55,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event5,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA05-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA05-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.56,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.57,VMSubnet,,192.168.142.251
+,,,,,,,,FA05-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA05-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.58,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.59,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event6,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA06-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA06-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.60,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.61,VMSubnet,,192.168.142.251
+,,,,,,,,FA06-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA06-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.62,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.63,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event7,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA07-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA07-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.64,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.65,VMSubnet,,192.168.142.251
+,,,,,,,,FA07-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA07-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.66,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.67,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event8,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA08-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA08-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.68,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.69,VMSubnet,,192.168.142.251
+,,,,,,,,FA08-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA08-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.70,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.71,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event9,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA09-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA09-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.72,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.73,VMSubnet,,192.168.142.251
+,,,,,,,,FA09-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA09-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.74,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.75,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event10,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_WinDriver_Azure.xml,IOLab/Password01!!,FA10-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA10-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.76,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.77,VMSubnet,,192.168.142.251
+,,,,,,,,FA10-CLI,Windows11_InsiderPreview_Client_x64_en-us_22598_a_event,FA10-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.78,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.79,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event11,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA11-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA11-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.80,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.81,VMSubnet,,192.168.142.251
+,,,,,,,,FA11-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA11-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.82,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.83,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event12,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA12-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA12-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.84,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.85,VMSubnet,,192.168.142.251
+,,,,,,,,FA12-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA12-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.86,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.87,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event13,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA13-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA13-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.88,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.89,VMSubnet,,192.168.142.251
+,,,,,,,,FA13-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA13-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.90,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.91,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event14,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA14-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA14-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.92,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.93,VMSubnet,,192.168.142.251
+,,,,,,,,FA14-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA14-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.94,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.95,VMSubnet,,192.168.142.251
+FileServer,FileServer_Standard_Azure_Event15,Azure,Win2022_Domain_NonCluster_SMB311,SNIA-EMEA2022,West Europe,FS_STD_NoDC_WinSUT_LinuxDriver_Azure.xml,IOLab/Password01!!,FA15-SRV,microsoftwindowsserver;microsoftserveroperatingsystems-previews;windows-server-vnext-azure-edition;latest,FA15-SRV,SNIA2022-EMEA.org ,NODE01,,,,SNIA-EMEA2022-vnet,,192.168.142.96,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.97,VMSubnet,,192.168.142.251
+,,,,,,,,FA15-CLI,Canonical;0001-com-ubuntu-server-focal;20_04-lts;latest,FA15-CLI,SNIA2022-EMEA.org ,DriverComputer,,,,SNIA-EMEA2022-vnet,,192.168.142.98,VMSubnet,,192.168.142.251
+,,,,,,,,,,,,,,,,SNIA-EMEA2022-vnet,,192.168.142.99,VMSubnet,,192.168.142.251

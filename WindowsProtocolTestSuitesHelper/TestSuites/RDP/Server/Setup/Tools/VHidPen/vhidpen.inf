@@ -1,0 +1,124 @@
+; VHidPen.INF
+; Copyright (c) 2000-2006 Microsoft Corporation
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=HIDClass
+ClassGuid={745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Provider=%MSFT%
+CatalogFile=vhidpen.cat
+DriverVer=09/13/2006,6.0.5723.0
+
+[SourceDisksNames.x86]
+99 = %DISK_NAME%,,,
+
+[SourceDisksNames.amd64]
+99 = %DISK_NAME%,,,
+
+[SourceDisksNames.ia64]
+99 = %DISK_NAME%,,,
+
+[SourceDisksNames.arm]
+99 = %DISK_NAME%,,,
+
+[SourceDisksFiles]
+vhidpen.sys = 99
+
+[ControlFlags]
+ExcludeFromSelect=HID\VirtualHidTabletDevice
+
+[DestinationDirs]
+VHidPenInst.NT.CopySYS      =12     ;LDID_DRIVERS
+
+[Manufacturer]
+%MSFT%=MS, NTx86, NTamd64, NTia64, NTarm
+
+; For Win2K
+[MS]
+%VHidPen.DeviceDesc%        =VHidPenInst,HID\VirtualHidTablet
+%HidPen.DeviceDesc%         =HidPenInst,HID\VirtualHidTabletDevice
+
+; For XP and later 32bit (x86)
+[MS.NTx86]
+%VHidPen.DeviceDesc%        =VHidPenInst,HID\VirtualHidTablet
+%HidPen.DeviceDesc%         =HidPenInst,HID\VirtualHidTabletDevice
+
+; For XP and later amd64
+[MS.NTamd64]
+%VHidPen.DeviceDesc%        =VHidPenInst,HID\VirtualHidTablet
+%HidPen.DeviceDesc%         =HidPenInst,HID\VirtualHidTabletDevice
+
+; For XP and later ia64
+[MS.NTia64]
+%VHidPen.DeviceDesc%        =VHidPenInst,HID\VirtualHidTablet
+%HidPen.DeviceDesc%         =HidPenInst,HID\VirtualHidTabletDevice
+
+; For XP and later arm
+[MS.NTarm]
+%VHidPen.DeviceDesc%        =VHidPenInst,HID\VirtualHidTablet
+%HidPen.DeviceDesc%         =HidPenInst,HID\VirtualHidTabletDevice
+
+; -------------- VHIDPen Driver install section
+[VHidPenInst.NT]
+CopyFiles                   =VHidPenInst.NT.CopySYS
+
+[VHidPenInst.NT.HW]
+AddReg                      =VHidPenInst.AddReg
+
+[VHidPenInst.NT.Services]
+AddService                  =VHidPen,0x00000002,VHidPenServiceInst,VHidPenEventLogInst
+
+[VHidPenEventLogInst]
+AddReg                      =VHidPenEventLogAddReg
+
+[VHidPenInst.NT.CopySYS]
+vhidpen.sys
+
+[VHidPenEventLogAddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\vhidpen.sys"
+HKR,,TypesSupported,0x00010001,7
+
+[VHidPenInst.AddReg]
+
+[VHidPenServiceInst]
+DisplayName    = %VHidPen.SVCDESC%
+ServiceType    = %SERVICE_KERNEL_DRIVER% 
+StartType      = %SERVICE_DEMAND_START% 
+ErrorControl   = %SERVICE_ERROR_NORMAL% 
+ServiceBinary  = %12%\vhidpen.sys
+LoadOrderGroup = Extended Base
+
+; -------------- HID Pen Driver install section
+[HidPenInst.NT]
+
+[HidPenInst.NT.Services]
+AddService                  = ,0x00000002,       ;NULL service
+
+; User readable strings
+;----------------------------------------------------------
+[Strings]
+;  *******Localizable Strings******* 
+MSFT="Microsoft Corporation"
+VHidPen.DeviceDesc="Virtual HID Digitizer Tablet"
+VHidPen.SVCDESC="Virtual HID Digitizer Driver"
+HidPen.DeviceDesc="Virtual HID Digitizer Device"
+DISK_NAME      = "Virtual Hid Digitizer Device Install Disk"
+;  *******Non Localizable Strings******* 
+
+SERVICE_BOOT_START     = 0x0 
+SERVICE_SYSTEM_START   = 0x1 
+SERVICE_AUTO_START     = 0x2 
+SERVICE_DEMAND_START   = 0x3 
+SERVICE_DISABLED       = 0x4 
+
+SERVICE_KERNEL_DRIVER  = 0x1 
+SERVICE_ERROR_IGNORE   = 0x0 
+SERVICE_ERROR_NORMAL   = 0x1 
+SERVICE_ERROR_SEVERE   = 0x2 
+SERVICE_ERROR_CRITICAL = 0x3 
+
+REG_EXPAND_SZ          = 0x00020000 
+REG_DWORD              = 0x00010001 
+REG_MULTI_SZ           = 0x00010000
+REG_BINARY             = 0x00000001
+REG_SZ                 = 0x00000000

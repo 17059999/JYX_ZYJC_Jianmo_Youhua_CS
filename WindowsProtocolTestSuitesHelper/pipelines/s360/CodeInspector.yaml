@@ -1,0 +1,23 @@
+trigger: none
+
+variables:
+  - name: build.project
+    value: WindowsProtocolTestSuites
+
+jobs:
+  - job:
+    displayName: Run CodeInspector
+    pool:
+      vmImage: windows-2022
+    workspace:
+      clean: true
+    timeoutInMinutes: 0
+
+    steps:
+      - checkout: git://$(build.project)/$(build.repo)@$(build.branch)
+        path: s
+
+      - task: securedevelopmentteam.vss-secure-development-tools.build-task-codeinspector.CodeInspector@2
+        displayName: "Run Code Inspector"
+        inputs:
+          ProductId: "$(build.serviceTreeId)"

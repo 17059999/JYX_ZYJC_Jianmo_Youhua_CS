@@ -1,0 +1,10 @@
+TestSuiteName,Environment,Regression Type,OSContextName,ResourceGroup,Location,Template,User credential,VM Name,ImageID,Computer Name,Domain,Role,CPU,MIN RAM (MB),MAX RAM (MB),VMSwitch,SwitchType,IP,Subnet,Gateway,DNS
+FileServer,FileServer_GithubPRB_Azure,Azure,Win2022_Domain_NonCluster_SMB311,TestSuiteOnAzure, West US 2,FS_NonCluster_Azure.xml,IOLab/Password01!,GHFS-DC,adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us,GHFS-DC,contoso.com,DC,,,,GitHubPRVNet1,,10.3.1.4,default,,
+,,,,,,,,GHFS-SRV,adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us,GHFS-SRV,contoso.com,NODE01,,,,GitHubPRVNet1,,10.3.1.5,default,,10.3.1.4
+,,,,,,,,,,,,,,,,GitHubPRVNet1,,10.3.1.6,default,,10.3.1.4
+,,,,,,,,GHFS-CLI,adc_21H1_210517-1932_client_enterprise_en-us_vl,GHFS-CLI,contoso.com,DriverComputer,,,,GitHubPRVNet1,,10.3.1.7,default,,10.3.1.4
+,,,,,,,,,,,,,,,,GitHubPRVNet1,,10.3.1.8,default,,10.3.1.4
+RDPServer,RDPServer_GithubPRB_Azure,Azure,,TestSuiteOnAzure, West US 2,RDPServer_Azure.xml,IOLab/Password01!,GHRDPS-Srv,adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us,GHRDPS-Srv,workgroup,SUT,,,,GitHubPRVNet1,,10.3.1.15,default,,
+,,,,,,,,GHRDPS-Cli,adc_21H1_210517-1932_client_enterprise_en-us_vl,GHRDPS-Cli,workgroup,DriverComputer,,,,GitHubPRVNet1,,10.3.1.16,default,,
+RDPClient,RDPClient_GithubPRB_Azure,Azure,,TestSuiteOnAzure, West US 2,RDPClient_Azure.xml,IOLab/Password01!,GHRDPC-Srv,adc_2022_20348.1.210507-1500.fe_release_SERVER_EVAL_x64FRE_en-us,GHRDPC-Srv,workgroup,DriverComputer,,,,GitHubPRVNet1,,10.3.1.21,default,,
+,,,,,,,,GHRDPC-Cli,adc_21H1_210517-1932_client_enterprise_en-us_vl,GHRDPC-Cli,workgroup,SUT,,,,GitHubPRVNet1,,10.3.1.22,default,,
